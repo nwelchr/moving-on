@@ -1,10 +1,6 @@
 .background {
-    background: rgb(15, 15, 15);
+    background: url('https://i.pinimg.com/originals/68/be/7d/68be7da71c8006e6db91e67856b861ba.jpg') repeat;
     border-spacing: 0;
-  }
-
-  .game {
-    margin: 0 auto;
   }
   
   .background td {
@@ -45,4 +41,15 @@
     max-width: 900px;
     max-height: 600px;
     position: relative;
+    border-radius: 45px;
+  }
+
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(
+      #3e95b0, #0d6153);
   }

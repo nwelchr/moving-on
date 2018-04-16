@@ -71,7 +71,7 @@
 //  VECTOR CONSTRUCTOR
 class Vector {
   constructor(x, y) {
-    // constructor for the function object with an x and y coordinate as an input
+    // constructor with x and y coordinates as an input
     this.x = x;
     this.y = y;
   }
@@ -128,7 +128,7 @@ const detectKeys = keyCodes => {
   return isPressed;
 };
 
-// frameFunc is 
+// currying!!
 const runAnimation = frameFunc => {
   let lastTime = null;
 
@@ -149,7 +149,7 @@ const runAnimation = frameFunc => {
   requestAnimationFrame(frame);
 };
 
-// currying!!
+// setup display, then run Animation
 const runLevel = (level, andThen) => {
   const display = new __WEBPACK_IMPORTED_MODULE_0__display__["a" /* default */](document.body, level);
 
@@ -195,7 +195,7 @@ runGame();
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-const scale = 60; // gives the scale of number of pixels that a single unit takes up on the screen
+const scale = 80; // gives the scale of number of pixels that a single unit takes up on the screen
 
 // HELPER FUNCTION TO CREATE AN ELEMENT IN THE DOM AND GIVE IT A CLASS
 const createElement = (name, className) => {
@@ -280,6 +280,7 @@ class DOMDisplay {
   }
 
   clear() {
+    // remove itself (weird syntax, right?)
     this.wrap.parentNode.removeChild(this.wrap);
   }
 }
@@ -300,7 +301,7 @@ class DOMDisplay {
 
 
 
-const actorChars = { // key for actor characters
+const actorChars = { // key for actor characters, i.e. superimposed characters
   "@": __WEBPACK_IMPORTED_MODULE_1__player__["a" /* default */],
   "o": __WEBPACK_IMPORTED_MODULE_2__coin__["a" /* default */],
   "=": __WEBPACK_IMPORTED_MODULE_3__lava__["a" /* default */], "|": __WEBPACK_IMPORTED_MODULE_3__lava__["a" /* default */], "v": __WEBPACK_IMPORTED_MODULE_3__lava__["a" /* default */]
@@ -310,21 +311,21 @@ const maxStep = .05;
 
 // LEVEL CONSTRUCTOR
 class Level {
-  constructor(plan) {
-    this.width = plan[0].length; // how many characters in the string
-    this.height = plan.length; // how many rows is how tall the game is
+  constructor(map) {
+    this.width = map[0].length; // how many characters in the string
+    this.height = map.length; // how many rows is how tall the game is
     this.grid = []; // this is the environment of empty space, walls, and lava
     this.actors = []; // array of actors
 
     for (let y = 0; y < this.height; y++) {
-      // iterate over each string in the plan array
-      const line = plan[y]; // the current string in the index of the input, the row of the game
-      const gridLine = []; // the line to be built of environment
+      // iterate over each string in the map array
+      const line = map[y]; // the current string in the index of the input, the row of the game
+      const row = []; // the line to be built of environment
       for (let x = 0; x < this.width; x++) {
         // iterate over each character
         const ch = line[x]; // the current character of the current line which is the current string
         let fieldType = null; // checking to see if it's an actor or an emtpy space, if not it's a wall or stationary lava
-        const Actor = actorChars[ch]; // haven't seen actorChars yet but this looks into that and declares Actor
+        const Actor = actorChars[ch]; // looks into actorChars for the current character, so Actor will only have a value if it's one of the actorChars
 
         if (Actor) {
           // if it is an actor as defined above which will be either undefined or an actor
@@ -334,9 +335,9 @@ class Level {
         } else if (ch === "!") {
           fieldType = "lava"; // set the variable fieldType to "lava"
         }
-        gridLine.push(fieldType); // pushes null into the grid line if it is an actor or empty space
+        row.push(fieldType); // pushes null into the grid line if it is an actor or empty space
       }
-      this.grid.push(gridLine); // pushes the newly built environment line into the grid, these are all words!!!
+      this.grid.push(row); // pushes the newly built environment line into the grid, these are all words!!!
     }
 
     this.player = this.actors.filter(actor => //searches for the player and returns the first instance found with [0]
@@ -426,7 +427,7 @@ class Level {
 class Player {
   constructor(pos) {
     this.pos = pos.plus(new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](0, -0.5)); // establish current position is half a square higher because it's 1.5 squares high and pos it top left corner of actor
-    this.size = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](.8, 1.5); // it is .8 wide and 1.5 tall as a vector
+    this.size = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](.6, 1); // it is .8 wide and 1.5 tall as a vector
     this.speed = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](0, 0); // stationary starting speed
   }
 

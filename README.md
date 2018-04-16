@@ -18,6 +18,7 @@ My current ideas for specific features for the app:
 - Obstacles:
     - Poison: Vats of poison as well as flying and falling poison that can only be traversed by certain characters
     - Water: Bodies of water that players must traverse to get to their goal
+    - Switches: Certain obstacles (such as wall height) may block all characters from passing. Switches will be used as "solo missions" that only certain characters can reach to eliminate obstacles for the others.
 - Special Features:
     - Gravity: While most of the game will operate under normal physics mechanics, certain areas of the game may trigger gravity to reverse or otherwise change.
 

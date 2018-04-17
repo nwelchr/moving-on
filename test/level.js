@@ -1,7 +1,9 @@
-import Vector from "../lib/vector";
+import Vector from "./vector";
+import Finley from './finley';
+import Poison from './poison';
 
 const actorChars = {
-    '1': Finley, '2': Frankie,
+    '1': Finley,
     '=': Poison, '|': Poison, 'v': Poison
 };
 

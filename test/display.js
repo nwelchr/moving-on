@@ -68,9 +68,32 @@ class Display {
     }
 
     scrollPlayerIntoView(state) {
-        let width = this.wrapper.clientWidth; // takes width of game div
-        let height = this.wrapper.clientHeight;
+        const width = this.wrapper.clientWidth; // takes width of game div
+        const height = this.wrapper.clientHeight;
+        const margin = width / 3; // it bugs out if I try too hard to make it centered???
         
+        const left = this.wrapper.scrollLeft;
+        const right = left + width;
+        const top = this.wrapper.scrollTop;
+        const bottom = top + height;
+
+        const player = state.player;
+        let center = player.pos.plus(player.size.times(0.5).times(scale)); // to find the player's center, we add the position + half the size
+
+
+        // if we set scrollLeft or scrollTop to negative number, it will re-center to 0
+        // margin creates a "neutral" area to not force player into the center
+        if (center.x < left + margin) {
+            this.wrapper.scrollLeft = center.x - margin;
+        } else if (center.x > right - margin) {
+            this.wrapper.scrollLeft = center.x + margin - width;
+        } 
+        
+        if (center.y < top + margin) {
+            this.wrapper.scrollTop = center.y - margin;
+        } else if (center.y > bottom - margin) {
+            this.wrapper.scrollTop = center.y + margin - height;
+        }
     }
 
     clear() {

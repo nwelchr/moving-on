@@ -2,7 +2,6 @@ import Vector from "../lib/vector";
 
 const actorChars = {
     '1': Finley, '2': Frankie,
-    '!': finleyGoal, '@': frankieGoal,
     '=': Poison, '|': Poison, 'v': Poison
 };
 
@@ -31,6 +30,10 @@ class Level {
                             fieldType = 'water';
                         case 'p':
                             fieldType = 'poison';
+                        case '!':
+                            fieldType = 'finleyGoal';
+                        case '@':
+                            fieldType = 'frankieGoal';
                         default:
                             fieldType = null;
                     }

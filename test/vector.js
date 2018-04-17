@@ -8,6 +8,7 @@ class Vector {
         return new Vector(this.x + otherVector.x, this.y + otherVector.y);
     }
 
+    // to get distance traveled during a particular time
     times(factor) {
         return new Vector(this.x * factor, this.y * factor);
     }

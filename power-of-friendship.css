@@ -20,6 +20,10 @@
   background: rgb(50, 50, 50);
 }
 
+.water {
+  background: blue;
+}
+
 .actor {
   position: absolute;
 }

@@ -1,10 +1,10 @@
-const scale = 60; // scale units into pixels
+const scale = 30; // scale units into pixels
 
 // helper function to create an element in the dom and give it a class;
 
 const createElement = (name, className) => {
     const element = document.createElement(name);
-    if (className) element.classtList.add(className);
+    if (className) element.className = className;
     return element;
 };
 
@@ -101,3 +101,5 @@ class Display {
         this.wrapper.parentNode.removeChild(this.wrapper);
     }
 }
+
+export default Display;

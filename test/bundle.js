@@ -71,7 +71,6 @@
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__level__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__display__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__display___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__display__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__level_maps__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__state__ = __webpack_require__(5);
 
@@ -80,7 +79,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 let simpleLevel = new __WEBPACK_IMPORTED_MODULE_0__level__["a" /* default */](__WEBPACK_IMPORTED_MODULE_2__level_maps__["a" /* default */][0]);
-let display = new __WEBPACK_IMPORTED_MODULE_1__display___default.a(document.body, simpleLevel);
+let display = new __WEBPACK_IMPORTED_MODULE_1__display__["a" /* default */](document.body, simpleLevel);
+debugger;
 display.drawFrame(__WEBPACK_IMPORTED_MODULE_3__state__["a" /* default */].start(simpleLevel));
 
 /***/ }),
@@ -91,52 +91,66 @@ display.drawFrame(__WEBPACK_IMPORTED_MODULE_3__state__["a" /* default */].start(
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__vector__ = __webpack_require__(6);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__finley__ = __webpack_require__(7);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__poison__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__player__ = __webpack_require__(8);
+
 
 
 
 
 const actorChars = {
-    '1': __WEBPACK_IMPORTED_MODULE_1__finley__["a" /* default */],
+    '1': __WEBPACK_IMPORTED_MODULE_3__player__["a" /* default */],
     '=': __WEBPACK_IMPORTED_MODULE_2__poison__["a" /* default */], '|': __WEBPACK_IMPORTED_MODULE_2__poison__["a" /* default */], 'v': __WEBPACK_IMPORTED_MODULE_2__poison__["a" /* default */]
 };
 
 class Level {
     constructor(levelMap) {
         this.rows = [];
-        this.height = levelMap[0].length; // width of level determined my first row
+        this.width = levelMap[0].length; // width of level determined my first row
         this.height = levelMap.length; // # of rows in array
         this.actors = []; // array of 'actors' i.e. non-background objs
 
-        levelMap.map((line, y) => {
+        for (let y = 0; y < this.height; y++) {
+            // iterate over each string in the map
+            const line = levelMap[y];
             const currRow = [];
 
-            line.map((ch, x) => {
+            for (let x = 0; x < this.width; x++) {
+                // iterate over each character
+                const ch = line[x];
                 let fieldType;
 
                 const Actor = actorChars[ch];
-                if (Actor) this.actors.push(new Actor(new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](x, y), ch));else {
+                if (Actor) {
+                    this.actors.push(new Actor(new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](x, y), ch));
+                } else {
                     switch (ch) {
-                        case Actor:
                         case 'x':
                             fieldType = 'wall';
+                            break;
                         case 'w':
                             fieldType = 'water';
+                            break;
                         case 'p':
                             fieldType = 'poison';
+                            break;
                         case '!':
                             fieldType = 'finleyGoal';
+                            break;
                         case '@':
                             fieldType = 'frankieGoal';
+                            break;
                         default:
                             fieldType = null;
+                            break;
                     }
                 }
 
-                ch = fieldType;
-            });
+                console.log(fieldType);
+                currRow.push(fieldType);
+            }
 
-            currRow = line;
-        });
+            this.rows.push(currRow);
+        }
     }
 }
 
@@ -145,15 +159,16 @@ class Level {
 /***/ }),
 /* 2 */,
 /* 3 */
-/***/ (function(module, exports) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-const scale = 60; // scale units into pixels
+"use strict";
+const scale = 30; // scale units into pixels
 
 // helper function to create an element in the dom and give it a class;
 
 const createElement = (name, className) => {
     const element = document.createElement(name);
-    if (className) element.classtList.add(className);
+    if (className) element.className = className;
     return element;
 };
 
@@ -251,12 +266,14 @@ class Display {
     }
 }
 
+/* harmony default export */ __webpack_exports__["a"] = (Display);
+
 /***/ }),
 /* 4 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-const levelMaps = [["                      ", "                      ", "                      ", "                      ", "                      ", "                      ", "                      ", "                      ", "                      ", "                      ", "  x              = x  ", "  x         o o    x  ", "  x @      xxxxx   x  ", "  xxxxx            x  ", "      x!!!!!!!!!!!!x  ", "      xxxxxxxxxxxxxx  ", "                      "], ["                      ", "                      ", "   v                  ", "          v           ", "                      ", "              v       ", "                      ", "     v                ", "                      ", "                      ", "  x              = x  ", "  x             o  x  ", "  x @         = xx x  ", "  xxxxx    xx    = x  ", "      xxx!!!!!!!!!!x  ", "      xxxxx!!!!xxxxx  ", "                      "]];
+const levelMaps = [["                      ", "                      ", "                      ", "                      ", "                      ", "                      ", "                      ", "                      ", "                      ", "                      ", "  x              = x  ", "  x                !  ", "  x 1      xxxxxx  x  ", "  xxxxx  wwwww     x  ", "      xppppppppppppx  ", "      xxxxxxxxxxxxxx  ", "                      "], ["                      ", "                      ", "   v                  ", "          v           ", "                      ", "              v       ", "                      ", "     v                ", "                      ", "                      ", "  x              = x  ", "  x             o  x  ", "  x @         = xx x  ", "  xxxxx    xx    = x  ", "      xxx!!!!!!!!!!x  ", "      xxxxx!!!!xxxxx  ", "                      "]];
 
 /* harmony default export */ __webpack_exports__["a"] = (levelMaps);
 
@@ -268,15 +285,16 @@ const levelMaps = [["                      ", "                      ", "       
 // unsure how to manage current player
 
 class State {
-    constructor(level, actors, status, currPlayer) {
+    constructor(level, actors, status, player) {
         this.level = level;
         this.actors = actors;
-        this.currPlayer = currPlayer;
+        this.player = this.actors.find(a => a.constructor.name === 'Player');
+        // this.currPlayer = currPlayer;
         this.status = status;
     }
 
     static start(level) {
-        return new State(level, level.actors, "playing", this.currPlayer);
+        return new State(level, level.actors, "playing", this.player);
     }
 }
 
@@ -318,29 +336,32 @@ class Vector {
 class Finley extends __WEBPACK_IMPORTED_MODULE_0__player__["a" /* default */] {
     constructor(pos) {
         // -.5 and 1.5 to compensate for tilemap
-        this.pos = pos.plus(new __WEBPACK_IMPORTED_MODULE_1__vector__["a" /* default */](0, -0.5));
-        this.size = new __WEBPACK_IMPORTED_MODULE_1__vector__["a" /* default */](.8, 1.5);
-        this.speed = .5;
-        this.jumpSpeed = 7;
-        this.gravity = -10;
+        super(this.pos, this.size, this.speed, this.jumpSpeed, this.gravity);
     }
 }
 
-/* harmony default export */ __webpack_exports__["a"] = (Finley);
+/* unused harmony default export */ var _unused_webpack_default_export = (Finley);
 
 /***/ }),
 /* 8 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-throw new Error("Cannot find module \"vector\"");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__vector__ = __webpack_require__(6);
 
 
 class Player {
-    constructor(pos, speed, jumpSpeed) {
-        this.pos = pos;
-        this.speed = speed;
-        this.jumpSpeed = jumpSpeed;
+    constructor(pos) {
+        // this.pos = pos;
+        // this.size = size;
+        // this.speed = speed;
+        // this.jumpSpeed = jumpSpeed;
+        // this.gravity = gravity;
+        this.pos = pos.plus(new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](0, -0.5));
+        this.size = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](.8, 1.5);
+        this.speed = .5;
+        this.jumpSpeed = 7;
+        this.gravity = -10;
     }
 
 }
@@ -358,17 +379,21 @@ class Player {
 class Poison {
     constructor(pos, ch) {
         this.pos = pos;
-
+        this.size = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](1, 1);
         switch (ch) {
             case '=':
                 this.speed = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](2, 0); // sideways lava
+                break;
             case '|':
                 this.speed = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](0, 2); // speed in terms of vector, up & down
+                break;
             case 'v':
                 this.speed = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](0, 3);
                 this.repeatPos - pos; // original starting position
+                break;
             default:
                 this.speed = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](0, 0);
+                break;
         }
     }
 }

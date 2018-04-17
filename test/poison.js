@@ -1,3 +1,5 @@
+import Vector from './vector';
+
 class Poison {
     constructor(pos, ch) {
         this.pos = pos;
@@ -14,6 +16,6 @@ class Poison {
                 this.speed = new Vector(0, 0);
         }
     }
-
-
 }
+
+export default Poison;

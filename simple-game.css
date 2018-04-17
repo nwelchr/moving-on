@@ -1,8 +1,8 @@
 .background {
-    background: url('https://i.pinimg.com/originals/68/be/7d/68be7da71c8006e6db91e67856b861ba.jpg') repeat;
-    border-spacing: 0;
-  }
-  
+  border-spacing: 0;
+  background: #111;
+}
+
   .background td {
     padding: 0;
   }
@@ -44,12 +44,40 @@
     border-radius: 45px;
   }
 
+  /* .game:before {
+    content: '';
+    position: fixed;
+    width: 910px;
+    height: 610px;
+    background-color: red;
+    margin-left: -5px;
+    margin-top: -5px;
+    z-index: -1;
+    border-radius: 48px;
+    background: linear-gradient(270deg, #961f7a, #1f5896, #1f963c, #90961f, #961f7a, #961f7a);
+    background-size: 1000% 1200%;
+    animation: gradient 500s infinite;
+    animation-fill-mode:forwards;
+    animation-timing-function: linear;
+  } */
+
   body {
     display: flex;
     justify-content: center;
     align-items: center;
+    overflow: hidden;
     width: 100vw;
     height: 100vh;
-    background: linear-gradient(
-      #3e95b0, #0d6153);
+    background: linear-gradient(270deg, #111, #000, #111);
+  }
+
+  @keyframes gradient { 
+    0% { 
+      background-position: 0 0;
+    } 
+  
+    100% { 
+      background-position: -1200% 0;
+    } 
+  
   }

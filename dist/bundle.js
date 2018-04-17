@@ -131,37 +131,54 @@ const detectKeys = keyCodes => {
 // currying!!
 const runAnimation = frameFunc => {
   let lastTime = null;
+  console.log("set lastTime to null");
 
   const frame = time => {
     let stop = false;
 
     if (lastTime != null) {
+      console.log("lastTime is not null");
+      // maximum frame step of 100 milliseconds
+      // difference between lastTime and time is how long the page was hidden
+      // convert between milliseconds and seconds to work with better
       const timeStep = Math.min(time - lastTime, 100) / 1000;
       stop = frameFunc(timeStep) === false;
     }
 
     lastTime = time;
+    console.log("lasttime is time!");
     if (!stop) {
+      console.log("!stop so requestAnimationFrame)");
       requestAnimationFrame(frame);
     }
   };
-
+  console.log("request animation fRame");
   requestAnimationFrame(frame);
 };
 
-// setup display, then run Animation
+// setup display in document.body as parent and curr level
+// then run Animation
 const runLevel = (level, andThen) => {
   const display = new __WEBPACK_IMPORTED_MODULE_0__display__["a" /* default */](document.body, level);
+  console.log("new display");
 
+  // takes in a timeStep
   runAnimation(step => {
+    console.log("about to animate level");
+
     level.animate(step, arrows);
+    console.log("about to drawFrame");
     display.drawFrame(step);
 
     if (level.isFinished()) {
       display.clear();
       if (andThen) {
+        console.log("andThen!!!!");
+
         andThen(level.status);
       }
+      console.log("no andThen");
+
       return false;
     }
   });
@@ -171,8 +188,14 @@ const runGame = () => {
   // Defining beginning of game conditions
 
   // Recursive function that increments level when its finished, resets if not, goes to win screen if won
+  console.log("runGame");
+
   const startLevel = n => {
+    console.log("startLevel");
+
     runLevel(new __WEBPACK_IMPORTED_MODULE_1__level__["a" /* default */](__WEBPACK_IMPORTED_MODULE_2__level_maps__["a" /* default */][n]), status => {
+      console.log("actually run level...");
+
       if (status === "lost") {
         startLevel(n);
       } else if (n < __WEBPACK_IMPORTED_MODULE_2__level_maps__["a" /* default */].length - 1) {
@@ -362,10 +385,11 @@ class Level {
       return "wall";
     }
 
-    //if the user hits a wall in the level, count it as lava
+    //if the user hits the bottom wall in the level, count it as lava
     if (yEnd > this.height) {
       return "lava";
     }
+
     for (let y = yStart; y < yEnd; y++) {
       for (let x = xStart; x < xEnd; x++) {
         const fieldType = this.grid[y][x];
@@ -409,7 +433,7 @@ class Level {
         this.status = "won";
         this.finishDelay = 1;
       }
-    }
+    } else if (type === "wall") return "wall";
   }
 }
 
@@ -427,14 +451,26 @@ class Level {
 class Player {
   constructor(pos) {
     this.pos = pos.plus(new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](0, -0.5)); // establish current position is half a square higher because it's 1.5 squares high and pos it top left corner of actor
-    this.size = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](.6, 1); // it is .8 wide and 1.5 tall as a vector
+    this.size = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](.8, 1.5); // it is .8 wide and 1.5 tall as a vector
     this.speed = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](0, 0); // stationary starting speed
   }
 
   moveX(step, level, keys) {
-    this.speed.x = 0;
-    if (keys.left) this.speed.x -= playerXSpeed;
-    if (keys.right) this.speed.x += playerXSpeed;
+    console.log(this.speed.x);
+    console.log(keys);
+
+    if (keys.left || keys.right || keys.up) {
+      if (this.speed.x < jumpSpeed && this.speed.x > -jumpSpeed) {
+        if (keys.left) this.speed.x -= playerXSpeed;
+        if (keys.right) this.speed.x += playerXSpeed;
+      } else if (this.speed.x === jumpSpeed || this.speed.x === -jumpSpeed) {
+        if (keys.left && this.speed.x === jumpSpeed) this.speed.x -= playerXSpeed;
+        if (keys.right && this.speed.x === -jumpSpeed) this.speed.x += playerXSpeed;
+      }
+    } else {
+      if (this.speed.x > 0) this.speed.x -= this.speed.x < playerXSpeed ? this.speed.x : playerXSpeed;
+      if (this.speed.x < 0) this.speed.x += this.speed.x > -playerXSpeed ? -this.speed.x : playerXSpeed;
+    }
 
     const motion = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](this.speed.x * step, 0);
     const newPos = this.pos.plus(motion);
@@ -481,7 +517,7 @@ class Player {
 
 Player.prototype.type = "player";
 
-var playerXSpeed = 7;
+var playerXSpeed = .5;
 
 var gravity = 10;
 var jumpSpeed = 7;

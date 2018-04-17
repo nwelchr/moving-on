@@ -18,6 +18,8 @@ class Display {
         this.actorLayer = null; // background and actor layers important for time save
 
         this.wrapper.appendChild(this.drawBackground());
+
+        this.drawActors = this.drawActors.bind(this);
     }
 
     // drawn once
@@ -43,16 +45,32 @@ class Display {
     }
 
     // drawn every time the display is updated with the given state
-    drawActors() {
+    drawActors(actors) {
+        const wrapper = createElement('div');
+
+        actors.forEach(actor => {
+            const el = wrapper.appendChild(createElement('div', `actor ${actor.constructor.name.toLowerCase()}`)); // actor.constructor.name finds the name of the class of the actor
+            el.style.width = `${actor.size.x * scale}px`;
+            el.style.height = `${actor.size.y * scale}px`;
+            el.style.left = `${actor.pos.x * scale}px`;
+            el.style.right = `${actor.pos.y * scale}px`;
+        });
+
+        return wrapper;
+    }
+
+    drawFrame(state) {
+        if (this.actorLayer) this.actorLayer.remove();
+        this.actorLayer = this.drawActors(state.actors);
+        this.wrapper.appendChild(this.actorLayer);
+        this.wrapper.className = `game ${state.status}`;
+        this.scrollPlayerIntoView(state);
+    }
+
+    scrollPlayerIntoView(state) {
+        let width = this.wrapper.clientWidth; // takes width of game div
+        let height = this.wrapper.clientHeight;
         
-    }
-
-    drawFrame() {
-
-    }
-
-    scrollPlayerIntoView() {
-
     }
 
     clear() {

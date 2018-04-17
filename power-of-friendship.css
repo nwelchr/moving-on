@@ -1,10 +1,15 @@
 .background {
   border-spacing: 0;
+  table-layout: fixed;
   background: #111;
 }
 
 .background td {
   padding: 0;
+}
+
+.poison {
+  background: rgb(170, 100, 255);
 }
 
 .lava {

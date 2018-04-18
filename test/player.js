@@ -2,17 +2,13 @@ import Vector from './vector';
 
 class Player {
     constructor(pos, ch, speed) {
-        // this.pos = pos;
-        // this.size = size;
-        // this.speed = speed;
-        // this.jumpSpeed = jumpSpeed;
-        // this.gravity = gravity;
-        this.pos = pos;
         this.size = new Vector(.8, 1.5);
-        this.speed = speed || new Vector(0, 0); // initial speed
         this.xSpeed = 7;
         this.jumpSpeed = 7;
         this.gravity = 10;
+        this.pos = pos;
+        this.size = new Vector(.8, 1.5);
+        this.speed = speed || new Vector(0, 0); // initial speed
     }
 
     moveX(time, state, keys) {
@@ -58,8 +54,9 @@ class Player {
     update (time, state, keys) {
         this.moveX(time, state, keys);
         this.moveY(time, state, keys);
-        
-        return new Player (this.pos, null, new Vector(this.speed.x, this.speed.y));
+
+        const Actor = this.constructor;
+        return new Actor(this.pos, null, new Vector(this.speed.x, this.speed.y));
     }
 
 }

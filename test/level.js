@@ -4,6 +4,7 @@ import Poison from './poison';
 import Player from "./player";
 
 const actorChars = {
+    // '1': Finley,
     '1': Player,
     '=': Poison, '|': Poison, 'v': Poison
 };

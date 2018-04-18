@@ -5,6 +5,7 @@ class State {
         this.level = level;
         this.actors = actors;
         this.player = this.actors.find(a => a.constructor.name === 'Player');
+        // this.player = this.actors.find(a => a.constructor.name === 'Finley');       
         // this.currPlayer = currPlayer;
         this.status = status;
     }

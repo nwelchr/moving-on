@@ -96,17 +96,13 @@ class Vector {
 
 class Player {
     constructor(pos, ch, speed) {
-        // this.pos = pos;
-        // this.size = size;
-        // this.speed = speed;
-        // this.jumpSpeed = jumpSpeed;
-        // this.gravity = gravity;
-        this.pos = pos;
         this.size = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](.8, 1.5);
-        this.speed = speed || new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](0, 0); // initial speed
         this.xSpeed = 7;
         this.jumpSpeed = 7;
         this.gravity = 10;
+        this.pos = pos;
+        this.size = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](.8, 1.5);
+        this.speed = speed || new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](0, 0); // initial speed
     }
 
     moveX(time, state, keys) {
@@ -153,7 +149,8 @@ class Player {
         this.moveX(time, state, keys);
         this.moveY(time, state, keys);
 
-        return new Player(this.pos, null, new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](this.speed.x, this.speed.y));
+        const Actor = this.constructor;
+        return new Actor(this.pos, null, new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](this.speed.x, this.speed.y));
     }
 
 }
@@ -172,6 +169,7 @@ class State {
         this.level = level;
         this.actors = actors;
         this.player = this.actors.find(a => a.constructor.name === 'Player');
+        // this.player = this.actors.find(a => a.constructor.name === 'Finley');       
         // this.currPlayer = currPlayer;
         this.status = status;
     }
@@ -333,6 +331,7 @@ runGame();
 
 
 const actorChars = {
+    // '1': Finley,
     '1': __WEBPACK_IMPORTED_MODULE_3__player__["a" /* default */],
     '=': __WEBPACK_IMPORTED_MODULE_2__poison__["a" /* default */], '|': __WEBPACK_IMPORTED_MODULE_2__poison__["a" /* default */], 'v': __WEBPACK_IMPORTED_MODULE_2__poison__["a" /* default */]
 };
@@ -429,9 +428,8 @@ class Level {
 
 class Finley extends __WEBPACK_IMPORTED_MODULE_0__player__["a" /* default */] {
     constructor(pos, ch, speed) {
-        this.pos = pos;
+        super(pos, ch, speed);
         this.size = new __WEBPACK_IMPORTED_MODULE_1__vector__["a" /* default */](.8, 1.5);
-        this.speed = speed || new __WEBPACK_IMPORTED_MODULE_1__vector__["a" /* default */](0, 0); // initial speed
         this.xSpeed = 7;
         this.jumpSpeed = 7;
         this.gravity = 10;
@@ -578,6 +576,7 @@ class Display {
         const bottom = top + height;
 
         const player = state.player;
+        console.log(player);
         const center = player.pos.plus(player.size.times(0.5)).times(scale); // to find the player's center, we add the position + half the size
 
 

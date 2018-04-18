@@ -21,7 +21,11 @@
 }
 
 .water {
-  background: blue;
+  background: linear-gradient(#83a4d4, #40a4df);
+}
+
+.water {
+  background: #0af;
 }
 
 .actor {

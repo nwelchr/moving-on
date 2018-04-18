@@ -1,4 +1,4 @@
-const scale = 30; // scale units into pixels
+const scale = 60; // scale units into pixels
 
 // helper function to create an element in the dom and give it a class;
 
@@ -23,7 +23,7 @@ class Display {
     }
 
     // drawn once
-    drawBackground() {
+    drawBackground() { 
         const table = createElement('table', 'background');
         table.style.width = `${this.level.width * scale}px`; // sets specifc style, doesn't change other inline styles
 
@@ -53,7 +53,7 @@ class Display {
             el.style.width = `${actor.size.x * scale}px`;
             el.style.height = `${actor.size.y * scale}px`;
             el.style.left = `${actor.pos.x * scale}px`;
-            el.style.right = `${actor.pos.y * scale}px`;
+            el.style.top = `${actor.pos.y * scale}px`;
         });
 
         return wrapper;

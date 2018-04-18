@@ -80,7 +80,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 let simpleLevel = new __WEBPACK_IMPORTED_MODULE_0__level__["a" /* default */](__WEBPACK_IMPORTED_MODULE_2__level_maps__["a" /* default */][0]);
 let display = new __WEBPACK_IMPORTED_MODULE_1__display__["a" /* default */](document.body, simpleLevel);
-debugger;
 display.drawFrame(__WEBPACK_IMPORTED_MODULE_3__state__["a" /* default */].start(simpleLevel));
 
 /***/ }),
@@ -144,8 +143,6 @@ class Level {
                             break;
                     }
                 }
-
-                console.log(fieldType);
                 currRow.push(fieldType);
             }
 
@@ -162,7 +159,7 @@ class Level {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-const scale = 30; // scale units into pixels
+const scale = 60; // scale units into pixels
 
 // helper function to create an element in the dom and give it a class;
 
@@ -217,7 +214,7 @@ class Display {
             el.style.width = `${actor.size.x * scale}px`;
             el.style.height = `${actor.size.y * scale}px`;
             el.style.left = `${actor.pos.x * scale}px`;
-            el.style.right = `${actor.pos.y * scale}px`;
+            el.style.top = `${actor.pos.y * scale}px`;
         });
 
         return wrapper;
@@ -273,7 +270,7 @@ class Display {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-const levelMaps = [["                      ", "                      ", "                      ", "                      ", "                      ", "                      ", "                      ", "                      ", "                      ", "                      ", "  x              = x  ", "  x                !  ", "  x 1      xxxxxx  x  ", "  xxxxx  wwwww     x  ", "      xppppppppppppx  ", "      xxxxxxxxxxxxxx  ", "                      "], ["                      ", "                      ", "   v                  ", "          v           ", "                      ", "              v       ", "                      ", "     v                ", "                      ", "                      ", "  x              = x  ", "  x             o  x  ", "  x @         = xx x  ", "  xxxxx    xx    = x  ", "      xxx!!!!!!!!!!x  ", "      xxxxx!!!!xxxxx  ", "                      "]];
+const levelMaps = [["                      ", "                      ", "  x              = x  ", "  x       xxxxxx   !  ", "  x 1              x  ", "  xxxxx  wwwww     x  ", "      xppppppppppppx  ", "      xxxxxxxxxxxxxx  ", "                      "], ["                      ", "                      ", "   v                  ", "          v           ", "                      ", "              v       ", "                      ", "     v                ", "                      ", "                      ", "  x              = x  ", "  x             o  x  ", "  x @         = xx x  ", "  xxxxx    xx    = x  ", "      xxx!!!!!!!!!!x  ", "      xxxxx!!!!xxxxx  ", "                      "]];
 
 /* harmony default export */ __webpack_exports__["a"] = (levelMaps);
 

@@ -49,8 +49,6 @@ class Level {
                             break;
                     }
                 }
-
-                console.log(fieldType);
                 currRow.push(fieldType);
             }
 

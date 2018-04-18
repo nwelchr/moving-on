@@ -55,6 +55,33 @@ class Level {
             this.rows.push(currRow);
         }
     }
+
+    touching(pos, size) {
+        // defines boundaries of what counts as touching
+        const xStart = Math.floor(pos.x);
+        const xEnd = Math.ceil(pos.x + size.x);
+        const yStart = Math.floor(pos.y);
+        const yEnd = Math.ceil(pos.y + size.y);
+
+        // if the user hits top/right/left margins, it's a wall
+        if (xStart < 0 || xEnd > this.width || yStart < 0) {
+            return "wall";
+        }
+
+        // if the user hits the bottom margin, it counts as poison
+        if (yEnd > this.height) {
+            return "poison";
+        }
+
+        for (let y = yStart; y < yEnd; y++) {
+            for (let x = xStart; x < xEnd; x++) {
+                const fieldType = this.grid[y][x];
+                if (fieldType) return fieldType;
+            }
+        }
+    }
+
+
 }
 
 export default Level;

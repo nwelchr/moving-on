@@ -149,17 +149,67 @@ class Level {
             this.rows.push(currRow);
         }
     }
+
+    touching(pos, size) {
+        // defines boundaries of what counts as touching
+        const xStart = Math.floor(pos.x);
+        const xEnd = Math.ceil(pos.x + size.x);
+        const yStart = Math.floor(pos.y);
+        const yEnd = Math.ceil(pos.y + size.y);
+
+        // if the user hits top/right/left margins, it's a wall
+        if (xStart < 0 || xEnd > this.width || yStart < 0) {
+            return "wall";
+        }
+
+        // if the user hits the bottom margin, it counts as poison
+        if (yEnd > this.height) {
+            return "poison";
+        }
+
+        for (let y = yStart; y < yEnd; y++) {
+            for (let x = xStart; x < xEnd; x++) {
+                const fieldType = this.grid[y][x];
+                if (fieldType) return fieldType;
+            }
+        }
+    }
+
 }
 
 /* harmony default export */ __webpack_exports__["a"] = (Level);
 
 /***/ }),
-/* 2 */,
+/* 2 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+//  VECTOR CONSTRUCTOR
+class Vector {
+  constructor(x, y) {
+    // constructor with x and y coordinates as an input
+    this.x = x;
+    this.y = y;
+  }
+
+  plus(other) {
+    // takes another vector as an argument
+    return new Vector(this.x + other.x, this.y + other.y); // creates a new Vector object from the current one and the argument and returns it
+  }
+
+  times(factor) {
+    return new Vector(this.x * factor, this.y * factor); // returns a new vector multiplied by the argument which will be useful when given a time interval to get the distance traveled
+  }
+}
+
+/* harmony default export */ __webpack_exports__["a"] = (Vector);
+
+/***/ }),
 /* 3 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-const scale = 60; // scale units into pixels
+const scale = 40; // scale units into pixels
 
 // helper function to create an element in the dom and give it a class;
 
@@ -293,6 +343,34 @@ class State {
     static start(level) {
         return new State(level, level.actors, "playing", this.player);
     }
+
+    overlap(actor, other) {
+        return actor.pos.x + actor.size.x > other.pos.x && actor.pos.x < other.pos.x + other.size.x && actor.pos.y + actor.size.y > other.pos.y && actor.pos.y < other.pos.y + other.size.y;
+    }
+
+    update(time, keys) {
+        let actors = this.actors.map(actor => actor.update(time, this, keys));
+        let newState = new State(this.level, actors, this.status);
+        if (newState.status != 'playing') return newState;
+
+        let player = newState.player;
+
+        if (this.level.touching(player.pos, player.size) === 'poison') {
+            return new State(this.level, actors, 'lost');
+        }
+
+        // if (keys.esc) {
+        //     return new State(this.level, actors, 'paused');
+        // }
+
+        for (let actor of actors) {
+            if (actor != player && this.overlap(actor, player)) {
+                newState = actor.collide(newState);
+            }
+        }
+
+        return newState;
+    }
 }
 
 /* harmony default export */ __webpack_exports__["a"] = (State);
@@ -371,12 +449,17 @@ class Player {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__vector__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__state__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__lib_lava__ = __webpack_require__(10);
+
+
 
 
 class Poison {
-    constructor(pos, ch) {
+    constructor(pos, ch, reset) {
         this.pos = pos;
         this.size = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](1, 1);
+
         switch (ch) {
             case '=':
                 this.speed = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](2, 0); // sideways lava
@@ -392,10 +475,67 @@ class Poison {
                 this.speed = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](0, 0);
                 break;
         }
+
+        this.resetPos = pos;
+    }
+
+    collide(state) {
+        return new __WEBPACK_IMPORTED_MODULE_1__state__["a" /* default */](state.level, state.actors, 'lost');
+    }
+
+    update(time, state) {
+        let newPos = this.pos.plus(this.speed.times(time));
+        // if poison touching a wall, just reset
+        if (!state.level.touches(newPos, this.size, 'wall')) {
+            return new Poison(newPos, this.speed, this.resetPos);
+        } else if (this.resetPos) {
+            return new Poison(this.resetPos, this.speed, this.resetPos);
+        } else {
+            return new Poison(this.pos, this.speed.times(-1));
+        }
     }
 }
 
 /* harmony default export */ __webpack_exports__["a"] = (Poison);
+
+/***/ }),
+/* 10 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__vector__ = __webpack_require__(2);
+
+
+// LAVA CONSTRUCTOR
+class Lava {
+  constructor(pos, ch) {
+    this.pos = pos;
+    this.size = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](1, 1); // takes up 1X1
+    if (ch === "=") {
+      this.speed = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](2, 0); // sideways lava
+    } else if (ch === "|") {
+      this.speed = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](0, 2); // speed in terms of vector, up & down
+    } else if (ch === "v") {
+      this.speed = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](0, 3);
+      this.repeatPos = pos; // the original starting position to later repeat to
+    }
+  }
+
+  act(step, level) {
+    const newPos = this.pos.plus(this.speed.times(step));
+    if (!level.obstacleAt(newPos, this.size)) {
+      this.pos = newPos;
+    } else if (this.repeatPos) {
+      this.pos = this.repeatPos;
+    } else {
+      this.speed = this.speed.times(-1);
+    }
+  }
+}
+
+Lava.prototype.type = "lava";
+
+/* unused harmony default export */ var _unused_webpack_default_export = (Lava);
 
 /***/ })
 /******/ ]);

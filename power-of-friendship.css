@@ -37,6 +37,13 @@
   border-radius: 50%;
 }
 
+.finleyGoal {
+  position: absolute;
+  width: 25px;
+  height: 45px;
+  border: 2px dotted white;
+}
+
 .player {
   background: rgb(111, 61, 150);
 }

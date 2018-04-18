@@ -96,12 +96,11 @@ class Vector {
 
 class Player {
     constructor(pos, ch, speed, size, xSpeed, jumpSpeed) {
-        this.size = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](.8, 1.5);
-        this.xSpeed = 7;
-        this.jumpSpeed = 7;
         this.pos = pos;
-        this.size = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](.8, 1.5);
         this.speed = speed || new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](0, 0); // initial speed
+        this.size = size;
+        this.xSpeed = xSpeed;
+        this.jumpSpeed = jumpSpeed;
     }
 
     moveX(time, state, keys) {
@@ -167,8 +166,8 @@ class State {
     constructor(level, actors, status, player) {
         this.level = level;
         this.actors = actors;
-        this.player = this.actors.find(a => a.constructor.name === 'Player');
-        // this.player = this.actors.find(a => a.constructor.name === 'Finley');       
+        // this.player = this.actors.find(a => a.constructor.name === 'Player');
+        this.player = this.actors.find(a => a.constructor.name === 'Finley');
         // this.currPlayer = currPlayer;
         this.status = status;
         this.gravity = 10;
@@ -191,7 +190,7 @@ class State {
 
         switch (this.level.touching(player.pos, player.size)) {
             case 'poison':
-                console.log('hi');
+                // console.log('hi');
                 return new State(this.level, actors, 'lost');
             case 'finleyGoal':
                 return new State(this.level, actors, 'won');
@@ -331,8 +330,8 @@ runGame();
 
 
 const actorChars = {
-    // '1': Finley,
-    '1': __WEBPACK_IMPORTED_MODULE_3__player__["a" /* default */],
+    '1': __WEBPACK_IMPORTED_MODULE_1__finley__["a" /* default */],
+    // '1': Player,
     '=': __WEBPACK_IMPORTED_MODULE_2__poison__["a" /* default */], '|': __WEBPACK_IMPORTED_MODULE_2__poison__["a" /* default */], 'v': __WEBPACK_IMPORTED_MODULE_2__poison__["a" /* default */]
 };
 
@@ -406,7 +405,7 @@ class Level {
         for (let y = yStart; y < yEnd; y++) {
             for (let x = xStart; x < xEnd; x++) {
                 const fieldType = this.rows[y][x];
-                console.log(fieldType);
+                // console.log(fieldType);
                 if (fieldType) return fieldType;
             }
         }
@@ -427,15 +426,15 @@ class Level {
 
 
 class Finley extends __WEBPACK_IMPORTED_MODULE_0__player__["a" /* default */] {
-    constructor(pos, ch, speed) {
-        super(pos, ch, speed);
-        this.size = new __WEBPACK_IMPORTED_MODULE_1__vector__["a" /* default */](.8, 1.5);
-        this.xSpeed = 7;
-        this.jumpSpeed = 7;
+    constructor(pos, ch, speed, size, xSpeed, jumpSpeed) {
+        const finleySize = size || new __WEBPACK_IMPORTED_MODULE_1__vector__["a" /* default */](.8, 1.5);
+        const finleyXSpeed = xSpeed || 7;
+        const finleyJumpSpeed = jumpSpeed || 7;
+        super(pos, ch, speed, finleySize, finleyXSpeed, finleyJumpSpeed);
     }
 }
 
-/* unused harmony default export */ var _unused_webpack_default_export = (Finley);
+/* harmony default export */ __webpack_exports__["a"] = (Finley);
 
 /***/ }),
 /* 6 */

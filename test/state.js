@@ -4,8 +4,8 @@ class State {
     constructor(level, actors, status, player) {
         this.level = level;
         this.actors = actors;
-        this.player = this.actors.find(a => a.constructor.name === 'Player');
-        // this.player = this.actors.find(a => a.constructor.name === 'Finley');       
+        // this.player = this.actors.find(a => a.constructor.name === 'Player');
+        this.player = this.actors.find(a => a.constructor.name === 'Finley');       
         // this.currPlayer = currPlayer;
         this.status = status;
         this.gravity = 10;
@@ -28,7 +28,7 @@ class State {
 
         switch (this.level.touching(player.pos, player.size)) {
             case 'poison':
-            console.log('hi');
+            // console.log('hi');
                 return new State(this.level, actors, 'lost');
             case 'finleyGoal':
                 return new State(this.level, actors, 'won');

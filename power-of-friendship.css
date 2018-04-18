@@ -45,17 +45,20 @@
   background: rgb(111, 61, 150);
 }
 
-.lost .player {
+.lost .player, .lost .finley {
   background: rgb(160, 64, 64);
 }
 
-.won .player {
+.won .player, .won .finley {
   background: #fff;
 }
 
 #game-wrapper {
-  background-color: orange;
   border-radius: 45px;
+}
+
+.finley {
+  background-color: orange;
 }
 
 .title-screen-modal {

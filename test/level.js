@@ -4,8 +4,8 @@ import Poison from './poison';
 import Player from "./player";
 
 const actorChars = {
-    // '1': Finley,
-    '1': Player,
+    '1': Finley,
+    // '1': Player,
     '=': Poison, '|': Poison, 'v': Poison
 };
 
@@ -78,7 +78,7 @@ class Level {
         for (let y = yStart; y < yEnd; y++) {
             for (let x = xStart; x < xEnd; x++) {
                 const fieldType = this.rows[y][x];
-                console.log(fieldType);
+                // console.log(fieldType);
                 if (fieldType) return fieldType;
             }
         }

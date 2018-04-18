@@ -2,12 +2,11 @@ import Vector from './vector';
 
 class Player {
     constructor(pos, ch, speed, size, xSpeed, jumpSpeed) {
-        this.size = new Vector(.8, 1.5);
-        this.xSpeed = 7;
-        this.jumpSpeed = 7;
         this.pos = pos;
-        this.size = new Vector(.8, 1.5);
         this.speed = speed || new Vector(0, 0); // initial speed
+        this.size = size;
+        this.xSpeed = xSpeed;
+        this.jumpSpeed = jumpSpeed;
     }
 
     moveX(time, state, keys) {

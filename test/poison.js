@@ -1,6 +1,5 @@
 import Vector from './vector';
 import State from './state';
-import Lava from '../lib/lava';
 
 class Poison {
     constructor(pos, ch, reset) {
@@ -33,7 +32,7 @@ class Poison {
     update(time, state) {
         let newPos = this.pos.plus(this.speed.times(time));
         // if poison touching a wall, just reset
-        if (!state.level.touches(newPos, this.size, 'wall')) {
+        if (state.level.touching(newPos, this.size) ==! 'wall') {
             return new Poison(newPos, this.speed, this.resetPos);
         } else if (this.resetPos) {
             return new Poison(this.resetPos, this.speed, this.resetPos);

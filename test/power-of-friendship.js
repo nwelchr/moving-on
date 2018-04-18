@@ -24,6 +24,8 @@ const detectKeys = () => {
 
     window.addEventListener('keydown', track);
     window.addEventListener('keyup', track);
+
+    return isPressed;
 };
 
 // calls requestAnimation again after every frame
@@ -47,7 +49,7 @@ const runAnimation = (frameFunction) => {
 
 const runLevel = (level, successFunction) => {
     const display = new Display(document.body, level);
-    const state = State.start(level);
+    let state = State.start(level);
     let ending = 1;
 
     runAnimation(time => {
@@ -78,7 +80,9 @@ const runGame = () => {
             }
         });
     };
+
+    startLevel(0);
 };
 
-const keys = detectKeys(keyCodes);
+const keys = detectKeys();
 runGame();

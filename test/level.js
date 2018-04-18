@@ -75,7 +75,7 @@ class Level {
 
         for (let y = yStart; y < yEnd; y++) {
             for (let x = xStart; x < xEnd; x++) {
-                const fieldType = this.grid[y][x];
+                const fieldType = this.rows[y][x];
                 if (fieldType) return fieldType;
             }
         }

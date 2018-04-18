@@ -1,4 +1,4 @@
-const scale = 40; // scale units into pixels
+const scale = 80; // scale units into pixels
 
 // helper function to create an element in the dom and give it a class;
 
@@ -78,13 +78,15 @@ class Display {
         const bottom = top + height;
 
         const player = state.player;
-        let center = player.pos.plus(player.size.times(0.5).times(scale)); // to find the player's center, we add the position + half the size
+        const center = player.pos.plus(player.size.times(0.5)).times(scale); // to find the player's center, we add the position + half the size
 
 
         // if we set scrollLeft or scrollTop to negative number, it will re-center to 0
         // margin creates a "neutral" area to not force player into the center
         if (center.x < left + margin) {
+            console.log(this.wrapper.scrollLeft, center.x, margin);
             this.wrapper.scrollLeft = center.x - margin;
+            console.log(this.wrapper.scrollLeft, center.x, margin);
         } else if (center.x > right - margin) {
             this.wrapper.scrollLeft = center.x + margin - width;
         } 
@@ -94,6 +96,7 @@ class Display {
         } else if (center.y > bottom - margin) {
             this.wrapper.scrollTop = center.y + margin - height;
         }
+
     }
 
     clear() {

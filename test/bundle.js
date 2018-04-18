@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 0);
+/******/ 	return __webpack_require__(__webpack_require__.s = 3);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -68,11 +68,158 @@
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+class Vector {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    plus(otherVector) {
+        return new Vector(this.x + otherVector.x, this.y + otherVector.y);
+    }
+
+    // to get distance traveled during a particular time
+    times(factor) {
+        return new Vector(this.x * factor, this.y * factor);
+    }
+}
+
+/* harmony default export */ __webpack_exports__["a"] = (Vector);
+
+/***/ }),
+/* 1 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__vector__ = __webpack_require__(0);
+
+
+class Player {
+    constructor(pos, ch, speed) {
+        // this.pos = pos;
+        // this.size = size;
+        // this.speed = speed;
+        // this.jumpSpeed = jumpSpeed;
+        // this.gravity = gravity;
+        this.pos = pos;
+        this.size = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](.8, 1.5);
+        this.speed = speed || new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](0, 0); // initial speed
+        this.xSpeed = 7;
+        this.jumpSpeed = 7;
+        this.gravity = 10;
+    }
+
+    moveX(time, state, keys) {
+
+        // this.speed.x = 0;
+        // if (keys.left) this.speed.x -= this.xSpeed;
+        // if (keys.right) this.speed.x += this.xSpeed;
+        if (keys.left || keys.right || keys.up) {
+            if (this.speed.x < this.jumpSpeed && this.speed.x > -this.jumpSpeed) {
+                if (keys.left) this.speed.x -= this.xSpeed;
+                if (keys.right) this.speed.x += this.xSpeed;
+            } else if (this.speed.x === this.jumpSpeed || this.speed.x === -this.jumpSpeed) {
+                if (keys.left && this.speed.x === this.jumpSpeed) this.speed.x -= this.xSpeed;
+                if (keys.right && this.speed.x === -this.jumpSpeed) this.speed.x += this.xSpeed;
+            }
+        } else {
+            if (this.speed.x > 0) this.speed.x -= this.speed.x < this.xSpeed ? this.speed.x : this.xSpeed;
+            if (this.speed.x < 0) this.speed.x += this.speed.x > -this.xSpeed ? -this.speed.x : this.xSpeed;
+        }
+
+        const movedX = this.pos.plus(new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](this.speed.x * time, 0));
+        if (state.level.touching(movedX, this.size) !== 'wall') {
+            this.pos = movedX;
+        }
+    }
+
+    moveY(time, state, keys) {
+        this.speed.y += time * this.gravity;
+        const motion = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](0, this.speed.y * time);
+        const newPos = this.pos.plus(motion);
+        const obstacle = state.level.touching(newPos, this.size);
+        if (obstacle) {
+            if (keys.up && this.speed.y >= 0) {
+                this.speed.y = -this.jumpSpeed;
+            } else {
+                this.speed.y = 0;
+            }
+        } else {
+            this.pos = newPos;
+        }
+    }
+
+    update(time, state, keys) {
+        this.moveX(time, state, keys);
+        this.moveY(time, state, keys);
+        return new Player(this.pos, null, new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](this.speed.x, this.speed.y));
+    }
+
+}
+
+/* harmony default export */ __webpack_exports__["a"] = (Player);
+
+/***/ }),
+/* 2 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+// unsure how to manage current player
+
+class State {
+    constructor(level, actors, status, player) {
+        this.level = level;
+        this.actors = actors;
+        this.player = this.actors.find(a => a.constructor.name === 'Player');
+        // this.currPlayer = currPlayer;
+        this.status = status;
+    }
+
+    static start(level) {
+        return new State(level, level.actors, "playing", this.player);
+    }
+
+    overlap(actor, other) {
+        return actor.pos.x + actor.size.x > other.pos.x && actor.pos.x < other.pos.x + other.size.x && actor.pos.y + actor.size.y > other.pos.y && actor.pos.y < other.pos.y + other.size.y;
+    }
+
+    update(time, keys) {
+        let actors = this.actors.map(actor => actor.update(time, this, keys));
+        let newState = new State(this.level, actors, this.status);
+        if (newState.status != 'playing') return newState;
+
+        let player = newState.player;
+
+        if (this.level.touching(player.pos, player.size) === 'poison') {
+            return new State(this.level, actors, 'lost');
+        }
+
+        // if (keys.esc) {
+        //     return new State(this.level, actors, 'paused');
+        // }
+
+        for (let actor of actors) {
+            if (actor != player && this.overlap(actor, player)) {
+                newState = actor.collide(newState);
+            }
+        }
+
+        return newState;
+    }
+}
+
+/* harmony default export */ __webpack_exports__["a"] = (State);
+
+/***/ }),
+/* 3 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__level__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__display__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__level_maps__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__state__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__level__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__display__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__level_maps__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__state__ = __webpack_require__(2);
 
 
 
@@ -98,6 +245,8 @@ const detectKeys = () => {
 
     window.addEventListener('keydown', track);
     window.addEventListener('keyup', track);
+
+    return isPressed;
 };
 
 // calls requestAnimation again after every frame
@@ -121,7 +270,7 @@ const runAnimation = frameFunction => {
 
 const runLevel = (level, successFunction) => {
     const display = new __WEBPACK_IMPORTED_MODULE_1__display__["a" /* default */](document.body, level);
-    const state = __WEBPACK_IMPORTED_MODULE_3__state__["a" /* default */].start(level);
+    let state = __WEBPACK_IMPORTED_MODULE_3__state__["a" /* default */].start(level);
     let ending = 1;
 
     runAnimation(time => {
@@ -152,20 +301,22 @@ const runGame = () => {
             }
         });
     };
+
+    startLevel(0);
 };
 
-const keys = detectKeys(keyCodes);
+const keys = detectKeys();
 runGame();
 
 /***/ }),
-/* 1 */
+/* 4 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__vector__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__finley__ = __webpack_require__(7);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__poison__ = __webpack_require__(9);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__player__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__vector__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__finley__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__poison__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__player__ = __webpack_require__(1);
 
 
 
@@ -244,7 +395,7 @@ class Level {
 
         for (let y = yStart; y < yEnd; y++) {
             for (let x = xStart; x < xEnd; x++) {
-                const fieldType = this.grid[y][x];
+                const fieldType = this.rows[y][x];
                 if (fieldType) return fieldType;
             }
         }
@@ -255,36 +406,83 @@ class Level {
 /* harmony default export */ __webpack_exports__["a"] = (Level);
 
 /***/ }),
-/* 2 */
+/* 5 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-//  VECTOR CONSTRUCTOR
-class Vector {
-  constructor(x, y) {
-    // constructor with x and y coordinates as an input
-    this.x = x;
-    this.y = y;
-  }
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__player__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__vector__ = __webpack_require__(0);
 
-  plus(other) {
-    // takes another vector as an argument
-    return new Vector(this.x + other.x, this.y + other.y); // creates a new Vector object from the current one and the argument and returns it
-  }
 
-  times(factor) {
-    return new Vector(this.x * factor, this.y * factor); // returns a new vector multiplied by the argument which will be useful when given a time interval to get the distance traveled
-  }
+
+class Finley extends __WEBPACK_IMPORTED_MODULE_0__player__["a" /* default */] {
+    constructor(pos) {
+        // -.5 and 1.5 to compensate for tilemap
+        super(this.pos, this.size, this.speed, this.jumpSpeed, this.gravity);
+    }
 }
 
-/* harmony default export */ __webpack_exports__["a"] = (Vector);
+/* unused harmony default export */ var _unused_webpack_default_export = (Finley);
 
 /***/ }),
-/* 3 */
+/* 6 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-const scale = 40; // scale units into pixels
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__vector__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__state__ = __webpack_require__(2);
+
+
+
+class Poison {
+    constructor(pos, ch, reset) {
+        this.pos = pos;
+        this.size = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](1, 1);
+
+        switch (ch) {
+            case '=':
+                this.speed = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](2, 0); // sideways lava
+                break;
+            case '|':
+                this.speed = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](0, 2); // speed in terms of vector, up & down
+                break;
+            case 'v':
+                this.speed = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](0, 3);
+                this.repeatPos - pos; // original starting position
+                break;
+            default:
+                this.speed = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](0, 0);
+                break;
+        }
+
+        this.resetPos = pos;
+    }
+
+    collide(state) {
+        return new __WEBPACK_IMPORTED_MODULE_1__state__["a" /* default */](state.level, state.actors, 'lost');
+    }
+
+    update(time, state) {
+        let newPos = this.pos.plus(this.speed.times(time));
+        // if poison touching a wall, just reset
+        if (state.level.touching(newPos, this.size) == !'wall') {
+            return new Poison(newPos, this.speed, this.resetPos);
+        } else if (this.resetPos) {
+            return new Poison(this.resetPos, this.speed, this.resetPos);
+        } else {
+            return new Poison(this.pos, this.speed.times(-1));
+        }
+    }
+}
+
+/* harmony default export */ __webpack_exports__["a"] = (Poison);
+
+/***/ }),
+/* 7 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+const scale = 80; // scale units into pixels
 
 // helper function to create an element in the dom and give it a class;
 
@@ -364,13 +562,15 @@ class Display {
         const bottom = top + height;
 
         const player = state.player;
-        let center = player.pos.plus(player.size.times(0.5).times(scale)); // to find the player's center, we add the position + half the size
+        const center = player.pos.plus(player.size.times(0.5)).times(scale); // to find the player's center, we add the position + half the size
 
 
         // if we set scrollLeft or scrollTop to negative number, it will re-center to 0
         // margin creates a "neutral" area to not force player into the center
         if (center.x < left + margin) {
+            console.log(this.wrapper.scrollLeft, center.x, margin);
             this.wrapper.scrollLeft = center.x - margin;
+            console.log(this.wrapper.scrollLeft, center.x, margin);
         } else if (center.x > right - margin) {
             this.wrapper.scrollLeft = center.x + margin - width;
         }
@@ -391,265 +591,13 @@ class Display {
 /* harmony default export */ __webpack_exports__["a"] = (Display);
 
 /***/ }),
-/* 4 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-const levelMaps = [["                      ", "                      ", "  x              = x  ", "  x       xxxxxx   !  ", "  x 1              x  ", "  xxxxx  wwwww     x  ", "      xppppppppppppx  ", "      xxxxxxxxxxxxxx  ", "                      "], ["                      ", "                      ", "   v                  ", "          v           ", "                      ", "              v       ", "                      ", "     v                ", "                      ", "                      ", "  x              = x  ", "  x             o  x  ", "  x @         = xx x  ", "  xxxxx    xx    = x  ", "      xxx!!!!!!!!!!x  ", "      xxxxx!!!!xxxxx  ", "                      "]];
-
-/* harmony default export */ __webpack_exports__["a"] = (levelMaps);
-
-/***/ }),
-/* 5 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-// unsure how to manage current player
-
-class State {
-    constructor(level, actors, status, player) {
-        this.level = level;
-        this.actors = actors;
-        this.player = this.actors.find(a => a.constructor.name === 'Player');
-        // this.currPlayer = currPlayer;
-        this.status = status;
-    }
-
-    static start(level) {
-        return new State(level, level.actors, "playing", this.player);
-    }
-
-    overlap(actor, other) {
-        return actor.pos.x + actor.size.x > other.pos.x && actor.pos.x < other.pos.x + other.size.x && actor.pos.y + actor.size.y > other.pos.y && actor.pos.y < other.pos.y + other.size.y;
-    }
-
-    update(time, keys) {
-        let actors = this.actors.map(actor => actor.update(time, this, keys));
-        let newState = new State(this.level, actors, this.status);
-        if (newState.status != 'playing') return newState;
-
-        let player = newState.player;
-
-        if (this.level.touching(player.pos, player.size) === 'poison') {
-            return new State(this.level, actors, 'lost');
-        }
-
-        // if (keys.esc) {
-        //     return new State(this.level, actors, 'paused');
-        // }
-
-        for (let actor of actors) {
-            if (actor != player && this.overlap(actor, player)) {
-                newState = actor.collide(newState);
-            }
-        }
-
-        return newState;
-    }
-}
-
-/* harmony default export */ __webpack_exports__["a"] = (State);
-
-/***/ }),
-/* 6 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-class Vector {
-    constructor(x, y) {
-        this.x = x;
-        this.y = y;
-    }
-
-    plus(otherVector) {
-        return new Vector(this.x + otherVector.x, this.y + otherVector.y);
-    }
-
-    // to get distance traveled during a particular time
-    times(factor) {
-        return new Vector(this.x * factor, this.y * factor);
-    }
-}
-
-/* harmony default export */ __webpack_exports__["a"] = (Vector);
-
-/***/ }),
-/* 7 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__player__ = __webpack_require__(8);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__vector__ = __webpack_require__(6);
-
-
-
-class Finley extends __WEBPACK_IMPORTED_MODULE_0__player__["a" /* default */] {
-    constructor(pos) {
-        // -.5 and 1.5 to compensate for tilemap
-        super(this.pos, this.size, this.speed, this.jumpSpeed, this.gravity);
-    }
-}
-
-/* unused harmony default export */ var _unused_webpack_default_export = (Finley);
-
-/***/ }),
 /* 8 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__vector__ = __webpack_require__(6);
+const levelMaps = [["                      ", "                      ", "  x              = x  ", "  x 1     xxxxxx   !  ", "  x                x  ", "  xxxxx  wwwww     x  ", "      xppppppppppppx  ", "      xxxxxxxxxxxxxx  ", "                      "], ["                      ", "                      ", "   v                  ", "          v           ", "                      ", "              v       ", "                      ", "     v                ", "                      ", "                      ", "  x              = x  ", "  x             o  x  ", "  x @         = xx x  ", "  xxxxx    xx    = x  ", "      xxx!!!!!!!!!!x  ", "      xxxxx!!!!xxxxx  ", "                      "]];
 
-
-class Player {
-    constructor(pos) {
-        // this.pos = pos;
-        // this.size = size;
-        // this.speed = speed;
-        // this.jumpSpeed = jumpSpeed;
-        // this.gravity = gravity;
-        this.pos = pos.plus(new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](0, -0.5));
-        this.size = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](.8, 1.5);
-        this.speed = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](0, 0); // initial speed
-        this.xSpeed = .5;
-        this.jumpSpeed = 7;
-        this.gravity = -10;
-    }
-
-    moveX(time, state, keys) {
-        if (keys.left || keys.right || keys.up) {
-            if (this.speed.x < this.jumpSpeed && this.speed.x > -this.jumpSpeed) {
-                if (keys.left) this.speed.x -= this.xSpeed;
-                if (keys.right) this.speed.x += this.xSpeed;
-            } else if (this.speed.x === this.jumpSpeed || this.speed.x === -this.jumpSpeed) {
-                if (keys.left && this.speed.x === this.jumpSpeed) this.speed.x -= this.xSpeed;
-                if (keys.right && this.speed.x === -this.jumpSpeed) this.speed.x += this.xSpeed;
-            }
-        } else {
-            if (this.speed.x > 0) this.speed.x -= this.speed.x < this.xSpeed ? this.speed.x : this.xSpeed;
-            if (this.speed.x < 0) this.speed.x += this.speed.x > -this.xSpeed ? -this.speed.x : this.xSpeed;
-        }
-
-        const movedX = this.pos.plus(new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](this.xSpeed * time, 0));
-        if (state.level.touching(movedX, this.size) !== 'wall') {
-            this.pos = movedX;
-        }
-    }
-
-    moveY(time, state, keys) {
-        let ySpeed = this.speed.y + time * this.gravity;
-        let movedY = this.pos.plus(new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](0, ySpeed * time));
-        if (state.level.touching(movedY, this.size) !== 'wall') {
-            ySpeed = -this.jumpSpeed;
-        } else {
-            ySpeed = 0;
-        }
-
-        return ySpeed;
-    }
-
-    update(time, state, keys) {
-        this.moveX(time, state, keys);
-        const ySpeed = this.moveY(time, state, keys);
-        return new Player(this.pos, new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](this.xSpeed, ySpeed));
-    }
-
-}
-
-/* harmony default export */ __webpack_exports__["a"] = (Player);
-
-/***/ }),
-/* 9 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__vector__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__state__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__lib_lava__ = __webpack_require__(10);
-
-
-
-
-class Poison {
-    constructor(pos, ch, reset) {
-        this.pos = pos;
-        this.size = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](1, 1);
-
-        switch (ch) {
-            case '=':
-                this.speed = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](2, 0); // sideways lava
-                break;
-            case '|':
-                this.speed = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](0, 2); // speed in terms of vector, up & down
-                break;
-            case 'v':
-                this.speed = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](0, 3);
-                this.repeatPos - pos; // original starting position
-                break;
-            default:
-                this.speed = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](0, 0);
-                break;
-        }
-
-        this.resetPos = pos;
-    }
-
-    collide(state) {
-        return new __WEBPACK_IMPORTED_MODULE_1__state__["a" /* default */](state.level, state.actors, 'lost');
-    }
-
-    update(time, state) {
-        let newPos = this.pos.plus(this.speed.times(time));
-        // if poison touching a wall, just reset
-        if (!state.level.touches(newPos, this.size, 'wall')) {
-            return new Poison(newPos, this.speed, this.resetPos);
-        } else if (this.resetPos) {
-            return new Poison(this.resetPos, this.speed, this.resetPos);
-        } else {
-            return new Poison(this.pos, this.speed.times(-1));
-        }
-    }
-}
-
-/* harmony default export */ __webpack_exports__["a"] = (Poison);
-
-/***/ }),
-/* 10 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__vector__ = __webpack_require__(2);
-
-
-// LAVA CONSTRUCTOR
-class Lava {
-  constructor(pos, ch) {
-    this.pos = pos;
-    this.size = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](1, 1); // takes up 1X1
-    if (ch === "=") {
-      this.speed = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](2, 0); // sideways lava
-    } else if (ch === "|") {
-      this.speed = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](0, 2); // speed in terms of vector, up & down
-    } else if (ch === "v") {
-      this.speed = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](0, 3);
-      this.repeatPos = pos; // the original starting position to later repeat to
-    }
-  }
-
-  act(step, level) {
-    const newPos = this.pos.plus(this.speed.times(step));
-    if (!level.obstacleAt(newPos, this.size)) {
-      this.pos = newPos;
-    } else if (this.repeatPos) {
-      this.pos = this.repeatPos;
-    } else {
-      this.speed = this.speed.times(-1);
-    }
-  }
-}
-
-Lava.prototype.type = "lava";
-
-/* unused harmony default export */ var _unused_webpack_default_export = (Lava);
+/* harmony default export */ __webpack_exports__["a"] = (levelMaps);
 
 /***/ })
 /******/ ]);

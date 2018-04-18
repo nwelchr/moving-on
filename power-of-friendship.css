@@ -57,6 +57,7 @@
   background-color: orange;
   border-radius: 45px;
 }
+
 .title-screen-modal {
   background-color: green;
   position: absolute;
@@ -67,6 +68,13 @@
   border-radius: 45px;
   display: flex;
   justify-content: center;
+  align-items: center;
+}
+
+button.start-game {
+  display: block;
+  height: 150px;
+  padding: 200px;
 }
 
 .game {

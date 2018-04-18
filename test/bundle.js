@@ -152,6 +152,7 @@ class Player {
     update(time, state, keys) {
         this.moveX(time, state, keys);
         this.moveY(time, state, keys);
+
         return new Player(this.pos, null, new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](this.speed.x, this.speed.y));
     }
 
@@ -186,12 +187,18 @@ class State {
     update(time, keys) {
         let actors = this.actors.map(actor => actor.update(time, this, keys));
         let newState = new State(this.level, actors, this.status);
-        if (newState.status != 'playing') return newState;
+        if (newState.status !== 'playing') return newState;
 
         let player = newState.player;
 
-        if (this.level.touching(player.pos, player.size) === 'poison') {
-            return new State(this.level, actors, 'lost');
+        switch (this.level.touching(player.pos, player.size)) {
+            case 'poison':
+                console.log('hi');
+                return new State(this.level, actors, 'lost');
+            case 'finleyGoal':
+                return new State(this.level, actors, 'won');
+            default:
+                break;
         }
 
         // if (keys.esc) {
@@ -199,7 +206,7 @@ class State {
         // }
 
         for (let actor of actors) {
-            if (actor != player && this.overlap(actor, player)) {
+            if (actor !== player && this.overlap(actor, player)) {
                 newState = actor.collide(newState);
             }
         }
@@ -269,7 +276,8 @@ const runAnimation = frameFunction => {
 };
 
 const runLevel = (level, successFunction) => {
-    const display = new __WEBPACK_IMPORTED_MODULE_1__display__["a" /* default */](document.body, level);
+    const gameWrapper = document.getElementById('game-wrapper');
+    const display = new __WEBPACK_IMPORTED_MODULE_1__display__["a" /* default */](gameWrapper, level);
     let state = __WEBPACK_IMPORTED_MODULE_3__state__["a" /* default */].start(level);
     let ending = 1;
 
@@ -290,6 +298,7 @@ const runLevel = (level, successFunction) => {
 };
 
 const runGame = () => {
+
     const startLevel = n => {
         runLevel(new __WEBPACK_IMPORTED_MODULE_0__level__["a" /* default */](__WEBPACK_IMPORTED_MODULE_2__level_maps__["a" /* default */][n]), status => {
             if (status === 'lost') {
@@ -302,6 +311,7 @@ const runGame = () => {
         });
     };
 
+    // goToTitleScreen();
     startLevel(0);
 };
 
@@ -382,6 +392,7 @@ class Level {
         const xEnd = Math.ceil(pos.x + size.x);
         const yStart = Math.floor(pos.y);
         const yEnd = Math.ceil(pos.y + size.y);
+        // console.log (xStart, xEnd, yStart, yEnd);
 
         // if the user hits top/right/left margins, it's a wall
         if (xStart < 0 || xEnd > this.width || yStart < 0) {
@@ -396,6 +407,7 @@ class Level {
         for (let y = yStart; y < yEnd; y++) {
             for (let x = xStart; x < xEnd; x++) {
                 const fieldType = this.rows[y][x];
+                console.log(fieldType);
                 if (fieldType) return fieldType;
             }
         }
@@ -416,9 +428,13 @@ class Level {
 
 
 class Finley extends __WEBPACK_IMPORTED_MODULE_0__player__["a" /* default */] {
-    constructor(pos) {
-        // -.5 and 1.5 to compensate for tilemap
-        super(this.pos, this.size, this.speed, this.jumpSpeed, this.gravity);
+    constructor(pos, ch, speed) {
+        this.pos = pos;
+        this.size = new __WEBPACK_IMPORTED_MODULE_1__vector__["a" /* default */](.8, 1.5);
+        this.speed = speed || new __WEBPACK_IMPORTED_MODULE_1__vector__["a" /* default */](0, 0); // initial speed
+        this.xSpeed = 7;
+        this.jumpSpeed = 7;
+        this.gravity = 10;
     }
 }
 
@@ -463,20 +479,13 @@ class Poison {
 
     update(time, state) {
         const newPos = this.pos.plus(this.speed.times(time));
-
         // if poison touching a wall, just reset
         if (!state.level.touching(newPos, this.size)) {
-            console.log('in air');
             return new Poison(newPos, this.ch, this.speed, this.resetPos);
-            // this.pos = newPos;
         } else if (this.resetPos) {
-            console.log('drip!');
             return new Poison(this.resetPos, this.ch, this.speed, this.resetPos);
-            // this.pos = this.repeatPos;
         } else {
-            console.log('bounce back');
             return new Poison(this.pos, this.ch, this.speed.times(-1));
-            // this.speed = this.speed.times(-1);
         }
     }
 }
@@ -488,7 +497,7 @@ class Poison {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-const scale = 40; // scale units into pixels
+const scale = 60; // scale units into pixels
 
 // helper function to create an element in the dom and give it a class;
 
@@ -501,6 +510,7 @@ const createElement = (name, className) => {
 class Display {
     constructor(parent, level) {
         this.wrapper = parent.appendChild(createElement('div', 'game')); // create wrapper for actual game (since screen will be slipping off)
+        // this.wrapper = parent;
 
         this.level = level;
 
@@ -574,9 +584,7 @@ class Display {
         // if we set scrollLeft or scrollTop to negative number, it will re-center to 0
         // margin creates a "neutral" area to not force player into the center
         if (center.x < left + margin) {
-            console.log(this.wrapper.scrollLeft, center.x, margin);
             this.wrapper.scrollLeft = center.x - margin;
-            console.log(this.wrapper.scrollLeft, center.x, margin);
         } else if (center.x > right - margin) {
             this.wrapper.scrollLeft = center.x + margin - width;
         }
@@ -601,7 +609,7 @@ class Display {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-const levelMaps = [["                      ", "                      ", "                      ", "               v      ", "                      ", "                      ", "                      ", "                      ", "  x         !      x  ", "  x 1     xxxxxx   x  ", "  x                x  ", "  xxxxx            x  ", "      xppwwwwwpppppx  ", "      xxxxxxxxxxxxxx  ", "                      "], ["                      ", "                      ", "   v                  ", "          v           ", "                      ", "              v       ", "                      ", "     v                ", "                      ", "                      ", "  x              = x  ", "  x             o  x  ", "  x @         = xx x  ", "  xxxxx    xx    = x  ", "      xxx!!!!!!!!!!x  ", "      xxxxx!!!!xxxxx  ", "                      "]];
+const levelMaps = [["  x                                                    ", "  x                    ", "  x                    ", "  x             v      ", "  x                    ", "  x                    ", "  x                    ", "  x      |                                        = ", "  x         !      x  x                    =x", "  x 1     xxxxxx   x  x                =x", "  x             =  x  x", "  xxxxx            x  xxxxxxxxxxxxxxx", "      xppwwwwwpppppx  ", "      xxxxxxxxxxxxxx  ", "                      "], ["                      ", "                      ", "   v                  ", "          v           ", "                      ", "              v       ", "                      ", "                     ", "                      ", "                      ", "  x              = x  ", "  x 1              x  ", "  x         !   xx x  ", "  xxxxx    xx    = x  ", "      xxxxxxxxxxxxxx  ", "      xxxxxxxxxxxxxx  ", "                      "]];
 
 /* harmony default export */ __webpack_exports__["a"] = (levelMaps);
 

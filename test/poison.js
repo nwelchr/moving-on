@@ -31,21 +31,13 @@ class Poison {
 
     update(time, state) {
         const newPos = this.pos.plus(this.speed.times(time));
-        
-
         // if poison touching a wall, just reset
         if (!state.level.touching(newPos, this.size)) {
-            console.log('in air');
             return new Poison(newPos, this.ch, this.speed, this.resetPos);
-            // this.pos = newPos;
         } else if (this.resetPos) {
-            console.log('drip!');
             return new Poison(this.resetPos, this.ch, this.speed, this.resetPos);
-            // this.pos = this.repeatPos;
         } else {
-            console.log('bounce back');
             return new Poison(this.pos, this.ch, this.speed.times(-1));
-            // this.speed = this.speed.times(-1);
         }
     }
 }

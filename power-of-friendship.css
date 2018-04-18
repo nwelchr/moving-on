@@ -38,9 +38,6 @@
 }
 
 .finleyGoal {
-  position: absolute;
-  width: 25px;
-  height: 45px;
   border: 2px dotted white;
 }
 
@@ -54,6 +51,22 @@
 
 .won .player {
   background: #fff;
+}
+
+#game-wrapper {
+  background-color: orange;
+  border-radius: 45px;
+}
+.title-screen-modal {
+  background-color: green;
+  position: absolute;
+  z-index: 10;
+  opacity: .5;
+  width: 900px;
+  height: 600px;
+  border-radius: 45px;
+  display: flex;
+  justify-content: center;
 }
 
 .game {

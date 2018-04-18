@@ -1,4 +1,4 @@
-const scale = 40; // scale units into pixels
+const scale = 60; // scale units into pixels
 
 // helper function to create an element in the dom and give it a class;
 
@@ -11,6 +11,7 @@ const createElement = (name, className) => {
 class Display {
     constructor(parent, level) {
         this.wrapper = parent.appendChild(createElement('div', 'game')); // create wrapper for actual game (since screen will be slipping off)
+        // this.wrapper = parent;
 
         this.level = level;
 
@@ -84,9 +85,7 @@ class Display {
         // if we set scrollLeft or scrollTop to negative number, it will re-center to 0
         // margin creates a "neutral" area to not force player into the center
         if (center.x < left + margin) {
-            console.log(this.wrapper.scrollLeft, center.x, margin);
             this.wrapper.scrollLeft = center.x - margin;
-            console.log(this.wrapper.scrollLeft, center.x, margin);
         } else if (center.x > right - margin) {
             this.wrapper.scrollLeft = center.x + margin - width;
         } 

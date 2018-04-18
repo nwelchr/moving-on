@@ -20,12 +20,18 @@ class State {
     update(time, keys) {
         let actors = this.actors.map(actor => actor.update(time, this, keys));
         let newState = new State(this.level, actors, this.status);
-        if (newState.status != 'playing') return newState;
+        if (newState.status !== 'playing') return newState;
 
         let player = newState.player;
 
-        if (this.level.touching(player.pos, player.size) === 'poison') {
-            return new State(this.level, actors, 'lost');
+        switch (this.level.touching(player.pos, player.size)) {
+            case 'poison':
+            console.log('hi');
+                return new State(this.level, actors, 'lost');
+            case 'finleyGoal':
+                return new State(this.level, actors, 'won');
+            default:
+                break;
         }
 
         // if (keys.esc) {
@@ -33,7 +39,7 @@ class State {
         // }
 
         for (let actor of actors) {
-            if (actor != player && this.overlap(actor, player)) {
+            if ((actor !== player) && this.overlap(actor, player)) {
                 newState = actor.collide(newState);
             }
         }

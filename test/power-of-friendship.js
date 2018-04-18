@@ -47,7 +47,8 @@ const runAnimation = (frameFunction) => {
 };
 
 const runLevel = (level, successFunction) => {
-    const display = new Display(document.body, level);
+    const gameWrapper = document.getElementById('game-wrapper');
+    const display = new Display(gameWrapper, level);
     let state = State.start(level);
     let ending = 1;
 
@@ -68,6 +69,8 @@ const runLevel = (level, successFunction) => {
 };
 
 const runGame = () => {
+
+
     const startLevel = (n) => {
         runLevel(new Level(levelMaps[n]), status => {
             if (status === 'lost') {
@@ -80,8 +83,10 @@ const runGame = () => {
         });
     };
 
+    // goToTitleScreen();
     startLevel(0);
 };
+
 
 const keys = detectKeys();
 runGame();

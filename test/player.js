@@ -58,6 +58,7 @@ class Player {
     update (time, state, keys) {
         this.moveX(time, state, keys);
         this.moveY(time, state, keys);
+        
         return new Player (this.pos, null, new Vector(this.speed.x, this.speed.y));
     }
 

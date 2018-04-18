@@ -62,6 +62,7 @@ class Level {
         const xEnd = Math.ceil(pos.x + size.x);
         const yStart = Math.floor(pos.y);
         const yEnd = Math.ceil(pos.y + size.y);
+        // console.log (xStart, xEnd, yStart, yEnd);
 
         // if the user hits top/right/left margins, it's a wall
         if (xStart < 0 || xEnd > this.width || yStart < 0) {
@@ -76,6 +77,7 @@ class Level {
         for (let y = yStart; y < yEnd; y++) {
             for (let x = xStart; x < xEnd; x++) {
                 const fieldType = this.rows[y][x];
+                console.log(fieldType);
                 if (fieldType) return fieldType;
             }
         }

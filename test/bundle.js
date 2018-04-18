@@ -435,27 +435,26 @@ class Finley extends __WEBPACK_IMPORTED_MODULE_0__player__["a" /* default */] {
 
 
 class Poison {
-    constructor(pos, ch, reset) {
+    constructor(pos, ch, speed, resetPos) {
         this.pos = pos;
         this.size = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](1, 1);
+        this.ch = ch;
 
         switch (ch) {
             case '=':
-                this.speed = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](2, 0); // sideways lava
+                this.speed = speed || new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](2, 0); // sideways lava
                 break;
             case '|':
-                this.speed = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](0, 2); // speed in terms of vector, up & down
+                this.speed = speed || new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](0, 2); // speed in terms of vector, up & down
                 break;
             case 'v':
-                this.speed = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](0, 3);
-                this.repeatPos - pos; // original starting position
+                this.speed = speed || new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](0, 3);
+                this.resetPos = resetPos || pos; // original starting position
                 break;
             default:
                 this.speed = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](0, 0);
                 break;
         }
-
-        this.resetPos = pos;
     }
 
     collide(state) {
@@ -463,14 +462,21 @@ class Poison {
     }
 
     update(time, state) {
-        let newPos = this.pos.plus(this.speed.times(time));
+        const newPos = this.pos.plus(this.speed.times(time));
+
         // if poison touching a wall, just reset
-        if (state.level.touching(newPos, this.size) == !'wall') {
-            return new Poison(newPos, this.speed, this.resetPos);
+        if (!state.level.touching(newPos, this.size)) {
+            console.log('in air');
+            return new Poison(newPos, this.ch, this.speed, this.resetPos);
+            // this.pos = newPos;
         } else if (this.resetPos) {
-            return new Poison(this.resetPos, this.speed, this.resetPos);
+            console.log('drip!');
+            return new Poison(this.resetPos, this.ch, this.speed, this.resetPos);
+            // this.pos = this.repeatPos;
         } else {
-            return new Poison(this.pos, this.speed.times(-1));
+            console.log('bounce back');
+            return new Poison(this.pos, this.ch, this.speed.times(-1));
+            // this.speed = this.speed.times(-1);
         }
     }
 }
@@ -482,7 +488,7 @@ class Poison {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-const scale = 80; // scale units into pixels
+const scale = 40; // scale units into pixels
 
 // helper function to create an element in the dom and give it a class;
 
@@ -595,7 +601,7 @@ class Display {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-const levelMaps = [["                      ", "                      ", "  x              = x  ", "  x 1     xxxxxx   !  ", "  x                x  ", "  xxxxx  wwwww     x  ", "      xppppppppppppx  ", "      xxxxxxxxxxxxxx  ", "                      "], ["                      ", "                      ", "   v                  ", "          v           ", "                      ", "              v       ", "                      ", "     v                ", "                      ", "                      ", "  x              = x  ", "  x             o  x  ", "  x @         = xx x  ", "  xxxxx    xx    = x  ", "      xxx!!!!!!!!!!x  ", "      xxxxx!!!!xxxxx  ", "                      "]];
+const levelMaps = [["                      ", "                      ", "                      ", "               v      ", "                      ", "                      ", "                      ", "                      ", "  x         !      x  ", "  x 1     xxxxxx   x  ", "  x                x  ", "  xxxxx            x  ", "      xppwwwwwpppppx  ", "      xxxxxxxxxxxxxx  ", "                      "], ["                      ", "                      ", "   v                  ", "          v           ", "                      ", "              v       ", "                      ", "     v                ", "                      ", "                      ", "  x              = x  ", "  x             o  x  ", "  x @         = xx x  ", "  xxxxx    xx    = x  ", "      xxx!!!!!!!!!!x  ", "      xxxxx!!!!xxxxx  ", "                      "]];
 
 /* harmony default export */ __webpack_exports__["a"] = (levelMaps);
 

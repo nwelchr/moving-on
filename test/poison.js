@@ -2,27 +2,27 @@ import Vector from './vector';
 import State from './state';
 
 class Poison {
-    constructor(pos, ch, reset) {
+    constructor(pos, ch, speed, resetPos) {
         this.pos = pos;
         this.size = new Vector(1, 1);
+        this.ch = ch;
         
         switch(ch) {
             case '=':
-                this.speed = new Vector(2, 0); // sideways lava
+                this.speed = speed || new Vector(2, 0); // sideways lava
                 break;
             case '|':
-                this.speed = new Vector(0, 2); // speed in terms of vector, up & down
+                this.speed = speed || new Vector(0, 2); // speed in terms of vector, up & down
                 break;
             case 'v':
-                this.speed = new Vector(0, 3);
-                this.repeatPos - pos; // original starting position
+                this.speed = speed || new Vector(0, 3);
+                this.resetPos = resetPos || pos; // original starting position
                 break;
             default:
                 this.speed = new Vector(0, 0);
                 break;
         }
 
-        this.resetPos = pos;
     }
 
     collide(state) {
@@ -30,14 +30,22 @@ class Poison {
     }
 
     update(time, state) {
-        let newPos = this.pos.plus(this.speed.times(time));
+        const newPos = this.pos.plus(this.speed.times(time));
+        
+
         // if poison touching a wall, just reset
-        if (state.level.touching(newPos, this.size) ==! 'wall') {
-            return new Poison(newPos, this.speed, this.resetPos);
+        if (!state.level.touching(newPos, this.size)) {
+            console.log('in air');
+            return new Poison(newPos, this.ch, this.speed, this.resetPos);
+            // this.pos = newPos;
         } else if (this.resetPos) {
-            return new Poison(this.resetPos, this.speed, this.resetPos);
+            console.log('drip!');
+            return new Poison(this.resetPos, this.ch, this.speed, this.resetPos);
+            // this.pos = this.repeatPos;
         } else {
-            return new Poison(this.pos, this.speed.times(-1));
+            console.log('bounce back');
+            return new Poison(this.pos, this.ch, this.speed.times(-1));
+            // this.speed = this.speed.times(-1);
         }
     }
 }

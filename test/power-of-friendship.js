@@ -3,7 +3,6 @@ import Display from './display';
 import levelMaps from './level_maps';
 import State from './state';
 
-
 const keyCodes = {
     37: 'left',
     38: 'up',

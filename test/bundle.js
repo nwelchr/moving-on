@@ -78,9 +78,84 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 
-let simpleLevel = new __WEBPACK_IMPORTED_MODULE_0__level__["a" /* default */](__WEBPACK_IMPORTED_MODULE_2__level_maps__["a" /* default */][0]);
-let display = new __WEBPACK_IMPORTED_MODULE_1__display__["a" /* default */](document.body, simpleLevel);
-display.drawFrame(__WEBPACK_IMPORTED_MODULE_3__state__["a" /* default */].start(simpleLevel));
+const keyCodes = {
+    37: 'left',
+    38: 'up',
+    39: 'right'
+};
+
+const detectKeys = () => {
+    // to avoid error with indexing into something that doesn't exist
+    const isPressed = Object.create(null);
+
+    const track = e => {
+        if (keyCodes.hasOwnProperty(e.keyCode)) {
+            e.preventDefault();
+            const isKeydown = e.type === 'keydown';
+            isPressed[keyCodes[e.keyCode]] = isKeydown;
+        }
+    };
+
+    window.addEventListener('keydown', track);
+    window.addEventListener('keyup', track);
+};
+
+// calls requestAnimation again after every frame
+const runAnimation = frameFunction => {
+    // last time since window has been open
+    let lastTime = null;
+
+    const frame = time => {
+        if (lastTime !== null) {
+            // converts time between ms and s for convenience
+            let timeStep = Math.min(time - lastTime, 100) / 1000;
+            if (frameFunction(timeStep) === false) return;
+        }
+
+        lastTime = time;
+        requestAnimationFrame(frame);
+    };
+
+    requestAnimationFrame(frame);
+};
+
+const runLevel = (level, successFunction) => {
+    const display = new __WEBPACK_IMPORTED_MODULE_1__display__["a" /* default */](document.body, level);
+    const state = __WEBPACK_IMPORTED_MODULE_3__state__["a" /* default */].start(level);
+    let ending = 1;
+
+    runAnimation(time => {
+        state = state.update(time, keys);
+        display.drawFrame(state);
+        if (state.status === 'playing') {
+            return true;
+        } else if (ending > 0) {
+            ending -= time;
+            return true;
+        } else {
+            display.clear();
+            successFunction(state.status);
+            return false;
+        }
+    });
+};
+
+const runGame = () => {
+    const startLevel = n => {
+        runLevel(new __WEBPACK_IMPORTED_MODULE_0__level__["a" /* default */](__WEBPACK_IMPORTED_MODULE_2__level_maps__["a" /* default */][n]), status => {
+            if (status === 'lost') {
+                startLevel(n);
+            } else if (n < __WEBPACK_IMPORTED_MODULE_2__level_maps__["a" /* default */].length - 1) {
+                startLevel(n + 1);
+            } else {
+                alert('you win!');
+            }
+        });
+    };
+};
+
+const keys = detectKeys(keyCodes);
+runGame();
 
 /***/ }),
 /* 1 */
@@ -434,9 +509,48 @@ class Player {
         // this.gravity = gravity;
         this.pos = pos.plus(new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](0, -0.5));
         this.size = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](.8, 1.5);
-        this.speed = .5;
+        this.speed = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](0, 0); // initial speed
+        this.xSpeed = .5;
         this.jumpSpeed = 7;
         this.gravity = -10;
+    }
+
+    moveX(time, state, keys) {
+        if (keys.left || keys.right || keys.up) {
+            if (this.speed.x < this.jumpSpeed && this.speed.x > -this.jumpSpeed) {
+                if (keys.left) this.speed.x -= this.xSpeed;
+                if (keys.right) this.speed.x += this.xSpeed;
+            } else if (this.speed.x === this.jumpSpeed || this.speed.x === -this.jumpSpeed) {
+                if (keys.left && this.speed.x === this.jumpSpeed) this.speed.x -= this.xSpeed;
+                if (keys.right && this.speed.x === -this.jumpSpeed) this.speed.x += this.xSpeed;
+            }
+        } else {
+            if (this.speed.x > 0) this.speed.x -= this.speed.x < this.xSpeed ? this.speed.x : this.xSpeed;
+            if (this.speed.x < 0) this.speed.x += this.speed.x > -this.xSpeed ? -this.speed.x : this.xSpeed;
+        }
+
+        const movedX = this.pos.plus(new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](this.xSpeed * time, 0));
+        if (state.level.touching(movedX, this.size) !== 'wall') {
+            this.pos = movedX;
+        }
+    }
+
+    moveY(time, state, keys) {
+        let ySpeed = this.speed.y + time * this.gravity;
+        let movedY = this.pos.plus(new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](0, ySpeed * time));
+        if (state.level.touching(movedY, this.size) !== 'wall') {
+            ySpeed = -this.jumpSpeed;
+        } else {
+            ySpeed = 0;
+        }
+
+        return ySpeed;
+    }
+
+    update(time, state, keys) {
+        this.moveX(time, state, keys);
+        const ySpeed = this.moveY(time, state, keys);
+        return new Player(this.pos, new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](this.xSpeed, ySpeed));
     }
 
 }

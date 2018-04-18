@@ -95,11 +95,10 @@ class Vector {
 
 
 class Player {
-    constructor(pos, ch, speed) {
+    constructor(pos, ch, speed, size, xSpeed, jumpSpeed) {
         this.size = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](.8, 1.5);
         this.xSpeed = 7;
         this.jumpSpeed = 7;
-        this.gravity = 10;
         this.pos = pos;
         this.size = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](.8, 1.5);
         this.speed = speed || new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](0, 0); // initial speed
@@ -130,7 +129,7 @@ class Player {
     }
 
     moveY(time, state, keys) {
-        this.speed.y += time * this.gravity;
+        this.speed.y += time * state.gravity;
         const motion = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](0, this.speed.y * time);
         const newPos = this.pos.plus(motion);
         const obstacle = state.level.touching(newPos, this.size);
@@ -172,6 +171,7 @@ class State {
         // this.player = this.actors.find(a => a.constructor.name === 'Finley');       
         // this.currPlayer = currPlayer;
         this.status = status;
+        this.gravity = 10;
     }
 
     static start(level) {
@@ -432,7 +432,6 @@ class Finley extends __WEBPACK_IMPORTED_MODULE_0__player__["a" /* default */] {
         this.size = new __WEBPACK_IMPORTED_MODULE_1__vector__["a" /* default */](.8, 1.5);
         this.xSpeed = 7;
         this.jumpSpeed = 7;
-        this.gravity = 10;
     }
 }
 

@@ -8,6 +8,7 @@ class State {
         // this.player = this.actors.find(a => a.constructor.name === 'Finley');       
         // this.currPlayer = currPlayer;
         this.status = status;
+        this.gravity = 10;
     }
 
     static start(level) {

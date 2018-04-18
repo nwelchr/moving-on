@@ -1,11 +1,10 @@
 import Vector from './vector';
 
 class Player {
-    constructor(pos, ch, speed) {
+    constructor(pos, ch, speed, size, xSpeed, jumpSpeed) {
         this.size = new Vector(.8, 1.5);
         this.xSpeed = 7;
         this.jumpSpeed = 7;
-        this.gravity = 10;
         this.pos = pos;
         this.size = new Vector(.8, 1.5);
         this.speed = speed || new Vector(0, 0); // initial speed
@@ -36,7 +35,7 @@ class Player {
     }
 
     moveY(time, state, keys) {
-        this.speed.y += time * this.gravity;
+        this.speed.y += time * state.gravity;
         const motion = new Vector(0, this.speed.y * time);
         const newPos = this.pos.plus(motion);
         const obstacle = state.level.touching(newPos, this.size);

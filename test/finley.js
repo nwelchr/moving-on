@@ -7,7 +7,6 @@ class Finley extends Player {
         this.size = new Vector(.8, 1.5);
         this.xSpeed = 7;
         this.jumpSpeed = 7;
-        this.gravity = 10;
     }
 }
 

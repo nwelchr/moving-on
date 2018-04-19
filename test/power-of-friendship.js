@@ -24,7 +24,7 @@ const detectKeys = () => {
 
     window.addEventListener('keydown', track);
     window.addEventListener('keyup', track);
-
+    
     return isPressed;
 };
 

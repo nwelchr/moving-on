@@ -1,20 +1,18 @@
 // unsure how to manage current player
 
 class State {
-    constructor(level, actors, status, player) {
+    constructor(level, actors, status, player, switchKey, gravity) {
         this.level = level;
         this.actors = actors;
-        // this.player = this.actors.find(a => a.constructor.name === 'Player');
-        // this.player = this.actors.find(a => a.constructor.name === 'Finley'); 
-        console.log(player);
         this.player = this.actors.find(actor => actor.constructor.name === player.constructor.name);
         this.nonPlayers = this.actors.filter(actor => Object.getPrototypeOf(Object.getPrototypeOf(actor)).constructor.name === 'Player' && actor !== this.player);
-        // console.log(this.player, this.nonPlayers);
-        // this.currPlayer = currPlayer;
         this.status = status;
-        this.gravity = 10;
+        this.gravity = gravity || 7;
+        debugger;
+        if (this.level.actors.length === 1 && this.player.pos.y < 40 && this.player.pos.y > 4) this.gravity = .3;
 
-        this.switchPlayer = this.switchPlayer.bind(this);
+        // to check whether switch is currently being pressed to prevent repeat switching on update
+        this.switch = switchKey;
     }
 
     static start(level) {
@@ -25,15 +23,14 @@ class State {
         return actor.pos.x + actor.size.x > other.pos.x && actor.pos.x < other.pos.x + other.size.x && actor.pos.y + actor.size.y > other.pos.y && actor.pos.y < other.pos.y + other.size.y;
     }
 
-    switchPlayer() {
-        return this.nonPlayers[0];
-    }
-
+    // any place I return keys.switch is to make sure the user doesn't hold down the switch key and have the characters switch rapidly between each other
     update(time, keys) {
         let actors = this.actors.map(actor => actor.update(time, this, keys));
-        if (keys.switch) return new State(this.level, actors, this.status, this.nonPlayers[0]);
+        
+        // if s is being pressed and wasn't already being pressed, AND if the current player isn't jumping/falling/etc, switch player
+        if (keys.switch && !this.switch && this.player.speed.y === 0) return new State(this.level, actors, this.status, this.nonPlayers[0], keys.switch);
 
-        let newState = new State(this.level, actors, this.status, this.player);
+        let newState = new State(this.level, actors, this.status, this.player, keys.switch);
         if (newState.status !== 'playing') return newState;
 
         let player = newState.player;
@@ -43,6 +40,8 @@ class State {
                 return new State(this.level, actors, 'lost', this.player);
             case 'finleyGoal':
                 return new State(this.level, actors, 'won', this.player);
+            case 'gravity':
+                return new State(this.level, actors, 'playing', this.player, -this.gravity);
             default:
                 break;
         }

@@ -3,10 +3,11 @@ import Finley from './finley';
 import Frankie from './frankie';
 import Poison from './poison';
 import Player from "./player";
+import { SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION } from "constants";
 
 const actorChars = {
-    '1': Finley,
-    '2': Frankie,
+    'i': Finley,
+    'r': Frankie,
     // '1': Player,
     '=': Poison, '|': Poison, 'v': Poison
 };
@@ -47,6 +48,15 @@ class Level {
                         case '@':
                             fieldType = 'frankieGoal';
                             break;
+                        case 'g':
+                            fieldType = 'gravity';
+                            break;
+                        case '1':
+                            fieldType = 'instruction one';
+                            break;
+                        case '2':
+                            fieldType = 'instruction two';
+                            break;
                         default:
                             fieldType = null;
                             break;
@@ -77,10 +87,10 @@ class Level {
             return "poison";
         }
 
+
         for (let y = yStart; y < yEnd; y++) {
             for (let x = xStart; x < xEnd; x++) {
                 const fieldType = this.rows[y][x];
-                // console.log(fieldType);
                 if (fieldType) return fieldType;
             }
         }

@@ -37,6 +37,10 @@
   border-radius: 50%;
 }
 
+.gravity {
+  background: purple;
+}
+
 .finleyGoal {
   border: 2px dotted white;
 }
@@ -45,7 +49,11 @@
   background: rgb(111, 61, 150);
 }
 
-.lost .player, .lost .finley, .won .frankie {
+.finley, .frankie {
+
+}
+
+.lost .player, .lost .finley, .lost .frankie {
   background: rgb(160, 64, 64);
 }
 
@@ -63,6 +71,25 @@
 
 .frankie {
   background-color: green;
+}
+
+.instruction {
+  position: absolute;
+  z-index: 0;
+}
+
+.instruction:before {
+  color: white;
+  font-size: 50px;
+  font-family: 'lato';
+}
+
+.one:before {
+  content: 'welcome.';
+}
+
+.two:before {
+  content: 'use the arrow keys to move and jump.';
 }
 
 .title-screen-modal {

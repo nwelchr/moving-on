@@ -38,7 +38,12 @@ class Player {
         const newPos = this.pos.plus(motion);
         const obstacle = state.level.touching(newPos, this.size);
         if (obstacle) {
-            if (keys.up && this.speed.y >= 0 && this === state.player) {
+            console.log(obstacle);
+            if (obstacle === 'gravity') {
+                this.speed.y = -this.jumpSpeed;
+                this.jumpSpeed = -this.jumpSpeed;
+            }
+            else if (keys.up && this.speed.y >= 0 && this === state.player) {
                 this.speed.y = -this.jumpSpeed;
             } else {
                 this.speed.y = 0;

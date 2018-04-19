@@ -57,6 +57,12 @@ class Level {
                         case '2':
                             fieldType = 'instruction two';
                             break;
+                        case '3':
+                            fieldType = 'instruction three';
+                            break;
+                        case '4':
+                            fieldType = 'instruction four';
+                            break;
                         default:
                             fieldType = null;
                             break;

@@ -41,8 +41,9 @@
   background: purple;
 }
 
-.finleyGoal {
+.finleyGoal, .frankieGoal {
   border: 2px dotted white;
+  border-spacing: 2px;
 }
 
 .player {
@@ -81,15 +82,32 @@
 .instruction:before {
   color: white;
   font-size: 50px;
-  font-family: 'lato';
+  font-family: 'lato', 'helveticaneue-light', 'helvetica';
 }
 
 .one:before {
   content: 'welcome.';
+  margin-left: -30px;
 }
 
 .two:before {
   content: 'use the arrow keys to move and jump.';
+  position: absolute;
+  width: 300px;
+  left: -30px;
+}
+
+.three:before {
+  content: 'not yet.';
+  position: absolute;
+  white-space: nowrap;
+  margin-left: -45px;
+}
+
+.four:before {
+  content: 'you need her. press s.';
+  position: absolute;
+  white-space: nowrap;
 }
 
 .title-screen-modal {

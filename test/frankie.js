@@ -5,7 +5,7 @@ class Frankie extends Player {
     constructor(pos, ch, speed, size, xSpeed, jumpSpeed) {
         const frankieSize = size || new Vector(1.5, .8);
         const frankieXSpeed = xSpeed || 5;
-        const frankieJumpSpeed = jumpSpeed || 5;
+        const frankieJumpSpeed = jumpSpeed || 6;
         super(pos, ch, speed, frankieSize, frankieXSpeed, frankieJumpSpeed);
     }
 }

@@ -37,7 +37,7 @@
   /* border-radius: 50%; */
 }
 
-.gravity {
+.trampoline {
   background: purple;
 }
 
@@ -48,10 +48,6 @@
 
 .player {
   background: rgb(111, 61, 150);
-}
-
-.finley, .frankie {
-
 }
 
 .lost .player, .lost .finley, .lost .frankie {
@@ -67,11 +63,11 @@
 }
 
 .finley {
-  background-color: orange;
+  background-color: #c57208;
 }
 
 .frankie {
-  background-color: green;
+  background-color: #0d613c;
 }
 
 .instruction {

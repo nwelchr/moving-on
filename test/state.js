@@ -8,7 +8,8 @@ class State {
         this.nonPlayers = this.actors.filter(actor => Object.getPrototypeOf(Object.getPrototypeOf(actor)).constructor.name === 'Player' && actor !== this.player);
         this.status = status;
         this.gravity = gravity || 10;
-        if (this.level.width === 66 && this.player.pos.y < 60 && this.player.pos.y > 4) this.gravity = .05;
+        // if (this.level.width === 15) this.gravity = -1;
+        // if (this.level.width === 66 && this.player.pos.y < 60 && this.player.pos.y > 4) this.gravity = .05;
         // this.finleyStatus = finleyStatus || null;
         // this.frankieStatus = frankieStatus || null;
         // console.log (this.finleyStatus);
@@ -41,7 +42,7 @@ class State {
         switch (this.level.touching(player.pos, player.size)) {
             case 'poison':
                 return new State(this.level, actors, 'lost');
-            case 'gravity':
+            case 'trampoline':
                 return new State(this.level, actors, 'playing', this.player, keys.switch, -this.gravity, this.finleyStatus, this.frankieStatus);
             case 'finleyGoal':
                 return new State(this.level, actors, 'won', this.player);

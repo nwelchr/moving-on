@@ -48,8 +48,8 @@ class Level {
                         case '@':
                             fieldType = 'frankieGoal';
                             break;
-                        case 'g':
-                            fieldType = 'gravity';
+                        case 't':
+                            fieldType = 'trampoline';
                             break;
                         case '1':
                             fieldType = 'instruction one';

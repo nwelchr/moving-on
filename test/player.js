@@ -14,12 +14,12 @@ class Player {
         // if (keys.left) this.speed.x -= this.xSpeed;
         // if (keys.right) this.speed.x += this.xSpeed;
         if ((keys.left || keys.right || keys.up) && this === state.player) {
-            if (this.speed.x < this.jumpSpeed && this.speed.x > -this.jumpSpeed) {
+            if (this.speed.x < this.xSpeed && this.speed.x > -this.xSpeed) {
             if (keys.left) this.speed.x -= this.xSpeed;
             if (keys.right) this.speed.x += this.xSpeed;
-            } else if (this.speed.x === this.jumpSpeed || this.speed.x === -this.jumpSpeed) {
-              if (keys.left && this.speed.x === this.jumpSpeed) this.speed.x -= this.xSpeed;
-              if (keys.right && this.speed.x === -this.jumpSpeed) this.speed.x += this.xSpeed;
+            } else if (this.speed.x === this.xSpeed || this.speed.x === -this.xSpeed) {
+              if (keys.left && this.speed.x === this.xSpeed) this.speed.x -= this.xSpeed;
+              if (keys.right && this.speed.x === -this.xSpeed) this.speed.x += this.xSpeed;
             } 
           } else { 
             if (this.speed.x > 0) this.speed.x -= this.speed.x < this.xSpeed ? this.speed.x : this.xSpeed;
@@ -39,7 +39,7 @@ class Player {
         const obstacle = state.level.touching(newPos, this.size);
         if (obstacle) {
             console.log(obstacle);
-            if (obstacle === 'gravity') {
+            if (obstacle === 'trampoline') {
                 this.speed.y = -this.jumpSpeed;
                 this.jumpSpeed = -this.jumpSpeed;
             }

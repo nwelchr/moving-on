@@ -1,10 +1,12 @@
 import Vector from "./vector";
 import Finley from './finley';
+import Frankie from './frankie';
 import Poison from './poison';
 import Player from "./player";
 
 const actorChars = {
     '1': Finley,
+    '2': Frankie,
     // '1': Player,
     '=': Poison, '|': Poison, 'v': Poison
 };

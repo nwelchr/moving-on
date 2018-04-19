@@ -26,7 +26,7 @@ class Poison {
     }
 
     collide(state) {
-        return new State(state.level, state.actors, 'lost');
+        return new State(state.level, state.actors, 'lost', state.player);
     }
 
     update(time, state) {

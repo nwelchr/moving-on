@@ -108,7 +108,7 @@ class Player {
         // this.speed.x = 0;
         // if (keys.left) this.speed.x -= this.xSpeed;
         // if (keys.right) this.speed.x += this.xSpeed;
-        if (keys.left || keys.right || keys.up) {
+        if ((keys.left || keys.right || keys.up) && this === state.player) {
             if (this.speed.x < this.jumpSpeed && this.speed.x > -this.jumpSpeed) {
                 if (keys.left) this.speed.x -= this.xSpeed;
                 if (keys.right) this.speed.x += this.xSpeed;
@@ -133,7 +133,7 @@ class Player {
         const newPos = this.pos.plus(motion);
         const obstacle = state.level.touching(newPos, this.size);
         if (obstacle) {
-            if (keys.up && this.speed.y >= 0) {
+            if (keys.up && this.speed.y >= 0 && this === state.player) {
                 this.speed.y = -this.jumpSpeed;
             } else {
                 this.speed.y = 0;
@@ -144,6 +144,8 @@ class Player {
     }
 
     update(time, state, keys) {
+        console.log(state.player);
+
         this.moveX(time, state, keys);
         this.moveY(time, state, keys);
 
@@ -167,22 +169,36 @@ class State {
         this.level = level;
         this.actors = actors;
         // this.player = this.actors.find(a => a.constructor.name === 'Player');
-        this.player = this.actors.find(a => a.constructor.name === 'Finley');
+        // this.player = this.actors.find(a => a.constructor.name === 'Finley'); 
+        this.player = player || this.actors.find(a => a.constructor.name === 'Finley');this.nonPlayers = this.actors.filter(actor => Object.getPrototypeOf(Object.getPrototypeOf(actor)).constructor.name === 'Player' && actor !== this.player);
+        // console.log(this.player, this.nonPlayers);
         // this.currPlayer = currPlayer;
         this.status = status;
         this.gravity = 10;
+
+        this.switchPlayer = this.switchPlayer.bind(this);
     }
 
     static start(level) {
-        return new State(level, level.actors, "playing", this.player);
+        return new State(level, level.actors, "playing");
     }
 
     overlap(actor, other) {
         return actor.pos.x + actor.size.x > other.pos.x && actor.pos.x < other.pos.x + other.size.x && actor.pos.y + actor.size.y > other.pos.y && actor.pos.y < other.pos.y + other.size.y;
     }
 
+    switchPlayer() {
+        const player = this.nonPlayers[0];
+        this.nonPlayers.shift();
+        this.nonPlayers.push(this.player);
+        this.player = player;
+    }
+
     update(time, keys) {
         let actors = this.actors.map(actor => actor.update(time, this, keys));
+        if (keys.switch) {
+            this.switchPlayer();
+        }
         let newState = new State(this.level, actors, this.status);
         if (newState.status !== 'playing') return newState;
 
@@ -190,7 +206,6 @@ class State {
 
         switch (this.level.touching(player.pos, player.size)) {
             case 'poison':
-                // console.log('hi');
                 return new State(this.level, actors, 'lost');
             case 'finleyGoal':
                 return new State(this.level, actors, 'won');
@@ -203,7 +218,7 @@ class State {
         // }
 
         for (let actor of actors) {
-            if (actor !== player && this.overlap(actor, player)) {
+            if (Object.getPrototypeOf(Object.getPrototypeOf(actor)).constructor.name !== 'Player' && this.overlap(actor, player)) {
                 newState = actor.collide(newState);
             }
         }
@@ -232,7 +247,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 const keyCodes = {
     37: 'left',
     38: 'up',
-    39: 'right'
+    39: 'right',
+    83: 'switch'
 };
 
 const detectKeys = () => {
@@ -322,8 +338,10 @@ runGame();
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__vector__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__finley__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__poison__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__player__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__frankie__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__poison__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__player__ = __webpack_require__(1);
+
 
 
 
@@ -331,8 +349,9 @@ runGame();
 
 const actorChars = {
     '1': __WEBPACK_IMPORTED_MODULE_1__finley__["a" /* default */],
+    '2': __WEBPACK_IMPORTED_MODULE_2__frankie__["a" /* default */],
     // '1': Player,
-    '=': __WEBPACK_IMPORTED_MODULE_2__poison__["a" /* default */], '|': __WEBPACK_IMPORTED_MODULE_2__poison__["a" /* default */], 'v': __WEBPACK_IMPORTED_MODULE_2__poison__["a" /* default */]
+    '=': __WEBPACK_IMPORTED_MODULE_3__poison__["a" /* default */], '|': __WEBPACK_IMPORTED_MODULE_3__poison__["a" /* default */], 'v': __WEBPACK_IMPORTED_MODULE_3__poison__["a" /* default */]
 };
 
 class Level {
@@ -470,7 +489,7 @@ class Poison {
     }
 
     collide(state) {
-        return new __WEBPACK_IMPORTED_MODULE_1__state__["a" /* default */](state.level, state.actors, 'lost');
+        return new __WEBPACK_IMPORTED_MODULE_1__state__["a" /* default */](state.level, state.actors, 'lost', state.player);
     }
 
     update(time, state) {
@@ -574,7 +593,7 @@ class Display {
         const bottom = top + height;
 
         const player = state.player;
-        console.log(player);
+        // console.log(player);
         const center = player.pos.plus(player.size.times(0.5)).times(scale); // to find the player's center, we add the position + half the size
 
 
@@ -606,9 +625,30 @@ class Display {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-const levelMaps = [["  x                                                    ", "  x                    ", "  x                    ", "  x             v      ", "  x                    ", "  x                    ", "  x                    ", "  x      |                                        = ", "  x         !      x  x                    =x", "  x 1     xxxxxx   x  x                =x", "  x             =  x  x", "  xxxxx            x  xxxxxxxxxxxxxxx", "      xppwwwwwpppppx  ", "      xxxxxxxxxxxxxx  ", "                      "], ["                      ", "                      ", "   v                  ", "          v           ", "                      ", "              v       ", "                      ", "                     ", "                      ", "                      ", "  x              = x  ", "  x 1              x  ", "  x         !   xx x  ", "  xxxxx    xx    = x  ", "      xxxxxxxxxxxxxx  ", "      xxxxxxxxxxxxxx  ", "                      "]];
+const levelMaps = [["  x                                                    ", "  x                    ", "  x                    ", "  x             v      ", "  x                    ", "  x                    ", "  x                    ", "  x      |                                        = ", "  x         !      x  x                    =x", "  x 12     xxxxxx   x  x                =x", "  x             =  x  x", "  xxxxx            x  xxxxxxxxxxxxxxx", "      xppwwwwwpppppx  ", "      xxxxxxxxxxxxxx  ", "                      "], ["                      ", "                      ", "   v                  ", "          v           ", "                      ", "              v       ", "                      ", "                     ", "                      ", "                      ", "  x              = x  ", "  x 1              x  ", "  x         !   xx x  ", "  xxxxx    xx    = x  ", "      xxxxxxxxxxxxxx  ", "      xxxxxxxxxxxxxx  ", "                      "]];
 
 /* harmony default export */ __webpack_exports__["a"] = (levelMaps);
+
+/***/ }),
+/* 9 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__player__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__vector__ = __webpack_require__(0);
+
+
+
+class Frankie extends __WEBPACK_IMPORTED_MODULE_0__player__["a" /* default */] {
+    constructor(pos, ch, speed, size, xSpeed, jumpSpeed) {
+        const frankieSize = size || new __WEBPACK_IMPORTED_MODULE_1__vector__["a" /* default */](1.5, .8);
+        const frankieXSpeed = xSpeed || 5;
+        const frankieJumpSpeed = jumpSpeed || 5;
+        super(pos, ch, speed, frankieSize, frankieXSpeed, frankieJumpSpeed);
+    }
+}
+
+/* harmony default export */ __webpack_exports__["a"] = (Frankie);
 
 /***/ })
 /******/ ]);

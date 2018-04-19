@@ -45,11 +45,11 @@
   background: rgb(111, 61, 150);
 }
 
-.lost .player, .lost .finley {
+.lost .player, .lost .finley, .won .frankie {
   background: rgb(160, 64, 64);
 }
 
-.won .player, .won .finley {
+.won .player, .won .finley, .won .frankie {
   background: #fff;
 }
 
@@ -59,6 +59,10 @@
 
 .finley {
   background-color: orange;
+}
+
+.frankie {
+  background-color: green;
 }
 
 .title-screen-modal {

@@ -14,7 +14,7 @@ class Player {
         // this.speed.x = 0;
         // if (keys.left) this.speed.x -= this.xSpeed;
         // if (keys.right) this.speed.x += this.xSpeed;
-        if (keys.left || keys.right || keys.up) {
+        if ((keys.left || keys.right || keys.up) && this === state.player) {
             if (this.speed.x < this.jumpSpeed && this.speed.x > -this.jumpSpeed) {
             if (keys.left) this.speed.x -= this.xSpeed;
             if (keys.right) this.speed.x += this.xSpeed;
@@ -39,7 +39,7 @@ class Player {
         const newPos = this.pos.plus(motion);
         const obstacle = state.level.touching(newPos, this.size);
         if (obstacle) {
-            if (keys.up && this.speed.y >= 0) {
+            if (keys.up && this.speed.y >= 0 && this === state.player) {
                 this.speed.y = -this.jumpSpeed;
             } else {
                 this.speed.y = 0;
@@ -50,6 +50,8 @@ class Player {
     }
 
     update (time, state, keys) {
+        console.log(state.player);
+        
         this.moveX(time, state, keys);
         this.moveY(time, state, keys);
 

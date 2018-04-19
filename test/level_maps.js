@@ -8,7 +8,7 @@ const levelMaps = [
         "  x                    ",
         "  x      |                                        = ",
         "  x         !      x  x                    =x",
-        "  x 1     xxxxxx   x  x                =x",
+        "  x 12     xxxxxx   x  x                =x",
         "  x             =  x  x",
         "  xxxxx            x  xxxxxxxxxxxxxxx",
         "      xppwwwwwpppppx  ",

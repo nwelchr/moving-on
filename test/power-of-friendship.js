@@ -6,7 +6,8 @@ import State from './state';
 const keyCodes = {
     37: 'left',
     38: 'up',
-    39: 'right'
+    39: 'right',
+    83: 'switch'
 };
 
 const detectKeys = () => {
@@ -69,7 +70,6 @@ const runLevel = (level, successFunction) => {
 };
 
 const runGame = () => {
-
 
     const startLevel = (n) => {
         runLevel(new Level(levelMaps[n]), status => {

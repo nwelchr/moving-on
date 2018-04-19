@@ -2,9 +2,9 @@ const levelMaps = [
 
   [   "xxxxxxxxxxxxxxx                              v    xxxxx            ",
   "x             x                 |                                 =",
-  "x   i r        x                                                  ",
+  "x   i         x                                                  ",
   "x                                               xxxxx            ",
-  "x                                                               ",
+  "x   r                                                            ",
   "x                                           !      ",
   "xxxxxxxxxxxxxxxxxwwwwwwwpppppppxxxxtxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 ]];

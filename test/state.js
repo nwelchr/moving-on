@@ -24,6 +24,7 @@ class State {
     }
 
     overlap(actor, other) {
+        debugger;
         return actor.pos.x + actor.size.x > other.pos.x && actor.pos.x < other.pos.x + other.size.x && actor.pos.y + actor.size.y > other.pos.y && actor.pos.y < other.pos.y + other.size.y;
     }
 
@@ -67,7 +68,8 @@ class State {
         // }
 
         for (let actor of actors) {
-            if (Object.getPrototypeOf(Object.getPrototypeOf(actor)).constructor.name !== 'Player' && this.overlap(actor, player)) {
+            if (this.overlap(actor, player) && actor !== player) {
+                // debugger;
                 newState = actor.collide(newState);
             }
         }

@@ -104,27 +104,30 @@ class Player {
     }
 
     moveX(time, state, keys) {
-        // this.speed.x = 0;
-        // if (keys.left) this.speed.x -= this.xSpeed;
-        // if (keys.right) this.speed.x += this.xSpeed;
-        if ((keys.left || keys.right || keys.up) && this === state.player) {
-            if (this.speed.x < this.xSpeed && this.speed.x > -this.xSpeed) {
-                if (keys.left) this.speed.x -= this.xSpeed;
-                if (keys.right) this.speed.x += this.xSpeed;
-            } else if (this.speed.x === this.xSpeed || this.speed.x === -this.xSpeed) {
-                if (keys.left && this.speed.x === this.xSpeed) this.speed.x -= this.xSpeed;
-                if (keys.right && this.speed.x === -this.xSpeed) this.speed.x += this.xSpeed;
-            }
-        } else {
-            if (this.speed.x > 0) this.speed.x -= this.speed.x < this.xSpeed ? this.speed.x : this.xSpeed;
-            if (this.speed.x < 0) this.speed.x += this.speed.x > -this.xSpeed ? -this.speed.x : this.xSpeed;
-        }
+        this.speed.x = 0;
+        if (keys.left && this === state.player) this.speed.x -= this.xSpeed;
+        if (keys.right && this === state.player) this.speed.x += this.xSpeed;
+
+        // if ((keys.left || keys.right || keys.up) && this === state.player) {
+        //     if (this.speed.x < this.xSpeed && this.speed.x > -this.xSpeed) {
+        //     if (keys.left) this.speed.x -= this.xSpeed;
+        //     if (keys.right) this.speed.x += this.xSpeed;
+        //     } else if (this.speed.x === this.xSpeed || this.speed.x === -this.xSpeed) {
+        //       if (keys.left && this.speed.x === this.xSpeed) this.speed.x -= this.xSpeed;
+        //       if (keys.right && this.speed.x === -this.xSpeed) this.speed.x += this.xSpeed;
+        //     } 
+        //   } else { 
+        //     if (this.speed.x > 0) this.speed.x -= this.speed.x < this.xSpeed ? this.speed.x : this.xSpeed;
+        //     if (this.speed.x < 0) this.speed.x += this.speed.x > -this.xSpeed ? -this.speed.x : this.xSpeed;
+        //   }
 
         const movedX = this.pos.plus(new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](this.speed.x * time, 0));
         if (state.level.touching(movedX, this.size) !== 'wall') {
             this.pos = movedX;
         }
     }
+
+    collide(state) {}
 
     moveY(time, state, keys) {
         this.speed.y += time * state.gravity;
@@ -138,6 +141,8 @@ class Player {
                 this.jumpSpeed = -this.jumpSpeed;
             } else if (keys.up && this.speed.y >= 0 && this === state.player) {
                 this.speed.y = -this.jumpSpeed;
+            } else if (obstacle === 'water' || obstacle === 'instruction') {
+                this.pos = newPos;
             } else {
                 this.speed.y = 0;
             }
@@ -147,6 +152,7 @@ class Player {
     }
 
     update(time, state, keys) {
+
         this.moveX(time, state, keys);
         this.moveY(time, state, keys);
 
@@ -189,6 +195,7 @@ class State {
     }
 
     overlap(actor, other) {
+        debugger;
         return actor.pos.x + actor.size.x > other.pos.x && actor.pos.x < other.pos.x + other.size.x && actor.pos.y + actor.size.y > other.pos.y && actor.pos.y < other.pos.y + other.size.y;
     }
 
@@ -232,7 +239,8 @@ class State {
         // }
 
         for (let actor of actors) {
-            if (Object.getPrototypeOf(Object.getPrototypeOf(actor)).constructor.name !== 'Player' && this.overlap(actor, player)) {
+            if (this.overlap(actor, player) && actor !== player) {
+                // debugger;
                 newState = actor.collide(newState);
             }
         }
@@ -687,7 +695,7 @@ class Display {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-const levelMaps = [["xxxxxxxxxxxxxxx                              v    xxxxx            ", "x             x                 |                                 =", "x   i r        x                                                  ", "x                                               xxxxx            ", "x                                                               ", "x                                           !      ", "xxxxxxxxxxxxxxxxxwwwwwwwpppppppxxxxtxxxxxxxxxxxxxxxxxxxxxxxxxxx"]];
+const levelMaps = [["xxxxxxxxxxxxxxx                              v    xxxxx            ", "x             x                 |                                 =", "x   i         x                                                  ", "x                                               xxxxx            ", "x   r                                                            ", "x                                           !      ", "xxxxxxxxxxxxxxxxxwwwwwwwpppppppxxxxtxxxxxxxxxxxxxxxxxxxxxxxxxxx"]];
 
 // [   "xxxxxxxxxxxxxxx                                  xxxxx            ",
 //     "x             x                                    r              ",

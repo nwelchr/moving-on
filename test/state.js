@@ -7,9 +7,8 @@ class State {
         this.player = this.actors.find(actor => actor.constructor.name === player.constructor.name);
         this.nonPlayers = this.actors.filter(actor => Object.getPrototypeOf(Object.getPrototypeOf(actor)).constructor.name === 'Player' && actor !== this.player);
         this.status = status;
-        this.gravity = gravity || 7;
-        debugger;
-        if (this.level.actors.length === 1 && this.player.pos.y < 40 && this.player.pos.y > 4) this.gravity = .3;
+        this.gravity = gravity || 10;
+        if (this.level.actors.length === 1 && this.player.pos.y < 60 && this.player.pos.y > 4) this.gravity = .05;
 
         // to check whether switch is currently being pressed to prevent repeat switching on update
         this.switch = switchKey;

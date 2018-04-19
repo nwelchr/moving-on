@@ -34,7 +34,7 @@
 
 .coin {
   background: rgb(241, 229, 89);
-  border-radius: 50%;
+  /* border-radius: 50%; */
 }
 
 .gravity {
@@ -62,7 +62,7 @@
 }
 
 #game-wrapper {
-  border-radius: 45px;
+  /* border-radius: 45px; */
 }
 
 .finley {
@@ -99,7 +99,7 @@
   opacity: .5;
   width: 900px;
   height: 600px;
-  border-radius: 45px;
+  /* border-radius: 45px; */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -116,7 +116,15 @@ button.start-game {
   max-width: 900px;
   max-height: 600px;
   position: relative;
-  border-radius: 45px;
+  /* border-radius: 45px; */
+}
+
+.game {
+  animation: baby 5s forwards;
+}
+@keyframes baby {
+  0% {opacity: 0;}
+  100% {opacity: 1;}
 }
 
 /* .game:before {

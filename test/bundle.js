@@ -172,9 +172,8 @@ class State {
         this.player = this.actors.find(actor => actor.constructor.name === player.constructor.name);
         this.nonPlayers = this.actors.filter(actor => Object.getPrototypeOf(Object.getPrototypeOf(actor)).constructor.name === 'Player' && actor !== this.player);
         this.status = status;
-        this.gravity = gravity || 7;
-        debugger;
-        if (this.level.actors.length === 1 && this.player.pos.y < 40 && this.player.pos.y > 4) this.gravity = .3;
+        this.gravity = gravity || 10;
+        if (this.level.actors.length === 1 && this.player.pos.y < 60 && this.player.pos.y > 4) this.gravity = .05;
 
         // to check whether switch is currently being pressed to prevent repeat switching on update
         this.switch = switchKey;
@@ -249,6 +248,10 @@ const keyCodes = {
     83: 'switch'
 };
 
+const audio = document.getElementById('intro');
+const finish = document.getElementById('level-finish');
+audio.volume = finish.volume = 0.2;
+
 const detectKeys = () => {
     // to avoid error with indexing into something that doesn't exist
     const isPressed = Object.create(null);
@@ -298,6 +301,7 @@ const runLevel = (level, successFunction) => {
         if (state.status === 'playing') {
             return true;
         } else if (ending > 0) {
+            finish.play();
             ending -= time;
             return true;
         } else {
@@ -309,7 +313,7 @@ const runLevel = (level, successFunction) => {
 };
 
 const runGame = () => {
-
+    audio.play();
     const startLevel = n => {
         runLevel(new __WEBPACK_IMPORTED_MODULE_0__level__["a" /* default */](__WEBPACK_IMPORTED_MODULE_2__level_maps__["a" /* default */][n]), status => {
             if (status === 'lost') {
@@ -633,7 +637,7 @@ class Display {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-const levelMaps = [["xxxxxxxxxxxxxxx", "x             x", "x   i         x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x         1   x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x        2    x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x         !   x", "xxxxxxxxxxxxxxx"], ["                      ", "                      ", "                     ", "                     ", "                      ", "                     ", "                      ", "                     ", "                      ", "                      ", " x              =x  ", " x ir             x  ", " x         !  xxx  ", " xxxxx   xx    =x  ", "     xxxxxxxxxxxxxx  ", "     xxxxxxxxxxxxxx  ", "                      "]];
+const levelMaps = [["xxxxxxxxxxxxxxx", "x             x", "x   i         x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x         1   x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x        2    x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x           ! x", "xxxxxxxxxxxxxxx"], ["                      ", "                      ", "                     ", "                     ", "                      ", "                     ", "                      ", "                     ", "                      ", "                      ", " x              =x  ", " x ir             x  ", " x         !  xxx  ", " xxxxx   xx    =x  ", "     xxxxxxxxxxxxxx  ", "     xxxxxxxxxxxxxx  ", "                      "]];
 
 /* harmony default export */ __webpack_exports__["a"] = (levelMaps);
 

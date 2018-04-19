@@ -10,6 +10,10 @@ const keyCodes = {
     83: 'switch'
 };
 
+const audio = document.getElementById('intro');
+const finish = document.getElementById('level-finish');
+audio.volume = finish.volume = 0.2;
+
 const detectKeys = () => {
     // to avoid error with indexing into something that doesn't exist
     const isPressed = Object.create(null);
@@ -53,12 +57,14 @@ const runLevel = (level, successFunction) => {
     let state = State.start(level);
     let ending = 1;
 
+
     runAnimation(time => {
         state = state.update(time, keys);
         display.drawFrame(state);
         if (state.status === 'playing') {
             return true;
         } else if (ending > 0) {
+            finish.play();
             ending -= time;
             return true;
         } else {
@@ -70,7 +76,7 @@ const runLevel = (level, successFunction) => {
 };
 
 const runGame = () => {
-
+    audio.play();
     const startLevel = (n) => {
         runLevel(new Level(levelMaps[n]), status => {
             if (status === 'lost') {

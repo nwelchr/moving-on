@@ -77,7 +77,7 @@ class Display {
         const right = left + width;
         const top = this.wrapper.scrollTop;
         const bottom = top + height;
-
+        
         const player = state.player;
         // console.log(player);
         const center = player.pos.plus(player.size.times(0.5)).times(scale); // to find the player's center, we add the position + half the size

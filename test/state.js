@@ -6,7 +6,9 @@ class State {
         this.actors = actors;
         // this.player = this.actors.find(a => a.constructor.name === 'Player');
         // this.player = this.actors.find(a => a.constructor.name === 'Finley'); 
-        this.player = player || this.actors.find(a => a.constructor.name === 'Finley');   this.nonPlayers = this.actors.filter(actor => Object.getPrototypeOf(Object.getPrototypeOf(actor)).constructor.name === 'Player' && actor !== this.player);
+        console.log(player);
+        this.player = this.actors.find(actor => actor.constructor.name === player.constructor.name);
+        this.nonPlayers = this.actors.filter(actor => Object.getPrototypeOf(Object.getPrototypeOf(actor)).constructor.name === 'Player' && actor !== this.player);
         // console.log(this.player, this.nonPlayers);
         // this.currPlayer = currPlayer;
         this.status = status;
@@ -16,7 +18,7 @@ class State {
     }
 
     static start(level) {
-        return new State(level, level.actors, "playing");
+        return new State(level, level.actors, "playing", level.actors.find(a => a.constructor.name === 'Finley'));
     }
 
     overlap(actor, other) {
@@ -24,27 +26,23 @@ class State {
     }
 
     switchPlayer() {
-        const player = this.nonPlayers[0];
-        this.nonPlayers.shift();
-        this.nonPlayers.push(this.player);
-        this.player = player;
+        return this.nonPlayers[0];
     }
 
     update(time, keys) {
         let actors = this.actors.map(actor => actor.update(time, this, keys));
-        if (keys.switch) {
-            this.switchPlayer();
-        }
-        let newState = new State(this.level, actors, this.status);
+        if (keys.switch) return new State(this.level, actors, this.status, this.nonPlayers[0]);
+
+        let newState = new State(this.level, actors, this.status, this.player);
         if (newState.status !== 'playing') return newState;
 
         let player = newState.player;
 
         switch (this.level.touching(player.pos, player.size)) {
             case 'poison':
-                return new State(this.level, actors, 'lost');
+                return new State(this.level, actors, 'lost', this.player);
             case 'finleyGoal':
-                return new State(this.level, actors, 'won');
+                return new State(this.level, actors, 'won', this.player);
             default:
                 break;
         }

@@ -10,7 +10,6 @@ class Player {
     }
 
     moveX(time, state, keys) {
-
         // this.speed.x = 0;
         // if (keys.left) this.speed.x -= this.xSpeed;
         // if (keys.right) this.speed.x += this.xSpeed;
@@ -50,8 +49,6 @@ class Player {
     }
 
     update (time, state, keys) {
-        console.log(state.player);
-        
         this.moveX(time, state, keys);
         this.moveY(time, state, keys);
 

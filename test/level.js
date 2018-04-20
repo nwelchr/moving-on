@@ -68,6 +68,48 @@ class Level {
                         case '5':
                             fieldType = 'instruction five';
                             break;
+                        case '6':
+                            fieldType = 'instruction six';
+                            break;
+                        case '7':
+                            fieldType = 'instruction seven';
+                            break;
+                        case '8':
+                            fieldType = 'instruction eight';
+                            break;
+                        case '9':
+                            fieldType = 'instruction nine';
+                            break;
+                        case '0':
+                            fieldType = 'instruction ten';
+                            break;
+                        case '#':
+                            fieldType = 'instruction eleven';
+                            break;
+                        case '$':
+                            fieldType = 'instruction twelve';
+                            break;
+                        case '%':
+                            fieldType = 'instruction thirteen';
+                            break;
+                        case '^':
+                            fieldType = 'instruction fourteen';
+                            break;
+                        case '&':
+                            fieldType = 'instruction fifteen';
+                            break;
+                        case '*':
+                            fieldType = 'instruction sixteen';
+                            break;
+                        case '(':
+                            fieldType = 'instruction seventeen';
+                            break;
+                        case ')':
+                            fieldType = 'instruction eighteen';
+                            break;
+                        case '-':
+                            fieldType = 'instruction nineteen';
+                            break;    
                         default:
                             fieldType = null;
                             break;

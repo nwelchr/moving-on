@@ -136,12 +136,14 @@ class Player {
             if (overlap === 'topOverlap' && this.speed.y < 0) {
                 this.pos = newPos;
             } else if (obstacle === 'trampoline') {
-                this.speed.y = -this.jumpSpeed;
-                this.jumpSpeed = -this.jumpSpeed;
+                this.speed.y = -this.jumpSpeed * 1.5;
+                // this.jumpSpeed = -this.jumpSpeed;
+                this.pos = newPos;
+            } else if (obstacle === 'water' && this.size.x === .8) {
                 this.pos = newPos;
             } else if (keys.up && (this.speed.y >= 0 || overlap === 'topOverlap') && this === state.player) {
                 this.speed.y = -this.jumpSpeed;
-            } else if (['water', 'gravity', 'instruction'].includes(obstacle)) {
+            } else if (['gravity', 'instruction'].includes(obstacle)) {
                 this.pos = newPos;
             } else {
                 this.speed.y = 0;
@@ -315,8 +317,8 @@ class State {
 
         let actors = this.actors.map(actor => actor.update(time, this, keys));
 
-        // if s is being pressed and wasn't already being pressed, AND if the current player isn't jumping/falling/etc, switch player
-        if (keys.switch && !this.switch && this.player.speed.y === 0) return new State(this.level, actors, this.status, this.nonPlayers[0], keys.switch, this.gravity, this.finleyStatus, this.frankieStatus);
+        // if s is being pressed and wasn't already being pressed, AND if the current player isn't jumping/falling/etc (w this.player.speed.y === 0), switch player
+        if (keys.switch && !this.switch) return new State(this.level, actors, this.status, this.nonPlayers[0], keys.switch, this.gravity, this.finleyStatus, this.frankieStatus);
 
         console.log('set newState');
         let newState = new State(this.level, actors, this.status, this.player, keys.switch, null, this.finleyStatus, this.frankieStatus);
@@ -328,6 +330,9 @@ class State {
             case 'poison':
                 console.log('poison');
                 return new State(this.level, actors, 'lost', this.player);
+            case 'water':
+                console.log('poison');
+                return new State(this.level, actors, 'lost drowned', this.player);
             case 'trampoline':
                 return new State(this.level, actors, 'playing', this.player, keys.switch, -this.gravity, this.finleyStatus, this.frankieStatus);
             default:
@@ -364,12 +369,18 @@ class State {
         newState.finleyStatus = this.overlap(finley, finleyGoal) ? true : false;
         newState.frankieStatus = this.overlap(frankie, frankieGoal) ? true : false;
 
-        console.log(this.gravity);
         if (this.level.touching(this.player.pos, this.player.size) === 'gravity') {
             newState.gravity = -Math.abs(newState.gravity);
         } else {
             newState.gravity = Math.abs(newState.gravity);
         }
+
+        // if (this.level.touching(this.player.pos, this.player.size) === 'water' && this.level.width === 77) {
+        //     console.log(this.level.width);
+        //     newState.gravity = -Math.abs(newState.gravity) * 2;
+        // } else {
+        //     newState.gravity = Math.abs(newState.gravity);
+        // }
 
         // const overlap = this.overlap(player, actor);
         // if (overlap && Object.getPrototypeOf(Object.getPrototypeOf(actor)).constructor.name !== 'Player') {
@@ -479,7 +490,7 @@ const runGame = () => {
     const startLevel = n => {
         runLevel(new __WEBPACK_IMPORTED_MODULE_0__level__["a" /* default */](__WEBPACK_IMPORTED_MODULE_2__level_maps__["a" /* default */][n]), status => {
             // debugger;
-            if (status === 'lost') {
+            if (status.includes('lost')) {
                 startLevel(n);
             } else if (n < __WEBPACK_IMPORTED_MODULE_2__level_maps__["a" /* default */].length - 1) {
                 startLevel(n + 1);
@@ -579,6 +590,48 @@ class Level {
                             break;
                         case '5':
                             fieldType = 'instruction five';
+                            break;
+                        case '6':
+                            fieldType = 'instruction six';
+                            break;
+                        case '7':
+                            fieldType = 'instruction seven';
+                            break;
+                        case '8':
+                            fieldType = 'instruction eight';
+                            break;
+                        case '9':
+                            fieldType = 'instruction nine';
+                            break;
+                        case '0':
+                            fieldType = 'instruction ten';
+                            break;
+                        case '#':
+                            fieldType = 'instruction eleven';
+                            break;
+                        case '$':
+                            fieldType = 'instruction twelve';
+                            break;
+                        case '%':
+                            fieldType = 'instruction thirteen';
+                            break;
+                        case '^':
+                            fieldType = 'instruction fourteen';
+                            break;
+                        case '&':
+                            fieldType = 'instruction fifteen';
+                            break;
+                        case '*':
+                            fieldType = 'instruction sixteen';
+                            break;
+                        case '(':
+                            fieldType = 'instruction seventeen';
+                            break;
+                        case ')':
+                            fieldType = 'instruction eighteen';
+                            break;
+                        case '-':
+                            fieldType = 'instruction nineteen';
                             break;
                         default:
                             fieldType = null;
@@ -946,7 +999,52 @@ const levelMaps = [
 //     " xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 //   ],
 
-["x                                                                                                    ", "x             x                                          ", "x       !     x                                         ", "x             x                               r         ", "x             x                               @          ", "x             x                                         ", "x             x                        xxxxxxxx", "x             x                     xxxxxxx", "x             x                xxxxxxx", "x             x             xxxxx", "x             x          xxxx", "x             x       xxxx", "x             x     xxxx", "x             x    xxx", "x             x   xx", "x             x  x                       ggggggggggg", "x             x x                  ggggggggggggggggg", "x             xx              gggggggggggggggggggggg                        ", "x             x          ggggggggggggggggggggggggggg", "x                  ggggggggggggggggggggggggggggggggg                                       x", "x i            ggggggggggggggggggggggggggggggggggggg x", "x                                                         x", "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"], ["x         @   x", "x    !        x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x    i    r   x", "x             x", "xxxxxxxxxxxxxxx"]];
+//     [ "x                                                                                                      ",
+//       "x             x                                          ",
+//       "x             x                                                                                  ",
+//       "x             x                                                                                    ",
+//       "x             x                                                                                  ",
+//       "x             x                                                                       xxxxxxxxxxxxxxx              ",
+//       "x             x                                                                       x             x           ",
+//       "x             x                                                                       x   !   @     x      ",
+//       "x             x      xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx              xxxxxxxxxxxxxxxxx              x      ",
+//       "x             x      x                                 x              x                             x ",
+//       "x             x      x                                 x              x                             x  ",
+//       "x             x      x                         7       x              x                             x   ",
+//       "x             x      x                                 x              x                   t   t     x   ",
+//       "x             x      x       xxxxxxxxxxxxxxxxxxx       x              x ggggg xxxxxxxxxxxxxxxxxxxxxxx     ",
+//       "x             x      x ggggg x                 x       x              x ggggg x      ",
+//       "x             x      x ggggg x                 x       x              x ggggg x",
+//       "x             x      x ggggg x                 x       x              x ggggg x",
+//       "x             x      x ggggg x                 x       x              x ggggg x ",
+//       "x             xxxxxxxx ggggg x                 x       xxxxxxxxxxxxxxxx ggggg x",
+//       "x                      ggggg x                 x                        ggggg x                                       x",
+//       "x i   r          6     ggggg x                 x                        ggggg x",
+//       "x                            x                 x                        ggggg x",
+//       "x                            x                 x                        ggggg x",
+//       "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx                 x                        ggggg x",
+//       "                                               x                        ggggg x",
+//       "                                               x                        ggggg x",
+//       "                                               x                        ggggg x",
+//       "                                               x                        ggggg x",
+//       "                                               x                        ggggg x",
+//       "                                               x                        ggggg x",
+//       "                                               x                        ggggg x",
+//       "                                               x                        ggggg x",
+//       "                                               x                        ggggg x",
+//       "                                               x                        ggggg x",
+//       "                                               x                        ggggg x",
+//       "                                               x                        ggggg x",
+//       "                                               x                        ggggg x",
+//       "                                               x                        ggggg x",
+//       "                                               x                        ggggg x",
+//       "                                               x                        ggggg x",
+//       "                                               x                        ggggg x",
+//       "                                               x                              x",
+//       "                                               xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+// ],
+
+["                                                                             ", " x                                                                          x", " x                                                                          x", " x   8                                                                       x", " x                                                                          x", " x   i   r                      9                                               x", " x                                                                          x", " xxxxxxxxxxxxx                                                    ! @                     x", " xxxxxxxxxxxxx                                                  xxxxxxxxxxxxx                     x", " xxxxxxxxxxxxxwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwxxxxxxxxxxxxx              xxxxxxxxxxxxxxxxxx                    x", " xxxxxxxxxxxxxwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwxxxxxxxxxxxxx               xxxxxxxxxxxxxxxxxx                    x", " xxxxxxxxxxxxxwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwxxxxxxxxxxxxx           xxxxxxxxxxxxxxxxxxxxxxxx              r  x", " xxxxxxxxxxxxxwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwxxxxxxxxxxxxx            xxxxxxxxxxxxxxxxxxxxxxxx                 x", " xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"], ["x         @   x", "x    !        x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x    i    r   x", "x             x", "xxxxxxxxxxxxxxx"]];
 
 /* harmony default export */ __webpack_exports__["a"] = (levelMaps);
 

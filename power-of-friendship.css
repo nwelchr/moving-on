@@ -100,7 +100,7 @@
 }
 
 .three:before {
-  content: 'you need her.';
+  content: 'you needed him.';
   position: absolute;
   white-space: nowrap;
 }
@@ -112,10 +112,108 @@
 }
 
 .five:before {
-  content: 'she needs you too.';
+  content: 'he needed you too.';
   position: absolute;
   white-space: nowrap;
 }
+
+.six:before {
+  content: 'you\'ve been through your ups...';
+  position: absolute;
+  white-space: nowrap;
+}
+
+.seven:before {
+  content: 'and your downs...';
+  position: absolute;
+  white-space: nowrap;
+}
+
+.eight:before {
+  content: 'and sometimes...';
+  position: absolute;
+  white-space: nowrap;
+}
+
+.nine:before {
+  content: 'he was the only thing keeping you afloat.';
+  position: absolute;
+  white-space: nowrap;
+}
+
+.ten:before {
+  content: 'then why did you suffer...';
+  position: absolute;
+  white-space: nowrap;
+}
+
+.eleven:before {
+  content: 'while he stood unaffected?';
+  position: absolute;
+  white-space: nowrap;
+}
+
+.twelve:before {
+  content: 'how come you felt so alone?';
+  position: absolute;
+  white-space: nowrap;
+}
+
+.thirteen:before {
+  content: 'it\'s ok.';
+  position: absolute;
+  white-space: nowrap;
+}
+
+.heart {
+  background-color: red;
+}
+
+.fourteen:before {
+  content: 'you never needed him.';
+  position: absolute;
+  white-space: nowrap;
+}
+
+.fifteen:before {
+  content: 'and all it takes...';
+  position: absolute;
+  white-space: nowrap;
+}
+
+.sixteen:before {
+  content: 'is just a change in perspective.';
+  position: absolute;
+  white-space: nowrap;
+}
+
+.seventeen:before {
+  content: 'it\'s not your fault.';
+  position: absolute;
+  white-space: nowrap;
+}
+
+.eighteen:before {
+  content: 'but you can let him go.';
+  position: absolute;
+  white-space: nowrap;
+}
+
+.nineteen:before {
+  content: 'you\'re free.';
+  position: absolute;
+  white-space: nowrap;
+}
+
+/* IMPLEMENT THIS OH MY GOD */
+/* #game-wrapper {
+  animation: hello 10s linear forwards;
+}
+
+@keyframes hello {
+  0% {transform: rotate(0deg);}
+  100% {transform: rotate(180deg);}
+} */
 
 .title-screen-modal {
   background-color: green;

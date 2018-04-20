@@ -85,7 +85,7 @@ const runGame = () => {
     const startLevel = (n) => {
         runLevel(new Level(levelMaps[n]), status => {
             // debugger;
-            if (status === 'lost') {
+            if (status.includes('lost')) {
                 startLevel(n);
             } else if (n < levelMaps.length - 1) {
                 startLevel(n + 1);

@@ -171,8 +171,8 @@ class State {
 
         let actors = this.actors.map(actor => actor.update(time, this, keys));
         
-        // if s is being pressed and wasn't already being pressed, AND if the current player isn't jumping/falling/etc, switch player
-        if (keys.switch && !this.switch && this.player.speed.y === 0) return new State(this.level, actors, this.status, this.nonPlayers[0], keys.switch, this.gravity, this.finleyStatus, this.frankieStatus);
+        // if s is being pressed and wasn't already being pressed, AND if the current player isn't jumping/falling/etc (w this.player.speed.y === 0), switch player
+        if (keys.switch && !this.switch) return new State(this.level, actors, this.status, this.nonPlayers[0], keys.switch, this.gravity, this.finleyStatus, this.frankieStatus);
 
         console.log('set newState');
         let newState = new State(this.level, actors, this.status, this.player, keys.switch, null, this.finleyStatus, this.frankieStatus);
@@ -184,6 +184,9 @@ class State {
             case 'poison':
                 console.log('poison');
                 return new State(this.level, actors, 'lost', this.player);
+            case 'water':
+                console.log('poison');
+                return new State(this.level, actors, 'lost drowned', this.player);
             case 'trampoline':
                 return new State(this.level, actors, 'playing', this.player, keys.switch, -this.gravity, this.finleyStatus, this.frankieStatus);
             default:
@@ -220,12 +223,18 @@ class State {
         newState.finleyStatus = this.overlap(finley, finleyGoal) ? true : false;
         newState.frankieStatus = this.overlap(frankie, frankieGoal) ? true : false;
 
-        console.log(this.gravity);
         if (this.level.touching(this.player.pos, this.player.size) === 'gravity') {
             newState.gravity = -Math.abs(newState.gravity);
         } else {
             newState.gravity = Math.abs(newState.gravity);
         }
+
+        // if (this.level.touching(this.player.pos, this.player.size) === 'water' && this.level.width === 77) {
+        //     console.log(this.level.width);
+        //     newState.gravity = -Math.abs(newState.gravity) * 2;
+        // } else {
+        //     newState.gravity = Math.abs(newState.gravity);
+        // }
 
             // const overlap = this.overlap(player, actor);
             // if (overlap && Object.getPrototypeOf(Object.getPrototypeOf(actor)).constructor.name !== 'Player') {

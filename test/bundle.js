@@ -160,8 +160,10 @@ class Player {
             }
         }
 
-        this.moveX(time, state, keys, overlap);
-        this.moveY(time, state, keys, overlap);
+        if (state.status !== 'won') {
+            this.moveX(time, state, keys, overlap);
+            this.moveY(time, state, keys, overlap);
+        }
 
         const Actor = this.constructor;
         return new Actor(this.pos, null, new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](this.speed.x, this.speed.y));
@@ -191,6 +193,11 @@ class State {
         this.finleyStatus = finleyStatus;
         this.frankieStatus = frankieStatus;
 
+        if (this.level.width === 67) {
+            this.frankieStatus = true;
+        }
+
+        console.log(this.finleyStatus, this.frankieStatus);
         if (this.finleyStatus === true && this.frankieStatus === true) {
             return new State(this.level, this.actors, 'won', this.player);
         }
@@ -202,9 +209,13 @@ class State {
         } else {
             this.gravity = gravity || 10;
         }
-        console.log(this, finleyStatus, frankieStatus);
+
         // console.log(this.gravity);
-        // if (this.level.width === 15) this.gravity = -1;
+
+        if (this.level.width === 15) {
+            this.gravity = -1;
+            this.status = 'playing last-level';
+        }
         // this.finleyStatus = finleyStatus || null;
         // this.frankieStatus = frankieStatus || null;
         // console.log (this.finleyStatus);
@@ -220,8 +231,9 @@ class State {
     }
 
     overlap(player, actor) {
-
-        if (Object.getPrototypeOf(Object.getPrototypeOf(actor)).constructor.name === 'Player') {
+        if (['FinleyGoal', 'FrankieGoal'].includes(actor.constructor.name)) {
+            return player.pos.x + player.size.x / 2 > actor.pos.x && player.pos.x < actor.pos.x + actor.size.x / 2 && player.pos.y + player.size.y / 2 > actor.pos.y && player.pos.y < actor.pos.y + actor.size.y / 2;
+        } else if (Object.getPrototypeOf(Object.getPrototypeOf(actor)).constructor.name === 'Player') {
 
             // player on top if actor.y - player.y > 0
             // player on bottom if actor.y - player.y < 0
@@ -338,10 +350,19 @@ class State {
         //     return new State(this.level, actors, 'paused');
         // }
 
-        for (let actor of actors) {
+        let overlapActors = actors.filter(actor => !(Object.getPrototypeOf(Object.getPrototypeOf(actor)).constructor.name === 'Player' || ['FinleyGoal', 'FrankieGoal'].includes(actor.constructor.name)));
+        for (let actor of overlapActors) {
             const overlap = this.overlap(player, actor);
-            if (overlap && Object.getPrototypeOf(Object.getPrototypeOf(actor)).constructor.name !== 'Player') return actor.collide(newState);
+            return actor.collide(newState);
         }
+
+        const frankieGoal = actors.find(actor => actor.constructor.name === 'FrankieGoal');
+        const frankie = actors.find(actor => actor.constructor.name === 'Frankie');
+        const finleyGoal = actors.find(actor => actor.constructor.name === 'FinleyGoal');
+        const finley = actors.find(actor => actor.constructor.name === 'Finley');
+
+        newState.finleyStatus = this.overlap(finley, finleyGoal) ? true : false;
+        newState.frankieStatus = this.overlap(frankie, frankieGoal) ? true : false;
 
         // const overlap = this.overlap(player, actor);
         // if (overlap && Object.getPrototypeOf(Object.getPrototypeOf(actor)).constructor.name !== 'Player') {
@@ -379,7 +400,8 @@ const keyCodes = {
 
 const audio = document.getElementById('intro');
 const finish = document.getElementById('level-finish');
-audio.volume = finish.volume = 0.2;
+audio.volume = 0.2;
+finish.volume = 0.05;
 
 const detectKeys = () => {
     // to avoid error with indexing into something that doesn't exist
@@ -428,7 +450,7 @@ const runLevel = (level, successFunction) => {
         state = state.update(time, keys);
         display.drawFrame(state);
         // console.log(state.status);
-        if (state.status === 'playing') {
+        if (state.status.includes('playing')) {
             // console.log(state.status);
             return true;
         } else if (ending > 0) {
@@ -544,6 +566,9 @@ class Level {
                             break;
                         case '4':
                             fieldType = 'instruction four';
+                            break;
+                        case '5':
+                            fieldType = 'instruction five';
                             break;
                         default:
                             fieldType = null;
@@ -806,7 +831,184 @@ class Display {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-const levelMaps = [["xxxxxxxxxxxxxxx                                                    ", "x             x                                          ", "x   i         x                                         ", "x             x                                        ", "x             x                                         ", "x             x                                         ", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x         1   x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x         a   x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x         2   x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x         !   x", "xxxxxxxxxxxxxxx"], ["                                                                ", "                      ", "                     ", " x                   ", " x                     ", " x                                           ", " x                                x          x         x", " x                                x          x         x", " x                              ! x          x         x", " x                      4         x          x         x", " x                                x          x         x", " x i                              xxxxxxxxxxxx      r  x", " x                                                     x", " xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"], ["                                                        ", " x                                                     x", " x                          !                          x", " x                                                     x", " x                      t                              x", " x                                                     x", " x                           t                         x", " x                    t                                x", " x                                                     x", " x               xxxxxxxxxxxxxxxxxx                    x", " x              xxxxxxxxxxxxxxxxxxxx                   x", " x i           xxxxxxxxxxxxxxxxxxxxxx               r  x", " x            xxxxxxxxxxxxxxxxxxxxxxxx                 x", " xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"], ["x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x    i    r   x", "x             x", "xxxxxxxxxxxxxxx"]];
+const levelMaps = [["x                                                    ", "x             x                                          ", "x            x                                         ", "x             x                               r         ", "x             x                               @          ", "x             x                                         ", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x      gggggg x", "xxxxxxxxxxxxxxx"]
+
+// [     "xxxxxxxxxxxxxxx                                                    ",
+//       "x             x                                          ",
+//       "x   i         x                                         ",
+//       "x             x                               r         ",
+//       "x             x                               @          ",
+//       "x             x                                         ",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x         1   x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x         a   x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x         2   x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x         !   x",
+//       "xxxxxxxxxxxxxxx"
+//     ],
+//     [
+//       "                                                                ",
+//       "                      ",   
+//       "                     ",
+//       " x                                x          x",
+//       " x                                x          x",
+//       " x                                x          x ",
+//       " x                                x          x         x",
+//       " x                              ! x          x         x",
+//       " x                                x          x         x",
+//       " x   3                       4    x          x         x",
+//       " x                              x x          x         x",
+//       " x i                              xxxxxxxxxxxx      r  x",
+//       " x                              @                      x",    
+//       " xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+//     ],
+//  [  "                                                        ",
+//     " x                                                     x",   
+//     " x                                                     x",
+//     " x                                                     x",
+//     " x                                                     x",
+//     " x                                                     x",
+//     " x                       ! @                           x",
+//     " x                  xxxxxxxxxxxx                       x",
+//     " x                  xxxxxxxxxxxx                       x",
+//     " x   5           xxxxxxxxxxxxxxxxxx                    x",
+//     " x               xxxxxxxxxxxxxxxxxx                    x",
+//     " x i          xxxxxxxxxxxxxxxxxxxxxxxx              r  x",
+//     " x            xxxxxxxxxxxxxxxxxxxxxxxx                 x",    
+//     " xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+//   ],
+
+//   [   "x         @   x",
+//       "x    !        x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x             x",
+//       "x    i    r   x",
+//       "x             x",
+//       "xxxxxxxxxxxxxxx"
+// ]
+];
 
 /* harmony default export */ __webpack_exports__["a"] = (levelMaps);
 
@@ -832,7 +1034,6 @@ class FrankieGoal {
     }
 
     collide(state) {
-        console.log('frankie collide');
         return new __WEBPACK_IMPORTED_MODULE_1__state__["a" /* default */](state.level, state.actors, state.status, state.player, state.switchKey, state.gravity, state.finleyStatus, true);
     }
 }
@@ -851,7 +1052,6 @@ class FinleyGoal {
     }
 
     collide(state) {
-        console.log('finley collide');
         return new __WEBPACK_IMPORTED_MODULE_1__state__["a" /* default */](state.level, state.actors, state.status, state.player, state.switchKey, state.gravity, true, state.frankieStatus);
     }
 }

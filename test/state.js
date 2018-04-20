@@ -12,6 +12,9 @@ class State {
         this.finleyStatus = finleyStatus;
         this.frankieStatus = frankieStatus;
 
+        if (this.level.width === 67) { this.frankieStatus = true; }
+
+        console.log(this.finleyStatus, this.frankieStatus);
         if (this.finleyStatus === true && this.frankieStatus === true) {
             return new State(this.level, this.actors, 'won', this.player);
         }
@@ -23,9 +26,14 @@ class State {
         } else {
             this.gravity = gravity || 10;
         }
-        console.log(this, finleyStatus, frankieStatus);
+        
+        
         // console.log(this.gravity);
-        // if (this.level.width === 15) this.gravity = -1;
+        
+        if (this.level.width === 15) {
+            this.gravity = -1;
+            this.status = 'playing last-level';
+        }
         // this.finleyStatus = finleyStatus || null;
         // this.frankieStatus = frankieStatus || null;
         // console.log (this.finleyStatus);
@@ -41,8 +49,9 @@ class State {
     }
 
     overlap(player, actor) {
-
-        if (Object.getPrototypeOf(Object.getPrototypeOf(actor)).constructor.name === 'Player') {
+        if (['FinleyGoal', 'FrankieGoal'].includes(actor.constructor.name)) {
+            return player.pos.x + player.size.x / 2 > actor.pos.x && player.pos.x < actor.pos.x + actor.size.x / 2 && player.pos.y + player.size.y / 2 > actor.pos.y && player.pos.y < actor.pos.y + actor.size.y / 2;
+        } else if (Object.getPrototypeOf(Object.getPrototypeOf(actor)).constructor.name === 'Player') {
 
         // player on top if actor.y - player.y > 0
         // player on bottom if actor.y - player.y < 0
@@ -197,11 +206,19 @@ class State {
         //     return new State(this.level, actors, 'paused');
         // }
 
-        for (let actor of actors) {
+        let overlapActors = actors.filter(actor => !(Object.getPrototypeOf(Object.getPrototypeOf(actor)).constructor.name === 'Player' || ['FinleyGoal', 'FrankieGoal'].includes(actor.constructor.name)));
+        for (let actor of overlapActors) {
             const overlap = this.overlap(player, actor);
-            if (overlap && Object.getPrototypeOf(Object.getPrototypeOf(actor)).constructor.name !== 'Player') return actor.collide(newState);
-
+            return actor.collide(newState);
         }
+
+        const frankieGoal = actors.find(actor => actor.constructor.name === 'FrankieGoal');
+        const frankie = actors.find(actor => actor.constructor.name === 'Frankie');
+        const finleyGoal = actors.find(actor => actor.constructor.name === 'FinleyGoal');
+        const finley = actors.find(actor => actor.constructor.name === 'Finley');
+        
+        newState.finleyStatus = this.overlap(finley, finleyGoal) ? true : false;
+        newState.frankieStatus = this.overlap(frankie, frankieGoal) ? true : false;
 
             // const overlap = this.overlap(player, actor);
             // if (overlap && Object.getPrototypeOf(Object.getPrototypeOf(actor)).constructor.name !== 'Player') {

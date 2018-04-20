@@ -43,6 +43,10 @@
   border-spacing: 2px;
 }
 
+.frankiegoal {
+  margin-bottom: -15px;
+}
+
 .player {
   background: rgb(111, 61, 150);
 }
@@ -96,14 +100,19 @@
 }
 
 .three:before {
-  content: 'not yet.';
+  content: 'you need her.';
   position: absolute;
   white-space: nowrap;
-  margin-left: -45px;
 }
 
 .four:before {
-  content: 'you need her. press s.';
+  content: 'press s.';
+  position: absolute;
+  white-space: nowrap;
+}
+
+.five:before {
+  content: 'she needs you too.';
   position: absolute;
   white-space: nowrap;
 }
@@ -141,6 +150,48 @@ button.start-game {
 @keyframes baby {
   0% {opacity: 0;}
   100% {opacity: 1;}
+}
+
+/* .last-level {
+  background-color: orange;
+  animation: fadeout 5s forwards;
+  animation-delay: 15s;
+} */
+
+@keyframes fadeout {
+  0% { transform: scale(1); }
+  100% { transform: scale(0); }
+}
+
+/* .last-level:after {
+  content: '';
+  position: absolute;
+  display: block;
+  z-index: 9999!important;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  color: orange!important;
+} */
+
+.last-level .background {
+  animation: lastlevel 15s forwards;
+  animation-delay: 5s;
+ }
+
+/* .last-level:before {
+ position: fixed;
+ z-index: 15!important;
+ width: 900px;
+ height: 600px;
+ background-color: white!important;
+} */
+
+@keyframes lastlevel {
+  100% {background-color: white;}
 }
 
 /* .game:before {

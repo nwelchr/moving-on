@@ -12,7 +12,8 @@ const keyCodes = {
 
 const audio = document.getElementById('intro');
 const finish = document.getElementById('level-finish');
-audio.volume = finish.volume = 0.2;
+audio.volume = 0.2;
+finish.volume = 0.05;
 
 const detectKeys = () => {
     // to avoid error with indexing into something that doesn't exist
@@ -62,7 +63,7 @@ const runLevel = (level, successFunction) => {
         state = state.update(time, keys);
         display.drawFrame(state);
         // console.log(state.status);
-        if (state.status === 'playing') {
+        if (state.status.includes('playing')) {
             // console.log(state.status);
             return true;
         } else if (ending > 0) {

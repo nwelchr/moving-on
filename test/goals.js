@@ -13,7 +13,6 @@ export class FrankieGoal {
     }
 
     collide(state) {
-        console.log('frankie collide');
         return new State(state.level, state.actors, state.status, state.player, state.switchKey, state.gravity, state.finleyStatus, true);
     }
 }
@@ -30,7 +29,6 @@ export class FinleyGoal {
     }
 
     collide(state) {
-        console.log('finley collide');
         return new State(state.level, state.actors, state.status, state.player, state.switchKey, state.gravity, true, state.frankieStatus);
     }
 }

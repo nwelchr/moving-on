@@ -67,8 +67,10 @@ class Player {
             }
         }
 
+        if (state.status !== 'won') {
         this.moveX(time, state, keys, overlap);
         this.moveY(time, state, keys, overlap);
+        }
 
         const Actor = this.constructor;
         return new Actor(this.pos, null, new Vector(this.speed.x, this.speed.y));

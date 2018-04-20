@@ -55,6 +55,14 @@
   background: rgb(160, 64, 64);
 }
 
+.drowned .finley {
+  background: #0d3831;
+}
+
+.drowned .frankie {
+  background: #0d613c;
+}
+
 .won .player, .won .finley, .won .frankie {
   background: #fff;
 }
@@ -189,12 +197,14 @@
   content: 'is just a change in perspective.';
   position: absolute;
   white-space: nowrap;
+  transform: rotate(180deg);
 }
 
 .seventeen:before {
-  content: 'it\'s not your fault.';
+  content: 'it\'s not your fault you stayed.';
   position: absolute;
   white-space: nowrap;
+  margin-left: 30px;
 }
 
 .eighteen:before {
@@ -209,15 +219,26 @@
   white-space: nowrap;
 }
 
+/* .last-level .frankie {
+  animation: byebye 5s linear forwards!important;
+}
+
+@keyframes byebye {
+  100% {background-color: white!important;}
+} */
+
+.last-level .finleygoal {
+}
+
 /* IMPLEMENT THIS OH MY GOD */
-/* #game-wrapper {
-  animation: hello 10s linear forwards;
+.rotated {
+  animation: hello 5s linear forwards;
 }
 
 @keyframes hello {
   0% {transform: rotate(0deg);}
   100% {transform: rotate(180deg);}
-} */
+}
 
 .title-screen-modal {
   background-color: green;
@@ -283,10 +304,10 @@ button.start-game {
   color: orange!important;
 } */
 
-.last-level .background {
+/* .last-level .background {
   animation: lastlevel 15s forwards;
   animation-delay: 5s;
- }
+ } */
 
 /* .last-level:before {
  position: fixed;

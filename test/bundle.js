@@ -139,10 +139,10 @@ class Player {
                 this.speed.y = -this.jumpSpeed * 1.5;
                 // this.jumpSpeed = -this.jumpSpeed;
                 this.pos = newPos;
-            } else if (obstacle === 'water') {
-                if (this.size.x === .8) this.pos = newPos;
             } else if (keys.up && (this.speed.y >= 0 || overlap === 'topOverlap') && this === state.player) {
                 this.speed.y = -this.jumpSpeed;
+            } else if (obstacle === 'water') {
+                if (this.size.x === .8) this.pos = newPos;
             } else if (['gravity', 'poison', 'instruction'].includes(obstacle)) {
                 this.pos = newPos;
             } else {
@@ -195,28 +195,42 @@ class State {
         this.finleyStatus = finleyStatus;
         this.frankieStatus = frankieStatus;
 
-        if (this.level.width === 67) {
+        if ([73, 58, 67].includes(this.level.width)) {
             this.frankieStatus = true;
         }
+        console.log(this.frankieStatus, this.finleyStatus);
 
         if (this.finleyStatus === true && this.frankieStatus === true) {
+            // debugger;
             return new State(this.level, this.actors, 'won', this.player);
         }
 
         // if first level
-        if (this.level.width === 67 && this.player.pos.y < 50 && this.player.pos.y > 4) {
+        if (this.level.width === 67 && this.player.pos.y < 50 && this.player.pos.y > 0) {
             this.frankieStatus = true;
-            this.gravity = 0;
+            this.gravity = .5;
+        } else if (this.level.width === 73 & this.player.pos.y < 80 && this.player.pos.y > 5) {
+            this.gravity = 2;
+        } else if (this.level.width === 58 && status !== 'won') {
+            this.gravity = -1;
+            this.status = 'playing last-level';
+
+            if (this.player.pos.x > 20) {
+                this.gravity = 10;
+            }
         } else {
             this.gravity = gravity || 10;
         }
 
-        // console.log(this.gravity);
+        console.log(this.level.width);
 
-        if (this.level.width === 15) {
-            this.gravity = -1;
-            this.status = 'playing last-level';
+        if (this.level.width === 73) {
+            const wrapper = document.getElementById('game-wrapper');
+            if (wrapper.classList.contains('rotated')) {
+                this.gravity = -5;
+            }
         }
+
         // this.finleyStatus = finleyStatus || null;
         // this.frankieStatus = frankieStatus || null;
         // console.log (this.finleyStatus);
@@ -227,7 +241,6 @@ class State {
     }
 
     static start(level) {
-        console.log('start level');
         return new State(level, level.actors, "playing", level.actors.find(a => a.constructor.name === 'Finley'));
     }
 
@@ -311,16 +324,14 @@ class State {
 
     // any place I return keys.switch is to make sure the user doesn't hold down the switch key and have the characters switch rapidly between each other
     update(time, keys) {
-        console.log(this.level.width);
-
         const oldPos = this.player.pos;
 
         let actors = this.actors.map(actor => actor.update(time, this, keys));
 
         // if s is being pressed and wasn't already being pressed, AND if the current player isn't jumping/falling/etc (w this.player.speed.y === 0), switch player
-        if (keys.switch && !this.switch && ![96, 62].includes(this.level.width)) return new State(this.level, actors, this.status, this.nonPlayers[0], keys.switch, this.gravity, this.finleyStatus, this.frankieStatus);
+        if (keys.switch && !this.switch && ![96, 62, 78, 58].includes(this.level.width)) return new State(this.level, actors, this.status, this.nonPlayers[0], keys.switch, this.gravity, this.finleyStatus, this.frankieStatus);
         let newState = new State(this.level, actors, this.status, this.player, keys.switch, null, this.finleyStatus, this.frankieStatus);
-        if (newState.status !== 'playing') return newState;
+        if (!newState.status.includes('playing')) return newState;
 
         let player = newState.player;
 
@@ -328,7 +339,7 @@ class State {
             case 'poison':
                 if (player.size.x === .8) return new State(this.level, actors, 'lost', this.player);
             case 'water':
-                if (player.size.x === .8) return new State(this.level, actors, 'lost drowned', this.player);
+                if (player.size.x === .8 && this.level.width !== 78) return new State(this.level, actors, 'lost drowned', this.player);
                 break;
             case 'trampoline':
                 return new State(this.level, actors, 'playing', this.player, keys.switch, -this.gravity, this.finleyStatus, this.frankieStatus);
@@ -363,12 +374,13 @@ class State {
         const finleyGoal = actors.find(actor => actor.constructor.name === 'FinleyGoal');
         const finley = actors.find(actor => actor.constructor.name === 'Finley');
 
+        console.log(this.overlap(finley, finleyGoal));
         newState.finleyStatus = this.overlap(finley, finleyGoal) ? true : false;
         newState.frankieStatus = this.overlap(frankie, frankieGoal) ? true : false;
 
         if (this.level.touching(this.player.pos, this.player.size) === 'gravity') {
             newState.gravity = -Math.abs(newState.gravity);
-        } else {
+        } else if (![73, 67, 58].includes(this.level.width)) {
             newState.gravity = Math.abs(newState.gravity);
         }
 
@@ -385,6 +397,7 @@ class State {
         // }
         // }
 
+
         return newState;
     }
 }
@@ -400,6 +413,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__level__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__display__ = __webpack_require__(9);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__level_maps__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__level_maps___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__level_maps__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__state__ = __webpack_require__(2);
 
 
@@ -461,20 +475,28 @@ const runLevel = (level, successFunction) => {
     let state = __WEBPACK_IMPORTED_MODULE_3__state__["a" /* default */].start(level);
     let ending = 1;
 
+    if (level.width === 73) {
+        setTimeout(rotate, 10000);
+    } else {
+        if (gameWrapper.classList.contains('rotated')) {
+            gameWrapper.classList.remove('rotated');
+        }
+    }
+
     runAnimation(time => {
         state = state.update(time, keys);
         display.drawFrame(state);
         // console.log(state.status);
         if (state.status.includes('playing')) {
-            // console.log(state.status);
+            console.log(state.status);
             return true;
         } else if (ending > 0) {
-            // debugger;
+            console.log('hi');
             finish.play();
             ending -= time;
             return true;
         } else {
-            // debugger;
+            console.log('bye');
             display.clear();
             successFunction(state.status);
             return false;
@@ -482,14 +504,18 @@ const runLevel = (level, successFunction) => {
     });
 };
 
+const rotate = () => {
+    const wrap = document.getElementById('game-wrapper');
+    wrap.classList.add('rotated');
+};
+
 const runGame = () => {
     audio.play();
     const startLevel = n => {
-        runLevel(new __WEBPACK_IMPORTED_MODULE_0__level__["a" /* default */](__WEBPACK_IMPORTED_MODULE_2__level_maps__["a" /* default */][n]), status => {
-            // debugger;
+        runLevel(new __WEBPACK_IMPORTED_MODULE_0__level__["a" /* default */](__WEBPACK_IMPORTED_MODULE_2__level_maps__["default"][n]), status => {
             if (status.includes('lost')) {
                 startLevel(n);
-            } else if (n < __WEBPACK_IMPORTED_MODULE_2__level_maps__["a" /* default */].length - 1) {
+            } else if (n < __WEBPACK_IMPORTED_MODULE_2__level_maps__["default"].length - 1) {
                 startLevel(n + 1);
             } else {
                 alert('you win!');
@@ -751,8 +777,6 @@ class Poison {
     }
 
     collide(state) {
-        console.log('poison collide');
-
         return new __WEBPACK_IMPORTED_MODULE_1__state__["a" /* default */](state.level, state.actors, 'lost', state.player);
     }
 
@@ -891,222 +915,10 @@ class Display {
 
 /***/ }),
 /* 10 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, __webpack_exports__) {
 
 "use strict";
-const levelMaps = [
-// [     "xxxxxxxxxxxxxxx                                                    ",
-//       "x             x                                          ",
-//       "x   i         x                                         ",
-//       "x             x                               r         ",
-//       "x             x                               @          ",
-//       "x             x                                         ",
-//       "x             x",
-//       "x             x",
-//       "x             x",
-//       "x             x",
-//       "x             x",
-//       "x             x",
-//       "x             x",
-//       "x             x",
-//       "x             x",
-//       "x             x",
-//       "x             x",
-//       "x             x",
-//       "x             x",
-//       "x             x",
-//       "x             x",
-//       "x             x",
-//       "x             x",
-//       "x         1   x",
-//       "x             x",
-//       "x             x",
-//       "x             x",
-//       "x             x",
-//       "x             x",
-//       "x             x",
-//       "x             x",
-//       "x         a   x",
-//       "x             x",
-//       "x             x",
-//       "x             x",
-//       "x             x",
-//       "x             x",
-//       "x             x",
-//       "x             x",
-//       "x             x",
-//       "x             x",
-//       "x             x",
-//       "x             x",
-//       "x         2   x",
-//       "x             x",
-//       "x             x",
-//       "x             x",
-//       "x             x",
-//       "x             x",
-//       "x             x",
-//       "x             x",
-//       "x             x",
-//       "x             x",
-//       "x             x",
-//       "x             x",
-//       "x             x",
-//       "x             x",
-//       "x             x",
-//       "x             x",
-//       "x             x",
-//       "x             x",
-//       "x             x",
-//       "x             x",
-//       "x             x",
-//       "x             x",
-//       "x             x",
-//       "x             x",
-//       "x             x",
-//       "x             x",
-//       "x         !   x",
-//       "xxxxxxxxxxxxxxx"
-//     ],
-//     [
-//       "                                                                ",
-//       "                      ",   
-//       "                     ",
-//       " x                                x          x",
-//       " x                                x          x",
-//       " x                                x          x ",
-//       " x                                x          x         x",
-//       " x                              ! x          x         x",
-//       " x                                x          x         x",
-//       " x   3                       4    x          x         x",
-//       " x                              x x          x         x",
-//       " x i                              xxxxxxxxxxxx      r  x",
-//       " x                              @                      x",    
-//       " xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-//     ],
-//  [  "                                                        ",
-//     " x                                                     x",   
-//     " x                                                     x",
-//     " x                                                     x",
-//     " x                                                     x",
-//     " x                                                     x",
-//     " x                       ! @                           x",
-//     " x                  xxxxxxxxxxxx                       x",
-//     " x                  xxxxxxxxxxxx                       x",
-//     " x   5           xxxxxxxxxxxxxxxxxx                    x",
-//     " x               xxxxxxxxxxxxxxxxxx                    x",
-//     " x i          xxxxxxxxxxxxxxxxxxxxxxxx              r  x",
-//     " x            xxxxxxxxxxxxxxxxxxxxxxxx                 x",    
-//     " xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-//   ],
-
-//     [ "x                                                                                                      ",
-//       "x             x                                          ",
-//       "x             x                                                                                  ",
-//       "x             x                                                                                    ",
-//       "x             x                                                                                  ",
-//       "x             x                                                                       xxxxxxxxxxxxxxx              ",
-//       "x             x                                                                       x             x           ",
-//       "x             x                                                                       x   !   @     x      ",
-//       "x             x      xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx              xxxxxxxxxxxxxxxxx              x      ",
-//       "x             x      x                                 x              x                             x ",
-//       "x             x      x                                 x              x                             x  ",
-//       "x             x      x                         7       x              x                             x   ",
-//       "x             x      x                                 x              x                   t   t     x   ",
-//       "x             x      x       xxxxxxxxxxxxxxxxxxx       x              x ggggg xxxxxxxxxxxxxxxxxxxxxxx     ",
-//       "x             x      x ggggg x                 x       x              x ggggg x      ",
-//       "x             x      x ggggg x                 x       x              x ggggg x",
-//       "x             x      x ggggg x                 x       x              x ggggg x",
-//       "x             x      x ggggg x                 x       x              x ggggg x ",
-//       "x             xxxxxxxx ggggg x                 x       xxxxxxxxxxxxxxxx ggggg x",
-//       "x                      ggggg x                 x                        ggggg x                                       x",
-//       "x i   r          6     ggggg x                 x                        ggggg x",
-//       "x                            x                 x                        ggggg x",
-//       "x                            x                 x                        ggggg x",
-//       "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx                 x                        ggggg x",
-//       "                                               x                        ggggg x",
-//       "                                               x                        ggggg x",
-//       "                                               x                        ggggg x",
-//       "                                               x                        ggggg x",
-//       "                                               x                        ggggg x",
-//       "                                               x                        ggggg x",
-//       "                                               x                        ggggg x",
-//       "                                               x                        ggggg x",
-//       "                                               x                        ggggg x",
-//       "                                               x                        ggggg x",
-//       "                                               x                        ggggg x",
-//       "                                               x                        ggggg x",
-//       "                                               x                        ggggg x",
-//       "                                               x                        ggggg x",
-//       "                                               x                        ggggg x",
-//       "                                               x                        ggggg x",
-//       "                                               x                        ggggg x",
-//       "                                               x                              x",
-//       "                                               xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-// ],
-
-//  [        "                                                                             ",
-//           " x                                                                  x        x",   
-//           " x                                                                  x         x",
-//           " x   8                                                              x         x",
-//           " x                                                                  x        x",
-//           " x   i    r                                                         x            x",
-//           " x                                                                  x        x",
-//           " xxxxxxxxxxxxx           xxx             xxx                    ! @ x                    x",
-//           " xxxxxxxxxxxxx                                              xxxxxxxxx                     x",
-//           " xxxxxxxxxxxxxwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwxxxxxxxxxxxxx                   x",
-//           " xxxxxxxxxxxxxwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwxxxxxxxxxxxxx ",
-//           " xxxxxxxxxxxxxwwwwwwwwwwwww9wwwwwwwwwwwwwwwwwwwwwwwwwwwwxxxxxxxxxxxxx x",
-//           " xxxxxxxxxxxxxwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwxxxxxxxxxxxxx x",    
-//           " xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-//         ],
-// [         "x             x                                            ",
-//           "x    i    r   x",
-//           "x             x",
-//           "x             x",
-//           "x             x",
-//           "x             x",
-//           "x             x",
-//           "x             x",
-//           "x             x",
-//           "x             x",
-//           "x             x",
-//           "x             x",
-//           "x             x",
-//           "x             x",
-//           "x             x",
-//           "x             x",
-//           "x             x",
-//           "x             x",
-//           "xp  ppppppppppx",
-//           "x             x",
-//           "x   0         x",
-//           "x             x          #",
-//           "x             xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-//           "x                |   v   |   v   |   v  =|   |   v =   x",
-//           "x                  v   v    v   v   v  =v   |   v   =  x",
-//           "x     !                                            @   x",
-//           "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-// ],
-
-// [  "                                                                                             r  ",
-//     " x                                                                                        x  @ x",   
-//     " x                                                                                        xxxxxx",
-//     " x                                                               x           x            x",
-//     " x               x                                x                                       x",
-//     " x                              x                          x         x                    x",
-//     " x           x                            x                                  x            x",
-//     " x                      x                            x                            x       x",
-//     " x                                           x                   x                        x",
-//     " x               $                  x                                   x                 x",
-//     " x                            x                           x                      x        x",
-//     " x i                                                                                      x",
-//     " x                                                                                    !   x",    
-//     " xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-//   ],
-
-["                                                           r  ", " x                                     x                x  @ x", " x                                     x                xxxxxx", " x                                     x", " x              xhh ! hhx              x", " x             xhhhh hhhhx     t       x", " x             xhhhhhhhhhx             x", " x             xxhhhhhhhxx             x", " x              xxhhhhhxx              x", " x   %           xxhhhxx    t          x", " x                xxhxx                x", " x i               xxx                 x", " x                                     x", " x                             t       x", " xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"], ["x         @   x", "x    !        x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x    i    r   x", "x             x", "xxxxxxxxxxxxxxx"]];
-
-/* harmony default export */ __webpack_exports__["a"] = (levelMaps);
+throw new Error("Module build failed: SyntaxError: Unexpected token (334:0)\n\n\u001b[0m \u001b[90m 332 | \u001b[39m    \n \u001b[90m 333 | \u001b[39m    \n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 334 | \u001b[39m\u001b[36mexport\u001b[39m \u001b[36mdefault\u001b[39m levelMaps\u001b[33m;\u001b[39m\n \u001b[90m     | \u001b[39m\u001b[31m\u001b[1m^\u001b[22m\u001b[39m\u001b[0m\n");
 
 /***/ }),
 /* 11 */

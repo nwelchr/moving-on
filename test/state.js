@@ -12,27 +12,42 @@ class State {
         this.finleyStatus = finleyStatus;
         this.frankieStatus = frankieStatus;
 
-        if (this.level.width === 67) { this.frankieStatus = true; }
+        if ([73, 58, 67].includes(this.level.width)) {
+            this.frankieStatus = true;
+        }
+        console.log(this.frankieStatus, this.finleyStatus);
 
         if (this.finleyStatus === true && this.frankieStatus === true) {
+            // debugger;
             return new State(this.level, this.actors, 'won', this.player);
         }
         
         // if first level
-        if (this.level.width === 67 && this.player.pos.y < 50 && this.player.pos.y > 4) {
+        if (this.level.width === 67 && this.player.pos.y < 50 && this.player.pos.y > 0) {
             this.frankieStatus = true;
-            this.gravity = 0;
+            this.gravity = .5;
+        } else if (this.level.width === 73 & this.player.pos.y < 80 && this.player.pos.y > 5) {
+            this.gravity = 2;
+        } else if (this.level.width === 58 && status !== 'won') {
+            this.gravity = -1;
+            this.status = 'playing last-level';
+
+            if (this.player.pos.x > 20) {
+                this.gravity = 10;
+            }
         } else {
             this.gravity = gravity || 10;
         }
-        
-        
-        // console.log(this.gravity);
-        
-        if (this.level.width === 15) {
-            this.gravity = -1;
-            this.status = 'playing last-level';
+
+        console.log(this.level.width);
+
+        if (this.level.width === 73) {
+            const wrapper = document.getElementById('game-wrapper');
+            if (wrapper.classList.contains('rotated')) {
+                this.gravity = -5;
+            }
         }
+        
         // this.finleyStatus = finleyStatus || null;
         // this.frankieStatus = frankieStatus || null;
         // console.log (this.finleyStatus);
@@ -43,7 +58,6 @@ class State {
     }
 
     static start(level) {
-        console.log('start level');
         return new State(level, level.actors, "playing", level.actors.find(a => a.constructor.name === 'Finley'));
     }
 
@@ -165,16 +179,14 @@ class State {
 
     // any place I return keys.switch is to make sure the user doesn't hold down the switch key and have the characters switch rapidly between each other
     update(time, keys) {
-        console.log (this.level.width);
-
         const oldPos = this.player.pos;
 
         let actors = this.actors.map(actor => actor.update(time, this, keys));
         
         // if s is being pressed and wasn't already being pressed, AND if the current player isn't jumping/falling/etc (w this.player.speed.y === 0), switch player
-        if (keys.switch && !this.switch && ![96, 62].includes(this.level.width)) return new State(this.level, actors, this.status, this.nonPlayers[0], keys.switch, this.gravity, this.finleyStatus, this.frankieStatus);
+        if (keys.switch && !this.switch && ![96, 62, 78, 58].includes(this.level.width)) return new State(this.level, actors, this.status, this.nonPlayers[0], keys.switch, this.gravity, this.finleyStatus, this.frankieStatus);
         let newState = new State(this.level, actors, this.status, this.player, keys.switch, null, this.finleyStatus, this.frankieStatus);
-        if (newState.status !== 'playing') return newState;
+        if (!(newState.status.includes('playing'))) return newState;
 
         let player = newState.player;
 
@@ -182,7 +194,7 @@ class State {
             case 'poison':
                 if (player.size.x === .8) return new State(this.level, actors, 'lost', this.player);
             case 'water':
-                if (player.size.x === .8) return new State(this.level, actors, 'lost drowned', this.player);
+                if (player.size.x === .8 && this.level.width !== 78) return new State(this.level, actors, 'lost drowned', this.player);
                 break;
             case 'trampoline':
                 return new State(this.level, actors, 'playing', this.player, keys.switch, -this.gravity, this.finleyStatus, this.frankieStatus);
@@ -217,14 +229,16 @@ class State {
         const finleyGoal = actors.find(actor => actor.constructor.name === 'FinleyGoal');
         const finley = actors.find(actor => actor.constructor.name === 'Finley');
         
+        console.log(this.overlap(finley, finleyGoal));
         newState.finleyStatus = this.overlap(finley, finleyGoal) ? true : false;
         newState.frankieStatus = this.overlap(frankie, frankieGoal) ? true : false;
 
         if (this.level.touching(this.player.pos, this.player.size) === 'gravity') {
             newState.gravity = -Math.abs(newState.gravity);
-        } else {
+        } else if (![73, 67, 58].includes(this.level.width)) {
             newState.gravity = Math.abs(newState.gravity);
         }
+        
 
         // if (this.level.touching(this.player.pos, this.player.size) === 'water' && this.level.width === 77) {
         //     console.log(this.level.width);
@@ -238,6 +252,7 @@ class State {
             //     newState = actor.collide(newState);
             // }
         // }
+
 
         return newState;
     }

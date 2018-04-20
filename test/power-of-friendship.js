@@ -58,21 +58,29 @@ const runLevel = (level, successFunction) => {
     let state = State.start(level);
     let ending = 1;
 
+    if (level.width === 73) {
+        setTimeout(rotate, 10000);
+    } else {
+        if (gameWrapper.classList.contains('rotated')) {
+            gameWrapper.classList.remove('rotated');
+        }
+    }
+
 
     runAnimation(time => {
         state = state.update(time, keys);
         display.drawFrame(state);
         // console.log(state.status);
         if (state.status.includes('playing')) {
-            // console.log(state.status);
+            console.log(state.status);
             return true;
         } else if (ending > 0) {
-            // debugger;
+            console.log('hi');
             finish.play();
             ending -= time;
             return true;
         } else {
-            // debugger;
+            console.log('bye');
             display.clear();
             successFunction(state.status);
             return false;
@@ -80,11 +88,15 @@ const runLevel = (level, successFunction) => {
     });
 };
 
+const rotate = () => {
+    const wrap = document.getElementById('game-wrapper');
+    wrap.classList.add('rotated');
+};
+
 const runGame = () => {
     audio.play();
     const startLevel = (n) => {
         runLevel(new Level(levelMaps[n]), status => {
-            // debugger;
             if (status.includes('lost')) {
                 startLevel(n);
             } else if (n < levelMaps.length - 1) {

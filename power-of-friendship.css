@@ -135,10 +135,14 @@
   white-space: nowrap;
 }
 
+.nine {
+  background-color: #0af;
+}
 .nine:before {
   content: 'he was the only thing keeping you afloat.';
   position: absolute;
   white-space: nowrap;
+  background-color: #0af;
 }
 
 .ten:before {

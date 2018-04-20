@@ -139,8 +139,8 @@ class Player {
                 this.speed.y = -this.jumpSpeed * 1.5;
                 // this.jumpSpeed = -this.jumpSpeed;
                 this.pos = newPos;
-            } else if (obstacle === 'water' && this.size.x === .8) {
-                this.pos = newPos;
+            } else if (obstacle === 'water') {
+                if (this.size.x === .8) this.pos = newPos;
             } else if (keys.up && (this.speed.y >= 0 || overlap === 'topOverlap') && this === state.player) {
                 this.speed.y = -this.jumpSpeed;
             } else if (['gravity', 'instruction'].includes(obstacle)) {
@@ -199,7 +199,6 @@ class State {
             this.frankieStatus = true;
         }
 
-        console.log(this.finleyStatus, this.frankieStatus);
         if (this.finleyStatus === true && this.frankieStatus === true) {
             return new State(this.level, this.actors, 'won', this.player);
         }
@@ -262,7 +261,7 @@ class State {
             }
 
             if (verticalOverlap >= verticalDistance - .1 && verticalOverlap <= verticalDistance + .1 && (player.pos.x + player.size.x > actor.pos.x && player.pos.x + player.size.x < actor.pos.x + actor.size.x || player.pos.x > actor.pos.x && player.pos.x < actor.pos.x + actor.size.x || player.pos.x < actor.pos.x && player.pos.x + player.size.x > actor.pos.x + actor.size.x || player.pos.x > actor.pos.x && player.pos.x + player.size.x < actor.pos.x + actor.size.x)) {
-                console.log('hi');return 'bottomOverlap';
+                return 'bottomOverlap';
             }
 
             if (-horizontalOverlap >= horizontalDistance - .1 && -horizontalOverlap <= horizontalDistance + .1 && (player.pos.y + player.size.y > actor.pos.y && player.pos.y + player.size.y < actor.pos.y + actor.size.y || player.pos.y > actor.pos.y && player.pos.y < actor.pos.y + actor.size.y || player.pos.y < actor.pos.y && player.pos.y + player.size.y > actor.pos.y + actor.size.y || player.pos.y > actor.pos.y && player.pos.y + player.size.y < actor.pos.y + actor.size.y)) {
@@ -319,8 +318,6 @@ class State {
 
         // if s is being pressed and wasn't already being pressed, AND if the current player isn't jumping/falling/etc (w this.player.speed.y === 0), switch player
         if (keys.switch && !this.switch) return new State(this.level, actors, this.status, this.nonPlayers[0], keys.switch, this.gravity, this.finleyStatus, this.frankieStatus);
-
-        console.log('set newState');
         let newState = new State(this.level, actors, this.status, this.player, keys.switch, null, this.finleyStatus, this.frankieStatus);
         if (newState.status !== 'playing') return newState;
 
@@ -332,7 +329,8 @@ class State {
                 return new State(this.level, actors, 'lost', this.player);
             case 'water':
                 console.log('poison');
-                return new State(this.level, actors, 'lost drowned', this.player);
+                if (player.size.x === .8) return new State(this.level, actors, 'lost drowned', this.player);
+                break;
             case 'trampoline':
                 return new State(this.level, actors, 'playing', this.player, keys.switch, -this.gravity, this.finleyStatus, this.frankieStatus);
             default:
@@ -1044,7 +1042,22 @@ const levelMaps = [
 //       "                                               xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
 // ],
 
-["                                                                             ", " x                                                                          x", " x                                                                          x", " x   8                                                                       x", " x                                                                          x", " x   i   r                      9                                               x", " x                                                                          x", " xxxxxxxxxxxxx                                                    ! @                     x", " xxxxxxxxxxxxx                                                  xxxxxxxxxxxxx                     x", " xxxxxxxxxxxxxwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwxxxxxxxxxxxxx              xxxxxxxxxxxxxxxxxx                    x", " xxxxxxxxxxxxxwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwxxxxxxxxxxxxx               xxxxxxxxxxxxxxxxxx                    x", " xxxxxxxxxxxxxwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwxxxxxxxxxxxxx           xxxxxxxxxxxxxxxxxxxxxxxx              r  x", " xxxxxxxxxxxxxwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwxxxxxxxxxxxxx            xxxxxxxxxxxxxxxxxxxxxxxx                 x", " xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"], ["x         @   x", "x    !        x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x    i    r   x", "x             x", "xxxxxxxxxxxxxxx"]];
+//  [        "                                                                             ",
+//           " x                                                                  x        x",   
+//           " x                                                                  x         x",
+//           " x   8                                                              x         x",
+//           " x                                                                  x        x",
+//           " x   i    r                                                         x            x",
+//           " x                                                                  x        x",
+//           " xxxxxxxxxxxxx           xxx             xxx                    ! @ x                    x",
+//           " xxxxxxxxxxxxx                                              xxxxxxxxx                     x",
+//           " xxxxxxxxxxxxxwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwxxxxxxxxxxxxx                   x",
+//           " xxxxxxxxxxxxxwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwxxxxxxxxxxxxx ",
+//           " xxxxxxxxxxxxxwwwwwwwwwwwww9wwwwwwwwwwwwwwwwwwwwwwwwwwwwxxxxxxxxxxxxx x",
+//           " xxxxxxxxxxxxxwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwxxxxxxxxxxxxx x",    
+//           " xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+//         ],
+["x             x", "x    1    r   x", "x             x", "x             x", "x             x", "x             x", "xpppppppppppppx", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x     ! @     x", "xxxxxxxxxxxxxxx"], ["x         @   x", "x    !        x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x    i    r   x", "x             x", "xxxxxxxxxxxxxxx"]];
 
 /* harmony default export */ __webpack_exports__["a"] = (levelMaps);
 

@@ -148,21 +148,38 @@ const levelMaps = [
 //       "                                               xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
 // ],
 
- [        "                                                                             ",
-          " x                                                                          x",   
-          " x                                                                          x",
-          " x   8                                                                       x",
-          " x                                                                          x",
-          " x   i   r                      9                                               x",
-          " x                                                                          x",
-          " xxxxxxxxxxxxx                                                    ! @                     x",
-          " xxxxxxxxxxxxx                                                  xxxxxxxxxxxxx                     x",
-          " xxxxxxxxxxxxxwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwxxxxxxxxxxxxx              xxxxxxxxxxxxxxxxxx                    x",
-          " xxxxxxxxxxxxxwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwxxxxxxxxxxxxx               xxxxxxxxxxxxxxxxxx                    x",
-          " xxxxxxxxxxxxxwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwxxxxxxxxxxxxx           xxxxxxxxxxxxxxxxxxxxxxxx              r  x",
-          " xxxxxxxxxxxxxwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwxxxxxxxxxxxxx            xxxxxxxxxxxxxxxxxxxxxxxx                 x",    
-          " xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-        ],
+//  [        "                                                                             ",
+//           " x                                                                  x        x",   
+//           " x                                                                  x         x",
+//           " x   8                                                              x         x",
+//           " x                                                                  x        x",
+//           " x   i    r                                                         x            x",
+//           " x                                                                  x        x",
+//           " xxxxxxxxxxxxx           xxx             xxx                    ! @ x                    x",
+//           " xxxxxxxxxxxxx                                              xxxxxxxxx                     x",
+//           " xxxxxxxxxxxxxwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwxxxxxxxxxxxxx                   x",
+//           " xxxxxxxxxxxxxwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwxxxxxxxxxxxxx ",
+//           " xxxxxxxxxxxxxwwwwwwwwwwwww9wwwwwwwwwwwwwwwwwwwwwwwwwwwwxxxxxxxxxxxxx x",
+//           " xxxxxxxxxxxxxwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwxxxxxxxxxxxxx x",    
+//           " xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+//         ],
+[         "x             x",
+          "x    1    r   x",
+          "x             x",
+          "x             x",
+          "x             x",
+          "x             x",
+          "xpppppppppppppx",
+          "x             x",
+          "x             x",
+          "x             x",
+          "x             x",
+          "x             x",
+          "x             x",
+          "x     ! @     x",
+          "xxxxxxxxxxxxxxx"
+],
+
 
       [   "x         @   x",
           "x    !        x",
@@ -233,8 +250,7 @@ const levelMaps = [
           "x             x",
           "x    i    r   x",
           "x             x",
-          "xxxxxxxxxxxxxxx"
-    ]
+          "xxxxxxxxxxxxxxx"]
     
   ];
     

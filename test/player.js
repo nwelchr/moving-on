@@ -46,8 +46,8 @@ class Player {
                 this.speed.y = -this.jumpSpeed * 1.5;
                 // this.jumpSpeed = -this.jumpSpeed;
                 this.pos = newPos;
-            } else if (obstacle === 'water' && this.size.x === .8) {
-                this.pos = newPos;
+            } else if (obstacle === 'water') {
+                if (this.size.x === .8) this.pos = newPos;
             } 
             else if (keys.up && (this.speed.y >= 0 || overlap === 'topOverlap') && this === state.player) {
                 this.speed.y = -this.jumpSpeed;

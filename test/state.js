@@ -14,7 +14,6 @@ class State {
 
         if (this.level.width === 67) { this.frankieStatus = true; }
 
-        console.log(this.finleyStatus, this.frankieStatus);
         if (this.finleyStatus === true && this.frankieStatus === true) {
             return new State(this.level, this.actors, 'won', this.player);
         }
@@ -97,7 +96,7 @@ class State {
                     && player.pos.x + player.size.x > actor.pos.x + actor.size.x) 
                 || (player.pos.x > actor.pos.x && player.pos.x + player.size.x < actor.pos.x + actor.size.x )
             )
-        ) { console.log('hi'); return('bottomOverlap'); }
+        ) { return('bottomOverlap'); }
 
         if (
             (-horizontalOverlap >= horizontalDistance - .1 && -horizontalOverlap <= horizontalDistance + .1) 
@@ -173,8 +172,6 @@ class State {
         
         // if s is being pressed and wasn't already being pressed, AND if the current player isn't jumping/falling/etc (w this.player.speed.y === 0), switch player
         if (keys.switch && !this.switch) return new State(this.level, actors, this.status, this.nonPlayers[0], keys.switch, this.gravity, this.finleyStatus, this.frankieStatus);
-
-        console.log('set newState');
         let newState = new State(this.level, actors, this.status, this.player, keys.switch, null, this.finleyStatus, this.frankieStatus);
         if (newState.status !== 'playing') return newState;
 
@@ -186,7 +183,8 @@ class State {
                 return new State(this.level, actors, 'lost', this.player);
             case 'water':
                 console.log('poison');
-                return new State(this.level, actors, 'lost drowned', this.player);
+                if (player.size.x === .8) return new State(this.level, actors, 'lost drowned', this.player);
+                break;
             case 'trampoline':
                 return new State(this.level, actors, 'playing', this.player, keys.switch, -this.gravity, this.finleyStatus, this.frankieStatus);
             default:

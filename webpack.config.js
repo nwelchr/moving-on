@@ -26,9 +26,9 @@ var path = require("path");
 
 module.exports = {
   context: __dirname,
-  entry: "./test/power-of-friendship.js",
+  entry: "./javascripts/moving_on.js",
   output: {
-    path: path.resolve(__dirname, 'test'),
+    path: path.resolve(__dirname, 'dist'),
     filename: "bundle.js"
   },
   module: {

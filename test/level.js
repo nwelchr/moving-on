@@ -50,6 +50,9 @@ class Level {
                         case 'g':
                             fieldType = 'gravity';
                             break;
+                        case 'h':
+                            fieldType = 'heart';
+                            break;
                         case '1':
                             fieldType = 'instruction one';
                             break;

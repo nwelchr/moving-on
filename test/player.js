@@ -51,7 +51,7 @@ class Player {
             } 
             else if (keys.up && (this.speed.y >= 0 || overlap === 'topOverlap') && this === state.player) {
                 this.speed.y = -this.jumpSpeed;
-            } else if (['gravity', 'instruction'].includes(obstacle)) {
+            } else if (['gravity', 'poison', 'instruction'].includes(obstacle)) {
                 this.pos = newPos;
             } else {
                 this.speed.y = 0;

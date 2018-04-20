@@ -1,11 +1,11 @@
 const levelMaps = [
 
-  [     "xxxxxxxxxxxxxxx                                  xxxxxx            ",
-        "x             x                                  x  r x              ",
-        "x   i         x                                  x    x              ",
-        "x             x                                  x  @ x               ",
-        "x             x                                  xxxxxx              ",
-        "x             x                                    3      ",
+  [     "xxxxxxxxxxxxxxx                                                    ",
+        "x             x                                          ",
+        "x   i         x                                         ",
+        "x             x                                        ",
+        "x             x                                         ",
+        "x             x                                         ",
         "x             x",
         "x             x",
         "x             x",

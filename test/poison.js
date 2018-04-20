@@ -26,6 +26,8 @@ class Poison {
     }
 
     collide(state) {
+        console.log('poison collide');
+        
         return new State(state.level, state.actors, 'lost', state.player);
     }
 

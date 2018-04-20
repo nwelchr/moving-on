@@ -188,11 +188,21 @@ class State {
         this.player = this.actors.find(actor => actor.constructor.name === player.constructor.name);
         this.nonPlayers = this.actors.filter(actor => Object.getPrototypeOf(Object.getPrototypeOf(actor)).constructor.name === 'Player' && actor !== this.player);
         this.status = status;
-        if (this.level.width === 66 && this.player.pos.y < 50 && this.player.pos.y > 4) {
+        this.finleyStatus = finleyStatus;
+        this.frankieStatus = frankieStatus;
+
+        if (this.finleyStatus === true && this.frankieStatus === true) {
+            return new State(this.level, this.actors, 'won', this.player);
+        }
+
+        // if first level
+        if (this.level.width === 67 && this.player.pos.y < 50 && this.player.pos.y > 4) {
+            this.frankieStatus = true;
             this.gravity = -.3;
         } else {
             this.gravity = gravity || 10;
         }
+        console.log(this, finleyStatus, frankieStatus);
         // console.log(this.gravity);
         // if (this.level.width === 15) this.gravity = -1;
         // this.finleyStatus = finleyStatus || null;
@@ -205,6 +215,7 @@ class State {
     }
 
     static start(level) {
+        console.log('start level');
         return new State(level, level.actors, "playing", level.actors.find(a => a.constructor.name === 'Finley'));
     }
 
@@ -233,19 +244,19 @@ class State {
             // if (verticalOverlap >= verticalDistance - .2 && verticalOverlap <= verticalDistance + .2) { console.log('bottom overlap', verticalDistance); }
 
             if (-verticalOverlap >= verticalDistance - .1 && -verticalOverlap <= verticalDistance + .1 && (player.pos.x + player.size.x > actor.pos.x && player.pos.x + player.size.x < actor.pos.x + actor.size.x || player.pos.x > actor.pos.x && player.pos.x < actor.pos.x + actor.size.x || player.pos.x < actor.pos.x && player.pos.x + player.size.x > actor.pos.x + actor.size.x || player.pos.x > actor.pos.x && player.pos.x + player.size.x < actor.pos.x + actor.size.x)) {
-                debugger;return 'topOverlap';
+                return 'topOverlap';
             }
 
             if (verticalOverlap >= verticalDistance - .1 && verticalOverlap <= verticalDistance + .1 && (player.pos.x + player.size.x > actor.pos.x && player.pos.x + player.size.x < actor.pos.x + actor.size.x || player.pos.x > actor.pos.x && player.pos.x < actor.pos.x + actor.size.x || player.pos.x < actor.pos.x && player.pos.x + player.size.x > actor.pos.x + actor.size.x || player.pos.x > actor.pos.x && player.pos.x + player.size.x < actor.pos.x + actor.size.x)) {
-                debugger;return 'bottomOverlap';
+                console.log('hi');return 'bottomOverlap';
             }
 
             if (-horizontalOverlap >= horizontalDistance - .1 && -horizontalOverlap <= horizontalDistance + .1 && (player.pos.y + player.size.y > actor.pos.y && player.pos.y + player.size.y < actor.pos.y + actor.size.y || player.pos.y > actor.pos.y && player.pos.y < actor.pos.y + actor.size.y || player.pos.y < actor.pos.y && player.pos.y + player.size.y > actor.pos.y + actor.size.y || player.pos.y > actor.pos.y && player.pos.y + player.size.y < actor.pos.y + actor.size.y)) {
-                debugger;return 'leftOverlap';
+                return 'leftOverlap';
             }
 
             if (horizontalOverlap >= horizontalDistance - .1 && horizontalOverlap <= horizontalDistance + .1 && (player.pos.y + player.size.y > actor.pos.y && player.pos.y + player.size.y < actor.pos.y + actor.size.y || player.pos.y > actor.pos.y && player.pos.y < actor.pos.y + actor.size.y || player.pos.y < actor.pos.y && player.pos.y + player.size.y > actor.pos.y + actor.size.y || player.pos.y > actor.pos.y && player.pos.y + player.size.y < actor.pos.y + actor.size.y)) {
-                debugger;return 'rightOverlap';
+                return 'rightOverlap';
             }
 
             // console.log(horizontalOverlap, "vo", verticalDistance, "vd");
@@ -293,8 +304,9 @@ class State {
         let actors = this.actors.map(actor => actor.update(time, this, keys));
 
         // if s is being pressed and wasn't already being pressed, AND if the current player isn't jumping/falling/etc, switch player
-        if (keys.switch && !this.switch && this.player.speed.y === 0) return new State(this.level, actors, this.status, this.nonPlayers[0], keys.switch);
+        if (keys.switch && !this.switch && this.player.speed.y === 0) return new State(this.level, actors, this.status, this.nonPlayers[0], keys.switch, this.gravity, this.finleyStatus, this.frankieStatus);
 
+        console.log('set newState');
         let newState = new State(this.level, actors, this.status, this.player, keys.switch, null, this.finleyStatus, this.frankieStatus);
         if (newState.status !== 'playing') return newState;
 
@@ -302,13 +314,10 @@ class State {
 
         switch (this.level.touching(player.pos, player.size)) {
             case 'poison':
+                console.log('poison');
                 return new State(this.level, actors, 'lost', this.player);
             case 'trampoline':
                 return new State(this.level, actors, 'playing', this.player, keys.switch, -this.gravity, this.finleyStatus, this.frankieStatus);
-            case 'finleyGoal':
-                this.player.pos = oldPos;
-                this.player.speed = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](0, 0);
-                return new State(this.level, actors, 'won', this.player);
             default:
                 break;
         }
@@ -654,6 +663,8 @@ class Poison {
     }
 
     collide(state) {
+        console.log('poison collide');
+
         return new __WEBPACK_IMPORTED_MODULE_1__state__["a" /* default */](state.level, state.actors, 'lost', state.player);
     }
 
@@ -795,7 +806,7 @@ class Display {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-const levelMaps = [["xxxxxxxxxxxxxxx                                  xxxxxx            ", "x             x                                  x  r x              ", "x   i         x                                  x    x              ", "x             x                                  x  @ x               ", "x             x                                  xxxxxx              ", "x             x                                    3      ", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x         1   x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x         a   x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x         2   x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x         !   x", "xxxxxxxxxxxxxxx"], ["                                                                ", "                      ", "                     ", " x                   ", " x                     ", " x                                           ", " x                                x          x         x", " x                                x          x         x", " x                              ! x          x         x", " x                      4         x          x         x", " x                                x          x         x", " x i                              xxxxxxxxxxxx      r  x", " x                                                     x", " xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"], ["                                                        ", " x                                                     x", " x                          !                          x", " x                                                     x", " x                      t                              x", " x                                                     x", " x                           t                         x", " x                    t                                x", " x                                                     x", " x               xxxxxxxxxxxxxxxxxx                    x", " x              xxxxxxxxxxxxxxxxxxxx                   x", " x i           xxxxxxxxxxxxxxxxxxxxxx               r  x", " x            xxxxxxxxxxxxxxxxxxxxxxxx                 x", " xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"], ["x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x    i    r   x", "x             x", "xxxxxxxxxxxxxxx"]];
+const levelMaps = [["xxxxxxxxxxxxxxx                                                    ", "x             x                                          ", "x   i         x                                         ", "x             x                                        ", "x             x                                         ", "x             x                                         ", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x         1   x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x         a   x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x         2   x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x         !   x", "xxxxxxxxxxxxxxx"], ["                                                                ", "                      ", "                     ", " x                   ", " x                     ", " x                                           ", " x                                x          x         x", " x                                x          x         x", " x                              ! x          x         x", " x                      4         x          x         x", " x                                x          x         x", " x i                              xxxxxxxxxxxx      r  x", " x                                                     x", " xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"], ["                                                        ", " x                                                     x", " x                          !                          x", " x                                                     x", " x                      t                              x", " x                                                     x", " x                           t                         x", " x                    t                                x", " x                                                     x", " x               xxxxxxxxxxxxxxxxxx                    x", " x              xxxxxxxxxxxxxxxxxxxx                   x", " x i           xxxxxxxxxxxxxxxxxxxxxx               r  x", " x            xxxxxxxxxxxxxxxxxxxxxxxx                 x", " xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"], ["x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x    i    r   x", "x             x", "xxxxxxxxxxxxxxx"]];
 
 /* harmony default export */ __webpack_exports__["a"] = (levelMaps);
 
@@ -821,7 +832,8 @@ class FrankieGoal {
     }
 
     collide(state) {
-        return new __WEBPACK_IMPORTED_MODULE_1__state__["a" /* default */](state.level, state.actors, state.status, state.player, state.switchKey, state.gravity, state.finleyStatus, 'true');
+        console.log('frankie collide');
+        return new __WEBPACK_IMPORTED_MODULE_1__state__["a" /* default */](state.level, state.actors, state.status, state.player, state.switchKey, state.gravity, state.finleyStatus, true);
     }
 }
 /* harmony export (immutable) */ __webpack_exports__["b"] = FrankieGoal;
@@ -839,7 +851,8 @@ class FinleyGoal {
     }
 
     collide(state) {
-        return new __WEBPACK_IMPORTED_MODULE_1__state__["a" /* default */](state.level, state.actors, state.status, state.player, state.switchKey, state.gravity, 'true', state.frankieStatus);
+        console.log('finley collide');
+        return new __WEBPACK_IMPORTED_MODULE_1__state__["a" /* default */](state.level, state.actors, state.status, state.player, state.switchKey, state.gravity, true, state.frankieStatus);
     }
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = FinleyGoal;

@@ -1,3 +1,5 @@
+import Vector from "./vector";
+
 // unsure how to manage current player
 
 class State {
@@ -7,9 +9,13 @@ class State {
         this.player = this.actors.find(actor => actor.constructor.name === player.constructor.name);
         this.nonPlayers = this.actors.filter(actor => Object.getPrototypeOf(Object.getPrototypeOf(actor)).constructor.name === 'Player' && actor !== this.player);
         this.status = status;
-        this.gravity = gravity || 10;
+        if (this.level.width === 66 && this.player.pos.y < 50 && this.player.pos.y > 4) {
+            this.gravity = -.3;
+        } else {
+            this.gravity = gravity || 10;
+        }
+        // console.log(this.gravity);
         // if (this.level.width === 15) this.gravity = -1;
-        // if (this.level.width === 66 && this.player.pos.y < 60 && this.player.pos.y > 4) this.gravity = .05;
         // this.finleyStatus = finleyStatus || null;
         // this.frankieStatus = frankieStatus || null;
         // console.log (this.finleyStatus);
@@ -58,7 +64,7 @@ class State {
                     && player.pos.x + player.size.x > actor.pos.x + actor.size.x) 
                 || (player.pos.x > actor.pos.x && player.pos.x + player.size.x < actor.pos.x + actor.size.x )
             )
-        ) { return('topOverlap'); }
+        ) { debugger; return('topOverlap'); }
 
         if (
             (verticalOverlap >= verticalDistance - .1 && verticalOverlap <= verticalDistance + .1) 
@@ -71,7 +77,7 @@ class State {
                     && player.pos.x + player.size.x > actor.pos.x + actor.size.x) 
                 || (player.pos.x > actor.pos.x && player.pos.x + player.size.x < actor.pos.x + actor.size.x )
             )
-        ) { return('bottomOverlap'); }
+        ) { debugger; return('bottomOverlap'); }
 
         if (
             (-horizontalOverlap >= horizontalDistance - .1 && -horizontalOverlap <= horizontalDistance + .1) 
@@ -84,7 +90,7 @@ class State {
                     && player.pos.y + player.size.y > actor.pos.y + actor.size.y) 
                 || (player.pos.y > actor.pos.y && player.pos.y + player.size.y < actor.pos.y + actor.size.y )
             )
-        ) { return('leftOverlap'); }
+        ) { debugger; return('leftOverlap'); }
 
         if (
             (horizontalOverlap >= horizontalDistance - .1 && horizontalOverlap <= horizontalDistance + .1) 
@@ -97,7 +103,7 @@ class State {
                     && player.pos.y + player.size.y > actor.pos.y + actor.size.y) 
                 || (player.pos.y > actor.pos.y && player.pos.y + player.size.y < actor.pos.y + actor.size.y )
             )
-        ) { return('rightOverlap'); }
+        ) { debugger; return('rightOverlap'); }
 
         // console.log(horizontalOverlap, "vo", verticalDistance, "vd");
 
@@ -140,12 +146,15 @@ class State {
 
     // any place I return keys.switch is to make sure the user doesn't hold down the switch key and have the characters switch rapidly between each other
     update(time, keys) {
+
+        const oldPos = this.player.pos;
+
         let actors = this.actors.map(actor => actor.update(time, this, keys));
         
         // if s is being pressed and wasn't already being pressed, AND if the current player isn't jumping/falling/etc, switch player
         if (keys.switch && !this.switch && this.player.speed.y === 0) return new State(this.level, actors, this.status, this.nonPlayers[0], keys.switch);
 
-        let newState = new State(this.level, actors, this.status, this.player, keys.switch, this.gravity, this.finleyStatus, this.frankieStatus);
+        let newState = new State(this.level, actors, this.status, this.player, keys.switch, null, this.finleyStatus, this.frankieStatus);
         if (newState.status !== 'playing') return newState;
 
         let player = newState.player;
@@ -156,6 +165,8 @@ class State {
             case 'trampoline':
                 return new State(this.level, actors, 'playing', this.player, keys.switch, -this.gravity, this.finleyStatus, this.frankieStatus);
             case 'finleyGoal':
+                this.player.pos = oldPos;
+                this.player.speed = new Vector(0, 0);
                 return new State(this.level, actors, 'won', this.player);
             default:
                 break;

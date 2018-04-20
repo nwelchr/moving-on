@@ -21,10 +21,6 @@
 }
 
 .water {
-  background: linear-gradient(#83a4d4, #40a4df);
-}
-
-.water {
   background: #0af;
 }
 
@@ -41,8 +37,9 @@
   background: purple;
 }
 
-.finleyGoal, .frankieGoal {
+.finleygoal, .frankiegoal {
   border: 2px dotted white;
+  box-sizing: border-box;
   border-spacing: 2px;
 }
 
@@ -82,7 +79,12 @@
 }
 
 .one:before {
-  content: 'welcome.';
+  content: 'it\'s been...';
+  margin-left: -30px;
+}
+
+.awhile:before {
+  content: 'a while.';
   margin-left: -30px;
 }
 
@@ -90,7 +92,7 @@
   content: 'use the arrow keys to move and jump.';
   position: absolute;
   width: 300px;
-  left: -30px;
+  left: -80px;
 }
 
 .three:before {

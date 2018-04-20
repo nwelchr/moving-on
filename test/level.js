@@ -3,13 +3,15 @@ import Finley from './finley';
 import Frankie from './frankie';
 import Poison from './poison';
 import Player from "./player";
+import { FinleyGoal, FrankieGoal } from './goals';
 import { SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION } from "constants";
 
 const actorChars = {
     'i': Finley,
     'r': Frankie,
     // '1': Player,
-    '=': Poison, '|': Poison, 'v': Poison
+    '=': Poison, '|': Poison, 'v': Poison,
+    '!': FinleyGoal, '@': FrankieGoal
 };
 
 class Level {
@@ -41,18 +43,15 @@ class Level {
                             break;                            
                         case 'p':
                             fieldType = 'poison';
-                            break;  
-                        case '!':
-                            fieldType = 'finleyGoal';
-                            break;
-                        case '@':
-                            fieldType = 'frankieGoal';
                             break;
                         case 't':
                             fieldType = 'trampoline';
                             break;
                         case '1':
                             fieldType = 'instruction one';
+                            break;
+                        case 'a':
+                            fieldType = 'instruction awhile';
                             break;
                         case '2':
                             fieldType = 'instruction two';

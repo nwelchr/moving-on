@@ -11,8 +11,8 @@ class Player {
 
     moveX(time, state, keys, overlap) {
         this.speed.x = 0;
-        if (keys.left && this === state.player & !(overlap === 'rightOverlap')) this.speed.x -= this.xSpeed;
-        if (keys.right && this === state.player & !(overlap === 'leftOverlap')) this.speed.x += this.xSpeed;
+        if (keys.left && this === state.player && !(overlap === 'rightOverlap')) this.speed.x -= this.xSpeed;
+        if (keys.right && this === state.player && !(overlap === 'leftOverlap')) this.speed.x += this.xSpeed;
 
 
         // if ((keys.left || keys.right || keys.up) && this === state.player) {
@@ -47,7 +47,8 @@ class Player {
                 this.jumpSpeed = -this.jumpSpeed;
             } else if (keys.up && (this.speed.y >= 0 || overlap === 'topOverlap') && this === state.player) {
                 this.speed.y = -this.jumpSpeed;
-            } else if (obstacle === 'water' || obstacle === 'instruction') {
+            } else if (['water', 'instruction', 'trampoline'].includes(obstacle)) {
+                // console.log('hi');
                 this.pos = newPos;
             } else {
                 this.speed.y = 0;

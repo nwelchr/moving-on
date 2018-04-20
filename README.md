@@ -1,5 +1,8 @@
 ## **Moving On** - A Minimalist Puzzle Game
 
+[Live](https://github.com/nwelchr/moving-on)
+[Video Playthrough](https://www.youtube.com/watch?v=8KlIGm3vNsc)
+
 ### Background and Overview
 Inspired by the game *Thomas was Alone* and formerly called **The Power of Friendship**, **Moving On** is a minimalist puzzle platformer where a single player controls multiple characters that must work together in order to reach their goal. Each character is gifted and hindered by their own individual characteristics. A story interwoven into the gameplay gives further context and adds a dimension of interpretation that personalize's the players's experience.
 

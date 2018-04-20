@@ -61,13 +61,17 @@ const runLevel = (level, successFunction) => {
     runAnimation(time => {
         state = state.update(time, keys);
         display.drawFrame(state);
+        // console.log(state.status);
         if (state.status === 'playing') {
+            // console.log(state.status);
             return true;
         } else if (ending > 0) {
+            // debugger;
             finish.play();
             ending -= time;
             return true;
         } else {
+            // debugger;
             display.clear();
             successFunction(state.status);
             return false;
@@ -79,6 +83,7 @@ const runGame = () => {
     audio.play();
     const startLevel = (n) => {
         runLevel(new Level(levelMaps[n]), status => {
+            // debugger;
             if (status === 'lost') {
                 startLevel(n);
             } else if (n < levelMaps.length - 1) {

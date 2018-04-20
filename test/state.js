@@ -25,6 +25,8 @@ class State {
 
     overlap(player, actor) {
 
+        if (Object.getPrototypeOf(Object.getPrototypeOf(actor)).constructor.name === 'Player') {
+
         // player on top if actor.y - player.y > 0
         // player on bottom if actor.y - player.y < 0
 
@@ -45,9 +47,61 @@ class State {
 
         // if (verticalOverlap >= verticalDistance - .2 && verticalOverlap <= verticalDistance + .2) { console.log('bottom overlap', verticalDistance); }
 
-        if ((-verticalOverlap >= verticalDistance - .2 && verticalOverlap <= verticalDistance + .2) && (player.pos.x + player.size.y > actor.pos.x && player.pos.x + player.size.y < actor.pos.x + actor.size.x) || (player.pos.x > actor.pos.x && player.pos.x < actor.pos.x + actor.size.x) || (player.pos.x < actor.pos.x && player.pos.x + player.size.x > actor.pos.x + actor.size.x) || (player.pos.x > actor.pos.x && player.pos.x + player.size.x < actor.pos.x + actor.size.x )) { console.log('top overlap', verticalDistance); }
+        if (
+            (-verticalOverlap >= verticalDistance - .1 && -verticalOverlap <= verticalDistance + .1) 
+                && (
+                (player.pos.x + player.size.x > actor.pos.x 
+                    && player.pos.x + player.size.x < actor.pos.x + actor.size.x) 
+                || (player.pos.x > actor.pos.x 
+                    && player.pos.x < actor.pos.x + actor.size.x) 
+                || (player.pos.x < actor.pos.x 
+                    && player.pos.x + player.size.x > actor.pos.x + actor.size.x) 
+                || (player.pos.x > actor.pos.x && player.pos.x + player.size.x < actor.pos.x + actor.size.x )
+            )
+        ) { return('topOverlap'); }
 
-        // console.log(verticalOverlap, "vo", verticalDistance, "vd");
+        if (
+            (verticalOverlap >= verticalDistance - .1 && verticalOverlap <= verticalDistance + .1) 
+                && (
+                (player.pos.x + player.size.x > actor.pos.x 
+                    && player.pos.x + player.size.x < actor.pos.x + actor.size.x) 
+                || (player.pos.x > actor.pos.x 
+                    && player.pos.x < actor.pos.x + actor.size.x) 
+                || (player.pos.x < actor.pos.x 
+                    && player.pos.x + player.size.x > actor.pos.x + actor.size.x) 
+                || (player.pos.x > actor.pos.x && player.pos.x + player.size.x < actor.pos.x + actor.size.x )
+            )
+        ) { return('bottomOverlap'); }
+
+        if (
+            (-horizontalOverlap >= horizontalDistance - .1 && -horizontalOverlap <= horizontalDistance + .1) 
+                && (
+                (player.pos.y + player.size.y > actor.pos.y 
+                    && player.pos.y + player.size.y < actor.pos.y + actor.size.y) 
+                || (player.pos.y > actor.pos.y 
+                    && player.pos.y < actor.pos.y + actor.size.y) 
+                || (player.pos.y < actor.pos.y 
+                    && player.pos.y + player.size.y > actor.pos.y + actor.size.y) 
+                || (player.pos.y > actor.pos.y && player.pos.y + player.size.y < actor.pos.y + actor.size.y )
+            )
+        ) { return('leftOverlap'); }
+
+        if (
+            (horizontalOverlap >= horizontalDistance - .1 && horizontalOverlap <= horizontalDistance + .1) 
+                && (
+                (player.pos.y + player.size.y > actor.pos.y 
+                    && player.pos.y + player.size.y < actor.pos.y + actor.size.y) 
+                || (player.pos.y > actor.pos.y 
+                    && player.pos.y < actor.pos.y + actor.size.y) 
+                || (player.pos.y < actor.pos.y 
+                    && player.pos.y + player.size.y > actor.pos.y + actor.size.y) 
+                || (player.pos.y > actor.pos.y && player.pos.y + player.size.y < actor.pos.y + actor.size.y )
+            )
+        ) { return('rightOverlap'); }
+
+        // console.log(horizontalOverlap, "vo", verticalDistance, "vd");
+
+        // console.log(-verticalOverlap > verticalDistance - .2 && -verticalOverlap < verticalDistance + .2, verticalOverlap, verticalDistance);
 
         // const leftOverlap = (player.pos.x + player.size.x > actor.pos.x && player.pos.x < actor.pos.x);
 
@@ -77,9 +131,11 @@ class State {
         //     debugger;
         //     return 'bottom';
         // }
+    }
 
-        // return false;
-        // return actor.pos.x + actor.size.x > other.pos.x && actor.pos.x < other.pos.x + other.size.x && actor.pos.y + actor.size.y > other.pos.y && actor.pos.y < other.pos.y + other.size.y;
+        else {
+            return player.pos.x + player.size.x > actor.pos.x && player.pos.x < actor.pos.x + actor.size.x && player.pos.y + player.size.y > actor.pos.y && player.pos.y < actor.pos.y + actor.size.y;
+        }
     }
 
     // any place I return keys.switch is to make sure the user doesn't hold down the switch key and have the characters switch rapidly between each other
@@ -96,7 +152,7 @@ class State {
 
         switch (this.level.touching(player.pos, player.size)) {
             case 'poison':
-                return new State(this.level, actors, 'lost');
+                return new State(this.level, actors, 'lost', this.player);
             case 'trampoline':
                 return new State(this.level, actors, 'playing', this.player, keys.switch, -this.gravity, this.finleyStatus, this.frankieStatus);
             case 'finleyGoal':
@@ -122,8 +178,9 @@ class State {
         // }
 
         for (let actor of actors) {
-            if (Object.getPrototypeOf(Object.getPrototypeOf(actor)).constructor.name === 'Player')
-            this.overlap(player, actor);
+            const overlap = this.overlap(player, actor);
+            if (overlap && Object.getPrototypeOf(Object.getPrototypeOf(actor)).constructor.name !== 'Player') return actor.collide(newState);
+
         }
 
             // const overlap = this.overlap(player, actor);

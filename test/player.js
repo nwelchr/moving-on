@@ -9,10 +9,10 @@ class Player {
         this.jumpSpeed = jumpSpeed;
     }
 
-    moveX(time, state, keys) {
+    moveX(time, state, keys, overlap) {
         this.speed.x = 0;
-        if (keys.left && this === state.player) this.speed.x -= this.xSpeed;
-        if (keys.right && this === state.player) this.speed.x += this.xSpeed;
+        if (keys.left && this === state.player & !(overlap === 'rightOverlap')) this.speed.x -= this.xSpeed;
+        if (keys.right && this === state.player & !(overlap === 'leftOverlap')) this.speed.x += this.xSpeed;
 
 
         // if ((keys.left || keys.right || keys.up) && this === state.player) {
@@ -34,18 +34,18 @@ class Player {
         }
     }
 
-    moveY(time, state, keys) {
+    moveY(time, state, keys, overlap) {
         this.speed.y += time * state.gravity;
         const motion = new Vector(0, this.speed.y * time);
-        const newPos = this.pos.plus(motion);
+        const newPos = this.pos.plus(motion); 
         const obstacle = state.level.touching(newPos, this.size);
-        if (obstacle) {
-            console.log(obstacle);
-            if (obstacle === 'trampoline') {
+        if (obstacle || overlap === 'topOverlap' && this === state.player) {
+            if (overlap === 'topOverlap' && this.speed.y < 0) {
+                this.pos = newPos;
+            } else if (obstacle === 'trampoline') {
                 this.speed.y = -this.jumpSpeed;
                 this.jumpSpeed = -this.jumpSpeed;
-            }
-            else if (keys.up && this.speed.y >= 0 && this === state.player) {
+            } else if (keys.up && (this.speed.y >= 0 || overlap === 'topOverlap') && this === state.player) {
                 this.speed.y = -this.jumpSpeed;
             } else if (obstacle === 'water' || obstacle === 'instruction') {
                 this.pos = newPos;
@@ -58,9 +58,16 @@ class Player {
     }
 
     update (time, state, keys) {
+        let overlap;
+        for(let actor of state.actors) {
+            if (actor !== state.player) {
+                overlap = state.overlap(this, actor);
+                if (overlap) break;
+            }
+        }
 
-        this.moveX(time, state, keys);
-        this.moveY(time, state, keys);
+        this.moveX(time, state, keys, overlap);
+        this.moveY(time, state, keys, overlap);
 
         const Actor = this.constructor;
         return new Actor(this.pos, null, new Vector(this.speed.x, this.speed.y));

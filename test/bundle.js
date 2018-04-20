@@ -103,10 +103,10 @@ class Player {
         this.jumpSpeed = jumpSpeed;
     }
 
-    moveX(time, state, keys) {
+    moveX(time, state, keys, overlap) {
         this.speed.x = 0;
-        if (keys.left && this === state.player) this.speed.x -= this.xSpeed;
-        if (keys.right && this === state.player) this.speed.x += this.xSpeed;
+        if (keys.left && this === state.player & !(overlap === 'rightOverlap')) this.speed.x -= this.xSpeed;
+        if (keys.right && this === state.player & !(overlap === 'leftOverlap')) this.speed.x += this.xSpeed;
 
         // if ((keys.left || keys.right || keys.up) && this === state.player) {
         //     if (this.speed.x < this.xSpeed && this.speed.x > -this.xSpeed) {
@@ -127,17 +127,18 @@ class Player {
         }
     }
 
-    moveY(time, state, keys) {
+    moveY(time, state, keys, overlap) {
         this.speed.y += time * state.gravity;
         const motion = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](0, this.speed.y * time);
         const newPos = this.pos.plus(motion);
         const obstacle = state.level.touching(newPos, this.size);
-        if (obstacle) {
-            // console.log(obstacle);
-            if (obstacle === 'trampoline') {
+        if (obstacle || overlap === 'topOverlap' && this === state.player) {
+            if (overlap === 'topOverlap' && this.speed.y < 0) {
+                this.pos = newPos;
+            } else if (obstacle === 'trampoline') {
                 this.speed.y = -this.jumpSpeed;
                 this.jumpSpeed = -this.jumpSpeed;
-            } else if (keys.up && this.speed.y >= 0 && this === state.player) {
+            } else if (keys.up && (this.speed.y >= 0 || overlap === 'topOverlap') && this === state.player) {
                 this.speed.y = -this.jumpSpeed;
             } else if (obstacle === 'water' || obstacle === 'instruction') {
                 this.pos = newPos;
@@ -150,9 +151,16 @@ class Player {
     }
 
     update(time, state, keys) {
+        let overlap;
+        for (let actor of state.actors) {
+            if (actor !== state.player) {
+                overlap = state.overlap(this, actor);
+                if (overlap) break;
+            }
+        }
 
-        this.moveX(time, state, keys);
-        this.moveY(time, state, keys);
+        this.moveX(time, state, keys, overlap);
+        this.moveY(time, state, keys, overlap);
 
         const Actor = this.constructor;
         return new Actor(this.pos, null, new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](this.speed.x, this.speed.y));
@@ -194,63 +202,79 @@ class State {
 
     overlap(player, actor) {
 
-        // player on top if actor.y - player.y > 0
-        // player on bottom if actor.y - player.y < 0
+        if (Object.getPrototypeOf(Object.getPrototypeOf(actor)).constructor.name === 'Player') {
 
-        // player on left if actor.x - player.x > 0
-        // player on right if actor.x - player.x < 0
+            // player on top if actor.y - player.y > 0
+            // player on bottom if actor.y - player.y < 0
 
-        // if player.pos.x + player.size.x  / 2 (center of player) - actor.pos.x + actor.size.x / 2 (center of actor) +-.01(-(player.size.x / 2 + actor.size.x/2)) -- player can't move right
+            // player on left if actor.x - player.x > 0
+            // player on right if actor.x - player.x < 0
 
-        const horizontalOverlap = player.pos.x + player.size.x / 2 - (actor.pos.x + actor.size.x / 2);
-        const horizontalDistance = player.size.x / 2 + actor.size.x / 2;
+            // if player.pos.x + player.size.x  / 2 (center of player) - actor.pos.x + actor.size.x / 2 (center of actor) +-.01(-(player.size.x / 2 + actor.size.x/2)) -- player can't move right
 
-        const verticalOverlap = player.pos.y + player.size.y / 2 - (actor.pos.y + actor.size.y / 2);
-        const verticalDistance = player.size.y / 2 + actor.size.y / 2;
+            const horizontalOverlap = player.pos.x + player.size.x / 2 - (actor.pos.x + actor.size.x / 2);
+            const horizontalDistance = player.size.x / 2 + actor.size.x / 2;
 
-        // if (horizontalOverlap >= horizontalDistance - .2 && horizontalOverlap <= horizontalDistance + .2) { console.log('left overlap', horizontalDistance); }
+            const verticalOverlap = player.pos.y + player.size.y / 2 - (actor.pos.y + actor.size.y / 2);
+            const verticalDistance = player.size.y / 2 + actor.size.y / 2;
 
-        // if (-horizontalOverlap >= horizontalDistance - .2 && horizontalOverlap <= horizontalDistance + .2) { console.log('right overlap', horizontalDistance); }
+            // if (horizontalOverlap >= horizontalDistance - .2 && horizontalOverlap <= horizontalDistance + .2) { console.log('left overlap', horizontalDistance); }
 
-        // if (verticalOverlap >= verticalDistance - .2 && verticalOverlap <= verticalDistance + .2) { console.log('bottom overlap', verticalDistance); }
+            // if (-horizontalOverlap >= horizontalDistance - .2 && horizontalOverlap <= horizontalDistance + .2) { console.log('right overlap', horizontalDistance); }
 
-        if (-verticalOverlap >= verticalDistance - .2 && verticalOverlap <= verticalDistance + .2 && player.pos.x + player.size.y > actor.pos.x && player.pos.x + player.size.y < actor.pos.x + actor.size.x || player.pos.x > actor.pos.x && player.pos.x < actor.pos.x + actor.size.x || player.pos.x < actor.pos.x && player.pos.x + player.size.x > actor.pos.x + actor.size.x || player.pos.x > actor.pos.x && player.pos.x + player.size.x < actor.pos.x + actor.size.x) {
-            console.log('top overlap', verticalDistance);
+            // if (verticalOverlap >= verticalDistance - .2 && verticalOverlap <= verticalDistance + .2) { console.log('bottom overlap', verticalDistance); }
+
+            if (-verticalOverlap >= verticalDistance - .1 && -verticalOverlap <= verticalDistance + .1 && (player.pos.x + player.size.x > actor.pos.x && player.pos.x + player.size.x < actor.pos.x + actor.size.x || player.pos.x > actor.pos.x && player.pos.x < actor.pos.x + actor.size.x || player.pos.x < actor.pos.x && player.pos.x + player.size.x > actor.pos.x + actor.size.x || player.pos.x > actor.pos.x && player.pos.x + player.size.x < actor.pos.x + actor.size.x)) {
+                return 'topOverlap';
+            }
+
+            if (verticalOverlap >= verticalDistance - .1 && verticalOverlap <= verticalDistance + .1 && (player.pos.x + player.size.x > actor.pos.x && player.pos.x + player.size.x < actor.pos.x + actor.size.x || player.pos.x > actor.pos.x && player.pos.x < actor.pos.x + actor.size.x || player.pos.x < actor.pos.x && player.pos.x + player.size.x > actor.pos.x + actor.size.x || player.pos.x > actor.pos.x && player.pos.x + player.size.x < actor.pos.x + actor.size.x)) {
+                return 'bottomOverlap';
+            }
+
+            if (-horizontalOverlap >= horizontalDistance - .1 && -horizontalOverlap <= horizontalDistance + .1 && (player.pos.y + player.size.y > actor.pos.y && player.pos.y + player.size.y < actor.pos.y + actor.size.y || player.pos.y > actor.pos.y && player.pos.y < actor.pos.y + actor.size.y || player.pos.y < actor.pos.y && player.pos.y + player.size.y > actor.pos.y + actor.size.y || player.pos.y > actor.pos.y && player.pos.y + player.size.y < actor.pos.y + actor.size.y)) {
+                return 'leftOverlap';
+            }
+
+            if (horizontalOverlap >= horizontalDistance - .1 && horizontalOverlap <= horizontalDistance + .1 && (player.pos.y + player.size.y > actor.pos.y && player.pos.y + player.size.y < actor.pos.y + actor.size.y || player.pos.y > actor.pos.y && player.pos.y < actor.pos.y + actor.size.y || player.pos.y < actor.pos.y && player.pos.y + player.size.y > actor.pos.y + actor.size.y || player.pos.y > actor.pos.y && player.pos.y + player.size.y < actor.pos.y + actor.size.y)) {
+                return 'rightOverlap';
+            }
+
+            // console.log(horizontalOverlap, "vo", verticalDistance, "vd");
+
+            // console.log(-verticalOverlap > verticalDistance - .2 && -verticalOverlap < verticalDistance + .2, verticalOverlap, verticalDistance);
+
+            // const leftOverlap = (player.pos.x + player.size.x > actor.pos.x && player.pos.x < actor.pos.x);
+
+            // const rightOverlap = (player.pos.x < actor.pos.x + actor.size.x && player.pos.x + player.size.x > actor.pos.x + actor.size.x);
+
+            // const topOverlap = (player.pos.y + player.size.y > actor.pos.y && player.pos.y < actor.pos.y);
+
+            // const bottomOverlap = (player.pos.y < actor.pos.y + actor.size.y && player.pos.y + player.size.y > actor.pos.y + actor.size.y);
+
+
+            // if (leftOverlap && !rightOverlap && (topOverlap || bottomOverlap)) {
+            //     debugger;
+            //     return 'left';
+            // }
+
+            // if (rightOverlap && !leftOverlap && (topOverlap || bottomOverlap)) {
+            //     debugger;            
+            //     return 'right';
+            // }
+
+            // if (topOverlap && !bottomOverlap && (leftOverlap || rightOverlap)) {
+            //     debugger;
+            //     return 'top';
+            // }
+
+            // if (bottomOverlap && !topOverlap && (leftOverlap || rightOverlap)) {
+            //     debugger;
+            //     return 'bottom';
+            // }
+        } else {
+            return player.pos.x + player.size.x > actor.pos.x && player.pos.x < actor.pos.x + actor.size.x && player.pos.y + player.size.y > actor.pos.y && player.pos.y < actor.pos.y + actor.size.y;
         }
-
-        // console.log(verticalOverlap, "vo", verticalDistance, "vd");
-
-        // const leftOverlap = (player.pos.x + player.size.x > actor.pos.x && player.pos.x < actor.pos.x);
-
-        // const rightOverlap = (player.pos.x < actor.pos.x + actor.size.x && player.pos.x + player.size.x > actor.pos.x + actor.size.x);
-
-        // const topOverlap = (player.pos.y + player.size.y > actor.pos.y && player.pos.y < actor.pos.y);
-
-        // const bottomOverlap = (player.pos.y < actor.pos.y + actor.size.y && player.pos.y + player.size.y > actor.pos.y + actor.size.y);
-
-
-        // if (leftOverlap && !rightOverlap && (topOverlap || bottomOverlap)) {
-        //     debugger;
-        //     return 'left';
-        // }
-
-        // if (rightOverlap && !leftOverlap && (topOverlap || bottomOverlap)) {
-        //     debugger;            
-        //     return 'right';
-        // }
-
-        // if (topOverlap && !bottomOverlap && (leftOverlap || rightOverlap)) {
-        //     debugger;
-        //     return 'top';
-        // }
-
-        // if (bottomOverlap && !topOverlap && (leftOverlap || rightOverlap)) {
-        //     debugger;
-        //     return 'bottom';
-        // }
-
-        // return false;
-        // return actor.pos.x + actor.size.x > other.pos.x && actor.pos.x < other.pos.x + other.size.x && actor.pos.y + actor.size.y > other.pos.y && actor.pos.y < other.pos.y + other.size.y;
     }
 
     // any place I return keys.switch is to make sure the user doesn't hold down the switch key and have the characters switch rapidly between each other
@@ -267,7 +291,7 @@ class State {
 
         switch (this.level.touching(player.pos, player.size)) {
             case 'poison':
-                return new State(this.level, actors, 'lost');
+                return new State(this.level, actors, 'lost', this.player);
             case 'trampoline':
                 return new State(this.level, actors, 'playing', this.player, keys.switch, -this.gravity, this.finleyStatus, this.frankieStatus);
             case 'finleyGoal':
@@ -293,7 +317,8 @@ class State {
         // }
 
         for (let actor of actors) {
-            if (Object.getPrototypeOf(Object.getPrototypeOf(actor)).constructor.name === 'Player') this.overlap(player, actor);
+            const overlap = this.overlap(player, actor);
+            if (overlap && Object.getPrototypeOf(Object.getPrototypeOf(actor)).constructor.name !== 'Player') return actor.collide(newState);
         }
 
         // const overlap = this.overlap(player, actor);
@@ -380,13 +405,17 @@ const runLevel = (level, successFunction) => {
     runAnimation(time => {
         state = state.update(time, keys);
         display.drawFrame(state);
+        // console.log(state.status);
         if (state.status === 'playing') {
+            // console.log(state.status);
             return true;
         } else if (ending > 0) {
+            // debugger;
             finish.play();
             ending -= time;
             return true;
         } else {
+            // debugger;
             display.clear();
             successFunction(state.status);
             return false;
@@ -398,6 +427,7 @@ const runGame = () => {
     audio.play();
     const startLevel = n => {
         runLevel(new __WEBPACK_IMPORTED_MODULE_0__level__["a" /* default */](__WEBPACK_IMPORTED_MODULE_2__level_maps__["a" /* default */][n]), status => {
+            // debugger;
             if (status === 'lost') {
                 startLevel(n);
             } else if (n < __WEBPACK_IMPORTED_MODULE_2__level_maps__["a" /* default */].length - 1) {

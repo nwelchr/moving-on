@@ -34,10 +34,6 @@ class Player {
         }
     }
 
-    collide(state) {
-
-    }
-
     moveY(time, state, keys) {
         this.speed.y += time * state.gravity;
         const motion = new Vector(0, this.speed.y * time);

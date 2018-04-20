@@ -4,7 +4,7 @@ const levelMaps = [
   "x             x                 |                                 =",
   "x   i         x                                                  ",
   "x                                               xxxxx            ",
-  "x   r                                                            ",
+  "x   r       x                                                     ",
   "x                                           !      ",
   "xxxxxxxxxxxxxxxxxwwwwwwwpppppppxxxxtxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 ]];

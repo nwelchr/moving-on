@@ -125,14 +125,51 @@
   white-space: nowrap;
 }
 
+.hidden {
+  display: none;
+}
+
+.pause-modal {
+  display: none;
+  position: absolute;
+  z-index: 1;
+  width: 900px;
+  height: 600px;
+  background-color: rgba(0, 0, 0, .3);
+}
+
+.pause-modal button {
+  width: 200px;
+  height: 100px;
+  padding: 15px;
+  border-radius: 30px;
+  background-color: ;
+  font-family: 'HelveticaNeue Light';
+  color: black;
+  outline: 0;
+  animation: fadein 1s forwards;
+}
+
+@keyframes fadein {
+  0% { opacity: 0; }
+  100% {color: blue; }
+}
+
+.show {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+
 .six:before {
-  content: 'you\'ve been through your ups...';
+  content: 'you\'ve been through ups...';
   position: absolute;
   white-space: nowrap;
 }
 
 .seven:before {
-  content: 'and your downs...';
+  content: 'and downs together.';
   position: absolute;
   white-space: nowrap;
 }

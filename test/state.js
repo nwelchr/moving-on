@@ -15,7 +15,6 @@ class State {
         if ([73, 58, 67].includes(this.level.width)) {
             this.frankieStatus = true;
         }
-        console.log(this.frankieStatus, this.finleyStatus);
 
         if (this.finleyStatus === true && this.frankieStatus === true) {
             // debugger;
@@ -23,9 +22,9 @@ class State {
         }
         
         // if first level
-        if (this.level.width === 67 && this.player.pos.y < 50 && this.player.pos.y > 0) {
+        if (this.level.width === 67 && this.player.pos.y < 30 && this.player.pos.y > 2) {
             this.frankieStatus = true;
-            this.gravity = .5;
+            this.gravity = .8;
         } else if (this.level.width === 73 & this.player.pos.y < 80 && this.player.pos.y > 5) {
             this.gravity = 2;
         } else if (this.level.width === 58 && status !== 'won') {
@@ -39,7 +38,6 @@ class State {
             this.gravity = gravity || 10;
         }
 
-        console.log(this.level.width);
 
         if (this.level.width === 73) {
             const wrapper = document.getElementById('game-wrapper');
@@ -50,8 +48,6 @@ class State {
         
         // this.finleyStatus = finleyStatus || null;
         // this.frankieStatus = frankieStatus || null;
-        // console.log (this.finleyStatus);
-        // console.log (this.frankieStatus);
 
         // to check whether switch is currently being pressed to prevent repeat switching on update
         this.switch = switchKey;
@@ -229,7 +225,6 @@ class State {
         const finleyGoal = actors.find(actor => actor.constructor.name === 'FinleyGoal');
         const finley = actors.find(actor => actor.constructor.name === 'Finley');
         
-        console.log(this.overlap(finley, finleyGoal));
         newState.finleyStatus = this.overlap(finley, finleyGoal) ? true : false;
         newState.frankieStatus = this.overlap(frankie, frankieGoal) ? true : false;
 

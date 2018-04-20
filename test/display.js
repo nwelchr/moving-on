@@ -99,7 +99,7 @@ class Display {
     }
 
     clear() {
-        // odd syntax to remove the wrapper because htmlelements are weird!
+        // odd syntax to remove the wrapper because htmlelements are weird! DOESN'T WORK
         this.wrapper.parentNode.removeChild(this.wrapper);
     }
 }

@@ -142,7 +142,7 @@ class Player {
             } else if (keys.up && (this.speed.y >= 0 || overlap === 'topOverlap') && this === state.player) {
                 this.speed.y = -this.jumpSpeed;
             } else if (obstacle === 'water') {
-                if (this.size.x === .8) this.pos = newPos;
+                if (this.size.x === .8) this.pos = newPos;else this.pos.y = 8.1;
             } else if (['gravity', 'poison', 'instruction'].includes(obstacle)) {
                 this.pos = newPos;
             } else {
@@ -198,7 +198,6 @@ class State {
         if ([73, 58, 67].includes(this.level.width)) {
             this.frankieStatus = true;
         }
-        console.log(this.frankieStatus, this.finleyStatus);
 
         if (this.finleyStatus === true && this.frankieStatus === true) {
             // debugger;
@@ -206,9 +205,9 @@ class State {
         }
 
         // if first level
-        if (this.level.width === 67 && this.player.pos.y < 50 && this.player.pos.y > 0) {
+        if (this.level.width === 67 && this.player.pos.y < 30 && this.player.pos.y > 2) {
             this.frankieStatus = true;
-            this.gravity = .5;
+            this.gravity = .8;
         } else if (this.level.width === 73 & this.player.pos.y < 80 && this.player.pos.y > 5) {
             this.gravity = 2;
         } else if (this.level.width === 58 && status !== 'won') {
@@ -222,8 +221,6 @@ class State {
             this.gravity = gravity || 10;
         }
 
-        console.log(this.level.width);
-
         if (this.level.width === 73) {
             const wrapper = document.getElementById('game-wrapper');
             if (wrapper.classList.contains('rotated')) {
@@ -233,8 +230,6 @@ class State {
 
         // this.finleyStatus = finleyStatus || null;
         // this.frankieStatus = frankieStatus || null;
-        // console.log (this.finleyStatus);
-        // console.log (this.frankieStatus);
 
         // to check whether switch is currently being pressed to prevent repeat switching on update
         this.switch = switchKey;
@@ -374,7 +369,6 @@ class State {
         const finleyGoal = actors.find(actor => actor.constructor.name === 'FinleyGoal');
         const finley = actors.find(actor => actor.constructor.name === 'Finley');
 
-        console.log(this.overlap(finley, finleyGoal));
         newState.finleyStatus = this.overlap(finley, finleyGoal) ? true : false;
         newState.frankieStatus = this.overlap(frankie, frankieGoal) ? true : false;
 
@@ -413,7 +407,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__level__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__display__ = __webpack_require__(9);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__level_maps__ = __webpack_require__(10);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__level_maps___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__level_maps__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__state__ = __webpack_require__(2);
 
 
@@ -430,7 +423,11 @@ const keyCodes = {
 const audio = document.getElementById('intro');
 const finish = document.getElementById('level-finish');
 audio.volume = 0.2;
+audio.loop = true;
 finish.volume = 0.05;
+// const pauseModal = document.querySelector('.pause-modal');
+// const pauseButton = document.querySelector('.unpause');
+// // const restartButton = document.querySelector('.restart');
 
 const detectKeys = () => {
     // to avoid error with indexing into something that doesn't exist
@@ -450,12 +447,33 @@ const detectKeys = () => {
     return isPressed;
 };
 
+// let running = true;
+
 // calls requestAnimation again after every frame
 const runAnimation = frameFunction => {
     // last time since window has been open
     let lastTime = null;
 
+    // window.addEventListener('keydown', (e) => {
+    //     if (e.keyCode === 27) { 
+    //         running = !running;
+    //         pauseModal.classList.toggle("show");   
+    //      }
+    //     if (running) requestAnimationFrame(frame);
+    // });
+
+    // pauseButton.addEventListener('click', (e) => {
+    //     e.preventDefault();
+    //     running = !running;
+    //     pauseModal.classList.toggle("show");
+    //     if (running) requestAnimationFrame(frame);
+    // });
+
     const frame = time => {
+        // if (running === false) {
+        //     return;
+        // }
+
         if (lastTime !== null) {
             // converts time between ms and s for convenience
             let timeStep = Math.min(time - lastTime, 100) / 1000;
@@ -468,6 +486,8 @@ const runAnimation = frameFunction => {
 
     requestAnimationFrame(frame);
 };
+
+// let nextLevelCount = 0;
 
 const runLevel = (level, successFunction) => {
     const gameWrapper = document.getElementById('game-wrapper');
@@ -486,17 +506,25 @@ const runLevel = (level, successFunction) => {
     runAnimation(time => {
         state = state.update(time, keys);
         display.drawFrame(state);
-        // console.log(state.status);
+
+        // restartButton.addEventListener('click', (e) => {
+        //     e.preventDefault();
+        //     running = !running;
+        //     pauseModal.classList.toggle("show");
+        //     display.clear();
+        //     successFunction('lost');
+        // });
+
         if (state.status.includes('playing')) {
-            console.log(state.status);
             return true;
         } else if (ending > 0) {
-            console.log('hi');
             finish.play();
             ending -= time;
             return true;
         } else {
-            console.log('bye');
+            // if (nextLevelCount === 0) {
+            // nextLevelCount++;
+            // }
             display.clear();
             successFunction(state.status);
             return false;
@@ -511,14 +539,15 @@ const rotate = () => {
 
 const runGame = () => {
     audio.play();
+
     const startLevel = n => {
-        runLevel(new __WEBPACK_IMPORTED_MODULE_0__level__["a" /* default */](__WEBPACK_IMPORTED_MODULE_2__level_maps__["default"][n]), status => {
+        runLevel(new __WEBPACK_IMPORTED_MODULE_0__level__["a" /* default */](__WEBPACK_IMPORTED_MODULE_2__level_maps__["a" /* default */][n]), status => {
             if (status.includes('lost')) {
                 startLevel(n);
-            } else if (n < __WEBPACK_IMPORTED_MODULE_2__level_maps__["default"].length - 1) {
+            } else if (n < __WEBPACK_IMPORTED_MODULE_2__level_maps__["a" /* default */].length - 1) {
                 startLevel(n + 1);
             } else {
-                alert('you win!');
+                alert('');
             }
         });
     };
@@ -677,7 +706,6 @@ class Level {
         const xEnd = Math.ceil(pos.x + size.x);
         const yStart = Math.floor(pos.y);
         const yEnd = Math.ceil(pos.y + size.y);
-        // console.log (xStart, xEnd, yStart, yEnd);
 
         // if the user hits top/right/left margins, it's a wall
         if (xStart < 0 || xEnd > this.width || yStart < 0) {
@@ -906,7 +934,7 @@ class Display {
     }
 
     clear() {
-        // odd syntax to remove the wrapper because htmlelements are weird!
+        // odd syntax to remove the wrapper because htmlelements are weird! DOESN'T WORK
         this.wrapper.parentNode.removeChild(this.wrapper);
     }
 }
@@ -915,10 +943,12 @@ class Display {
 
 /***/ }),
 /* 10 */
-/***/ (function(module, __webpack_exports__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-throw new Error("Module build failed: SyntaxError: Unexpected token (334:0)\n\n\u001b[0m \u001b[90m 332 | \u001b[39m    \n \u001b[90m 333 | \u001b[39m    \n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 334 | \u001b[39m\u001b[36mexport\u001b[39m \u001b[36mdefault\u001b[39m levelMaps\u001b[33m;\u001b[39m\n \u001b[90m     | \u001b[39m\u001b[31m\u001b[1m^\u001b[22m\u001b[39m\u001b[0m\n");
+const levelMaps = [["xxxxxxxxxxxxxxx                                                    ", "x             x                                          ", "x   i         x                                         ", "x             x                               r         ", "x             x                               @          ", "x             x                                         ", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x         1   x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x         a   x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x         !   x", "xxxxxxxxxxxxxxx", "       2       ", "               ", "               "], ["                                                                ", "                      ", "                     ", " x                                x          x", " x                                x          x", " x                                x          x ", " x                                x          x         x", " x                              ! x          x         x", " x                                x          x         x", " x   3                       4    x          x         x", " x                              x x          x         x", " x i                              xxxxxxxxxxxx      r  x", " x                              @                      x", " xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"], ["                                                        ", " x                                                     x", " x                                                     x", " x                                                     x", " x                                                     x", " x                                                     x", " x                       ! @                           x", " x                  xxxxxxxxxxxx                       x", " x                  xxxxxxxxxxxx                       x", " x   5           xxxxxxxxxxxxxxxxxx                    x", " x               xxxxxxxxxxxxxxxxxx                    x", " x i          xxxxxxxxxxxxxxxxxxxxxxxx              r  x", " x            xxxxxxxxxxxxxxxxxxxxxxxx                 x", " xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"], ["x                                                                                                      ", "x             x                                          ", "x             x                                                                                  ", "x             x                                                                                    ", "x             x                                                                                  ", "x             x                                                                       xxxxxxxxxxxxxxx              ", "x             x                                                                       x             x           ", "x             x                                                                       x   !   @     x      ", "x             x      xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx              xxxxxxxxxxxxxxxxx             x      ", "x             x      x                                 x              x                             x ", "x             x      x                                 x              x                             x  ", "x             x      x                      7          x              x                             x   ", "x             x      x                                 x              x                   t   t     x   ", "x             x      x       xxxxxxxxxxxxxxxxxxx       x              x ggggg xxxxxxxxxxxxxxxxxxxxxxx     ", "x             x      x ggggg x                 x       x              x ggggg x      ", "x             x      x ggggg x                 x       x              x ggggg x", "x             x      x ggggg x                 x       x              x ggggg x", "x             x      x ggggg x                 x       x              x ggggg x ", "x             xxxxxxxx ggggg x                 x       xxxxxxxxxxxxxxxx ggggg x", "x                      ggggg x                 x                        ggggg x                                       x", "x i   r          6     ggggg x                 x                        ggggg x", "x                            x                 x                        ggggg x", "x                            x                 x                        ggggg x", "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx                 x                        ggggg x", "                                               x                        ggggg x", "                                               x                        ggggg x", "                                               x                        ggggg x", "                                               x                        ggggg x", "                                               x                        ggggg x", "                                               x                        ggggg x", "                                               x                        ggggg x", "                                               x                        ggggg x", "                                               x                        ggggg x", "                                               x                        ggggg x", "                                               x                        ggggg x", "                                               x                        ggggg x", "                                               x                        ggggg x", "                                               x                        ggggg x", "                                               x                        ggggg x", "                                               x                        ggggg x", "                                               x                        ggggg x", "                                               x                              x", "                                               xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"], ["                                                                             ", " x                                                                  x        x", " x                                                                  x         x", " x   8                                                              x         x", " x                                                                  x        x", " x   i    r                                                         x            x", " x                                                                  x        x", " xxxxxxxxxxxxx           xxx             xxx                    ! @ x                    x", " xxxxxxxxxxxxx                                              xxxxxxxxx                     x", " xxxxxxxxxxxxxwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwxxxxxxxxxxxxx                   x", " xxxxxxxxxxxxxwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwxxxxxxxxxxxxx ", " xxxxxxxxxxxxxwwwwwwwwwwwww9wwwwwwwwwwwwwwwwwwwwwwwwwwwwxxxxxxxxxxxxx x", " xxxxxxxxxxxxxwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwxxxxxxxxxxxxx x", " xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"], ["x             x                                            ", "x    i    r   x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "xp  ppppppppppx", "x             x", "x   0         x", "x             x          #", "x             xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", "x                |   v   |   v   |   v  =|   |   v =   x", "x                  v   v    v   v   v  =v   |   v   =  x", "x     !                                            @   x", "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"], ["                                                                                             r  ", " x                                                                                        x  @ x", " x                                                                                        xxxxxx", " x                                                               x           x            x", " x               x                                x                                       x", " x                              x                          x         x                    x", " x           x                            x                                  x            x", " x                      x                            x                            x       x", " x                                           x                   x                        x", " x               $                  x                                   x                 x", " x                            x                           x                      x        x", " x i                                                                                      x", " x                                                                                    !   x", " xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"], ["                                                           r  ", " x                                     x                x  @ x", " x                                     x                xxxxxx", " x                                     x", " x              xhh ! hhx              x", " x             xhhhh hhhhx     t       x", " x             xhhhhhhhhhx             x", " x             xxhhhhhhhxx             x", " x              xxhhhhhxx              x", " x   %           xxhhhxx    t          x", " x                xxhxx                x", " x i               xxx                 x", " x                                     x", " x                             t       x", " xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"], ["                                                                       r      ", " x                                                                  x  @     x", " x                                                                  xxxxxxxxxx         x", " x   ^                                                              x         x", " x                                                                  x        x", " x   i                                                             x            x", " x                                                                  x        x", " xxxxxxxxxxxxx           xxx             xxx                    !  x                    x", " xxxxxxxxxxxxx                                              xxxxxxxxx                     x", " xxxxxxxxxxxxxwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwxxxxxxxxxxxxx                   x", " xxxxxxxxxxxxxwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwxxxxxxxxxxxxx ", " xxxxxxxxxxxxxwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwxxxxxxxxxxxxx x", " xxxxxxxxxxxxxwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwxxxxxxxxxxxxx x", " xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"], ["xxxxxxxxxxxxxxxxxx                                                       ", "x                x                                          ", "x      !         x                                         ", "x                x                               r         ", "x                x                               @          ", "x                x                                         ", "x                x", "x                x                                          ", "x                x                                        ", "x                x", "x                x", "x                x", "x                x", "x   i    &       x", "x                x", "x                x", "x                x", "x                x", "x                x", "x                x", "x                x", "x                x", "x                x", "x                x", "x                x", "x                x", "x                x", "x                x", "x                x", "x                x", "x                x", "x                x", "x                x", "x                x", "x                x", "x                x", "x                x", "x                x", "x                x", "x                x", "x                x", "x                x", "x                x", "x                x", "x                x", "x                xxxxxxxxxxxxxxxx", "x               *               x", "x                               x", "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"], [" )                                                      @ ", "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", "x                                         x", "x                                      !  x", "x             xxxxxxxxxxxxxxxxxxxxxxxxxxxxx", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x             x", "x    i    r   x", "x (           x", "xxxxxxxxxxxxxxx"]];
+
+/* harmony default export */ __webpack_exports__["a"] = (levelMaps);
 
 /***/ }),
 /* 11 */

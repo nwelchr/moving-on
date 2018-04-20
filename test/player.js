@@ -51,6 +51,7 @@ class Player {
                 this.speed.y = -this.jumpSpeed;
             } else if (obstacle === 'water') {
                 if (this.size.x === .8) this.pos = newPos;
+                else this.pos.y = 8.1;
             } 
             else if (['gravity', 'poison', 'instruction'].includes(obstacle)) {
                 this.pos = newPos;

@@ -22,7 +22,7 @@ class State {
         // if first level
         if (this.level.width === 67 && this.player.pos.y < 50 && this.player.pos.y > 4) {
             this.frankieStatus = true;
-            this.gravity = -.3;
+            this.gravity = 0;
         } else {
             this.gravity = gravity || 10;
         }
@@ -219,6 +219,13 @@ class State {
         
         newState.finleyStatus = this.overlap(finley, finleyGoal) ? true : false;
         newState.frankieStatus = this.overlap(frankie, frankieGoal) ? true : false;
+
+        console.log(this.gravity);
+        if (this.level.touching(this.player.pos, this.player.size) === 'gravity') {
+            newState.gravity = -Math.abs(newState.gravity);
+        } else {
+            newState.gravity = Math.abs(newState.gravity);
+        }
 
             // const overlap = this.overlap(player, actor);
             // if (overlap && Object.getPrototypeOf(Object.getPrototypeOf(actor)).constructor.name !== 'Player') {

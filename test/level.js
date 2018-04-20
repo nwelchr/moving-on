@@ -11,7 +11,7 @@ const actorChars = {
     'r': Frankie,
     // '1': Player,
     '=': Poison, '|': Poison, 'v': Poison,
-    '!': FinleyGoal, '@': FrankieGoal
+    '!': FinleyGoal, '@': FrankieGoal,
 };
 
 class Level {
@@ -46,6 +46,9 @@ class Level {
                             break;
                         case 't':
                             fieldType = 'trampoline';
+                            break;
+                        case 'g':
+                            fieldType = 'gravity';
                             break;
                         case '1':
                             fieldType = 'instruction one';

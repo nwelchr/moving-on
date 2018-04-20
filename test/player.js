@@ -45,10 +45,11 @@ class Player {
             } else if (obstacle === 'trampoline') {
                 this.speed.y = -this.jumpSpeed;
                 this.jumpSpeed = -this.jumpSpeed;
-            } else if (keys.up && (this.speed.y >= 0 || overlap === 'topOverlap') && this === state.player) {
+                this.pos = newPos;
+            }  
+            else if (keys.up && (this.speed.y >= 0 || overlap === 'topOverlap') && this === state.player) {
                 this.speed.y = -this.jumpSpeed;
-            } else if (['water', 'instruction', 'trampoline'].includes(obstacle)) {
-                // console.log('hi');
+            } else if (['water', 'gravity', 'instruction'].includes(obstacle)) {
                 this.pos = newPos;
             } else {
                 this.speed.y = 0;
@@ -56,6 +57,7 @@ class Player {
         } else { 
             this.pos = newPos;
         }
+
     }
 
     update (time, state, keys) {

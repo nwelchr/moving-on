@@ -64,7 +64,7 @@
 }
 
 .finley {
-  background-color: #c57208;
+  background-color: #320d61;
 }
 
 .frankie {
@@ -142,6 +142,10 @@ button.start-game {
   max-height: 600px;
   position: relative;
   /* border-radius: 45px; */
+}
+
+.gravity {
+  /* background-color: green; */
 }
 
 .game {

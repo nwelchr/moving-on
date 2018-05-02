@@ -166,7 +166,7 @@ const levelMaps = [
           "x             x",
           "xp  ppppppppppx",
           "x             x",
-          "x   0         x",
+          "x   ~         x",
           "x             x          #",
           "x             xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
           "x                |   v   |   v   |   v  =|   |   v =   x",

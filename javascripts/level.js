@@ -15,7 +15,7 @@ const actorChars = {
 
 const instructionChars = {
 
-}
+};
 
 class Level {
     constructor(levelMap, levelId) {
@@ -87,7 +87,7 @@ class Level {
                         case '9':
                             fieldType = 'instruction nine';
                             break;
-                        case '0':
+                        case '~':
                             fieldType = 'instruction ten';
                             break;
                         case '#':

@@ -49,6 +49,7 @@ class State {
       case 9:
         break;
       case 10:
+        console.log('hi');
         this.frankieStatus = true;
         if (this.player.pos.y < 80 && this.player.pos.y > 5) this.gravity = 2;
         const wrapper = document.getElementById("game-wrapper");
@@ -257,7 +258,7 @@ class State {
     if (
       keys.switch &&
       !this.switch &&
-      !(7, 8, 9, 10, 11).includes(this.level.levelId)
+      ![1, 7, 8, 9, 10, 11].includes(this.level.levelId)
     //   ![96, 62, 78, 58].includes(this.level.width)
     )
       return new State(

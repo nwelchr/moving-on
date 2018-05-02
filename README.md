@@ -1,6 +1,6 @@
 ## **Moving On** - A Minimalist Puzzle Game
 
-[Live](https://nwelchr.github.io/moving-on)
+[Live](https://nwelchr.github.io/moving-on)<br />
 [Video Playthrough](https://www.youtube.com/watch?v=8KlIGm3vNsc)
 
 ### Background and Overview

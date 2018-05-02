@@ -15,7 +15,8 @@ const actorChars = {
 };
 
 class Level {
-    constructor(levelMap) {
+    constructor(levelMap, levelId) {
+        this.levelId = levelId;
         this.rows = [];
         this.width = levelMap[0].length; // width of level determined my first row
         this.height = levelMap.length; // # of rows in array

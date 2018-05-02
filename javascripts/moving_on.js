@@ -132,7 +132,7 @@ const runGame = () => {
     audio.play();
 
     const startLevel = (n) => {
-        runLevel(new Level(levelMaps[n]), status => {
+        runLevel(new Level(levelMaps[n], n + 1), status => {
             if (status.includes('lost')) {
                 startLevel(n);
             } else if (n < levelMaps.length - 1) {

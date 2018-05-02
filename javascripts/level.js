@@ -13,6 +13,10 @@ const actorChars = {
     '!': FinleyGoal, '@': FrankieGoal,
 };
 
+const instructionChars = {
+
+}
+
 class Level {
     constructor(levelMap, levelId) {
         this.levelId = levelId;
@@ -53,11 +57,11 @@ class Level {
                         case 'h':
                             fieldType = 'heart';
                             break;
+                        case '0':
+                            fieldType = 'instruction zero';
+                            break;
                         case '1':
                             fieldType = 'instruction one';
-                            break;
-                        case 'a':
-                            fieldType = 'instruction awhile';
                             break;
                         case '2':
                             fieldType = 'instruction two';

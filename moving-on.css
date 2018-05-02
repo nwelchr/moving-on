@@ -90,12 +90,12 @@
   font-family: 'lato', 'helveticaneue-light', 'helvetica';
 }
 
-.one:before {
+.zero:before {
   content: 'it\'s been...';
   margin-left: -30px;
 }
 
-.awhile:before {
+.one:before {
   content: 'a while.';
   margin-left: -30px;
 }

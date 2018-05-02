@@ -85,7 +85,8 @@ const runLevel = (level, successFunction) => {
     let state = State.start(level);
     let ending = 1;
 
-    if (level.width === 73) {
+    // if (level.width === 73) {
+    if (level.levelId === 10) {
         setTimeout(rotate, 10000);
     } else {
         if (gameWrapper.classList.contains('rotated')) {

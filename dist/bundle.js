@@ -358,7 +358,9 @@ class State {
     let actors = this.actors.map(actor => actor.update(time, this, keys));
 
     // if s is being pressed and wasn't already being pressed, AND if the current player isn't jumping/falling/etc (w this.player.speed.y === 0), switch player
-    if (keys.switch && !this.switch && ![96, 62, 78, 58].includes(this.level.levelId)) return new State(this.level, actors, this.status, this.nonPlayers[0], keys.switch, this.gravity, this.finleyStatus, this.frankieStatus);
+    if (keys.switch && !this.switch && !(7, 8, 9, 10, 11).includes(this.level.levelId)
+    //   ![96, 62, 78, 58].includes(this.level.width)
+    ) return new State(this.level, actors, this.status, this.nonPlayers[0], keys.switch, this.gravity, this.finleyStatus, this.frankieStatus);
     let newState = new State(this.level, actors, this.status, this.player, keys.switch, null, this.finleyStatus, this.frankieStatus);
     if (!newState.status.includes("playing")) return newState;
 
@@ -368,7 +370,9 @@ class State {
       case "poison":
         if (player.size.x === 0.8) return new State(this.level, actors, "lost", this.player);
       case "water":
-        if (player.size.x === 0.8 && this.level.width !== 78) return new State(this.level, actors, "lost drowned", this.player);
+        if (player.size.x === 0.8 && this.level.levelId !== 9)
+          // this.level.width !== 78
+          return new State(this.level, actors, "lost drowned", this.player);
         break;
       case "trampoline":
         return new State(this.level, actors, "playing", this.player, keys.switch, -this.gravity, this.finleyStatus, this.frankieStatus);
@@ -408,7 +412,8 @@ class State {
 
     if (this.level.touching(this.player.pos, this.player.size) === "gravity") {
       newState.gravity = -Math.abs(newState.gravity);
-    } else if (![73, 67, 58].includes(this.level.width)) {
+      // } else if (![73, 67, 58].includes(this.level.width)) {
+    } else if (![1, 10, 11].includes(this.level.levelId)) {
       newState.gravity = Math.abs(newState.gravity);
     }
 
@@ -528,7 +533,8 @@ const runLevel = (level, successFunction) => {
     let state = __WEBPACK_IMPORTED_MODULE_3__state__["a" /* default */].start(level);
     let ending = 1;
 
-    if (level.width === 73) {
+    // if (level.width === 73) {
+    if (level.levelId === 10) {
         setTimeout(rotate, 10000);
     } else {
         if (gameWrapper.classList.contains('rotated')) {
@@ -616,7 +622,6 @@ runGame();
 const actorChars = {
     'i': __WEBPACK_IMPORTED_MODULE_1__finley__["a" /* default */],
     'r': __WEBPACK_IMPORTED_MODULE_2__frankie__["a" /* default */],
-    // '1': Player,
     '=': __WEBPACK_IMPORTED_MODULE_3__poison__["a" /* default */], '|': __WEBPACK_IMPORTED_MODULE_3__poison__["a" /* default */], 'v': __WEBPACK_IMPORTED_MODULE_3__poison__["a" /* default */],
     '!': __WEBPACK_IMPORTED_MODULE_5__goals__["a" /* FinleyGoal */], '@': __WEBPACK_IMPORTED_MODULE_5__goals__["b" /* FrankieGoal */]
 };

@@ -9,7 +9,6 @@ import { SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION } from "constants";
 const actorChars = {
     'i': Finley,
     'r': Frankie,
-    // '1': Player,
     '=': Poison, '|': Poison, 'v': Poison,
     '!': FinleyGoal, '@': FrankieGoal,
 };

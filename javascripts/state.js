@@ -257,7 +257,8 @@ class State {
     if (
       keys.switch &&
       !this.switch &&
-      ![96, 62, 78, 58].includes(this.level.levelId)
+      !(7, 8, 9, 10, 11).includes(this.level.levelId)
+    //   ![96, 62, 78, 58].includes(this.level.width)
     )
       return new State(
         this.level,
@@ -288,7 +289,8 @@ class State {
         if (player.size.x === 0.8)
           return new State(this.level, actors, "lost", this.player);
       case "water":
-        if (player.size.x === 0.8 && this.level.width !== 78)
+        if (player.size.x === 0.8 && this.level.levelId !== 9)
+        // this.level.width !== 78
           return new State(this.level, actors, "lost drowned", this.player);
         break;
       case "trampoline":
@@ -353,7 +355,8 @@ class State {
 
     if (this.level.touching(this.player.pos, this.player.size) === "gravity") {
       newState.gravity = -Math.abs(newState.gravity);
-    } else if (![73, 67, 58].includes(this.level.width)) {
+    // } else if (![73, 67, 58].includes(this.level.width)) {
+    } else if (![1, 10, 11].includes(this.level.levelId)) {
       newState.gravity = Math.abs(newState.gravity);
     }
 

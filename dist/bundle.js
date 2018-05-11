@@ -460,7 +460,7 @@ const keyCodes = {
 };
 
 const audio = document.getElementById('intro');
-let isPlaying = false;
+let musicIsPlaying = false;
 const finish = document.getElementById('level-finish');
 audio.volume = 0.2;
 audio.loop = true;
@@ -476,6 +476,7 @@ const detectKeys = () => {
     const isPressed = Object.create(null);
 
     const track = e => {
+        // if (e.keyCode === 27) togglePauseScreen(e);
         if (keyCodes.hasOwnProperty(e.keyCode)) {
             e.preventDefault();
             const isKeydown = e.type === 'keydown';
@@ -486,10 +487,27 @@ const detectKeys = () => {
     window.addEventListener('keydown', track);
     window.addEventListener('keyup', track);
 
+    console.log(isPressed, "his");
     return isPressed;
 };
 
-let running = true;
+let gameIsRunning = true;
+
+// const togglePauseScreen = (e) => {
+//     // const didPressEsc = e.keyCode === 27;
+//     // const didClick = e.type === "click";
+//         gameIsRunning = !gameIsRunning;
+
+//         // toggle music
+//         musicIsPlaying = !musicIsPlaying;
+//         musicIsPlaying ? audio.play() : audio.pause();
+
+
+//         pauseModal.classList.toggle("show");
+//         if (gameIsRunning) runAnimation()
+// };
+
+// pauseButton.addEventListener('click', togglePauseScreen);
 
 // calls requestAnimation again after every frame
 const runAnimation = frameFunction => {
@@ -498,29 +516,32 @@ const runAnimation = frameFunction => {
 
     window.addEventListener('keydown', e => {
         if (e.keyCode === 27) {
-            running = !running;
+            // toggle gameplay
+            gameIsRunning = !gameIsRunning;
 
-            isPlaying = !isPlaying;
-            isPlaying ? audio.play() : audio.pause();
+            // toggle music
+            musicIsPlaying = !musicIsPlaying;
+            musicIsPlaying ? audio.play() : audio.pause();
 
             pauseModal.classList.toggle("show");
         }
-        if (running) requestAnimationFrame(frame);
+        if (gameIsRunning) requestAnimationFrame(frame);
     });
 
-    pauseButton.addEventListener('click', e => {
-        e.preventDefault();
-        running = !running;
-        pauseModal.classList.toggle("show");
+    // pauseButton.addEventListener('click', (e) => {
+    //     debugger;
+    //     e.preventDefault();
+    //     gameIsRunning = !gameIsRunning;
+    //     pauseModal.classList.toggle("show");
 
-        isPlaying = true;
-        audio.play();
+    //     musicIsPlaying = true;
+    //     audio.play();
 
-        if (running) requestAnimationFrame(frame);
-    });
+    //     if (gameIsRunning) requestAnimationFrame(frame);
+    // });
 
     const frame = time => {
-        if (running === false) {
+        if (gameIsRunning === false) {
             return;
         }
 
@@ -534,7 +555,7 @@ const runAnimation = frameFunction => {
         requestAnimationFrame(frame);
     };
 
-    if (running) requestAnimationFrame(frame);
+    if (gameIsRunning) requestAnimationFrame(frame);
 };
 
 // let nextLevelCount = 0;
@@ -554,16 +575,16 @@ const runLevel = (level, successFunction) => {
         }
     }
 
-    runAnimation(time => {
+    const frameFunction = time => {
         state = state.update(time, keys);
         display.drawFrame(state);
 
         restartButton.addEventListener('click', e => {
             e.preventDefault();
-            running = !running;
+            gameIsRunning = !gameIsRunning;
             pauseModal.classList.toggle("show");
 
-            isPlaying = false;
+            musicIsPlaying = false;
             audio.pause();
 
             display.clear('restart button clicked', state.status);
@@ -585,7 +606,9 @@ const runLevel = (level, successFunction) => {
             successFunction(state.status);
             return false;
         }
-    });
+    };
+
+    runAnimation(frameFunction);
 };
 
 const rotate = () => {
@@ -593,35 +616,34 @@ const rotate = () => {
     wrap.classList.add('rotated');
 };
 
-const runGame = isStart => {
+const startLevel = n => {
 
-    const startLevel = n => {
-        runLevel(new __WEBPACK_IMPORTED_MODULE_0__level__["a" /* default */](__WEBPACK_IMPORTED_MODULE_2__level_maps__["a" /* default */][n], n + 1), status => {
-            if (status.includes('lost')) {
-                startLevel(n);
-            } else if (n < __WEBPACK_IMPORTED_MODULE_2__level_maps__["a" /* default */].length - 1) {
-                startLevel(n + 1);
-            } else {
-                titleScreen.classList.add('show');
-            }
-        });
+    const statusFunction = status => {
+        if (status.includes('lost')) {
+            startLevel(n);
+        } else if (n < __WEBPACK_IMPORTED_MODULE_2__level_maps__["a" /* default */].length - 1) {
+            startLevel(n + 1);
+        } else {
+            titleScreen.classList.add('show');
+        }
     };
 
-    isStart ? startLevel(0) : goToTitleScreen();
+    runLevel(new __WEBPACK_IMPORTED_MODULE_0__level__["a" /* default */](__WEBPACK_IMPORTED_MODULE_2__level_maps__["a" /* default */][n], n + 1), statusFunction);
 };
 
-const goToTitleScreen = () => {
-    startButton.addEventListener('click', () => {
-        isPlaying = true;
-        audio.play();
+// conditions to start game
 
-        titleScreen.classList.remove('show');
-        runGame(true);
-    });
+const startGame = () => {
+    musicIsPlaying = true;
+    audio.play();
+
+    titleScreen.classList.remove('show');
+    startLevel(0);
 };
+
+startButton.addEventListener('click', () => startGame());
 
 const keys = detectKeys();
-runGame();
 
 /***/ }),
 /* 4 */

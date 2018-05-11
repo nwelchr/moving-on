@@ -69,6 +69,9 @@
 
 #game-wrapper {
   /* border-radius: 45px; */
+  position: relative;
+  width: 900px;
+  height: 600px;
 }
 
 .finley {
@@ -125,20 +128,37 @@
   white-space: nowrap;
 }
 
-.hidden {
-  display: none;
-}
-
-.pause-modal {
+.pause-modal, .title-screen  {
   display: none;
   position: absolute;
   z-index: 1;
   width: 900px;
   height: 600px;
   background-color: rgba(0, 0, 0, .3);
+  opacity: .7;
 }
 
-.pause-modal button {
+.title-screen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  animation: fadein 5s ease;
+}
+
+.hidden {
+  display: none;
+}
+
+.show {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+
+.pause-modal button, .title-screen button {
   width: 200px;
   height: 100px;
   padding: 15px;
@@ -151,14 +171,7 @@
 
 @keyframes fadein {
   0% { opacity: 0; }
-  100% {color: blue; }
-}
-
-.show {
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  align-items: center;
+  100% { opacity: 1; }
 }
 
 .six:before {
@@ -276,19 +289,6 @@
   100% {transform: rotate(180deg);}
 }
 
-.title-screen-modal {
-  background-color: green;
-  position: absolute;
-  z-index: 10;
-  opacity: .5;
-  width: 900px;
-  height: 600px;
-  /* border-radius: 45px; */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
 button.start-game {
   display: block;
   height: 150px;
@@ -310,6 +310,7 @@ button.start-game {
 .game {
   animation: baby 5s forwards;
 }
+
 @keyframes baby {
   0% {opacity: 0;}
   100% {opacity: 1;}

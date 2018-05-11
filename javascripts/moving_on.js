@@ -3,6 +3,7 @@ import Display from './display';
 import levelMaps from './level_maps';
 import State from './state';
 
+
 const keyCodes = {
     37: 'left',
     38: 'up',
@@ -11,13 +12,16 @@ const keyCodes = {
 };
 
 const audio = document.getElementById('intro');
+let isPlaying = false;
 const finish = document.getElementById('level-finish');
 audio.volume = 0.2;
 audio.loop = true;
 finish.volume = 0.05;
-// const pauseModal = document.querySelector('.pause-modal');
-// const pauseButton = document.querySelector('.unpause');
-// // const restartButton = document.querySelector('.restart');
+const pauseModal = document.querySelector('.pause-modal');
+const pauseButton = document.querySelector('.unpause');
+const restartButton = document.querySelector('.restart');
+const titleScreen = document.querySelector('.title-screen');
+const startButton = document.querySelector('.start');
 
 const detectKeys = () => {
     // to avoid error with indexing into something that doesn't exist
@@ -37,32 +41,40 @@ const detectKeys = () => {
     return isPressed;
 };
 
-// let running = true;
+let running = true;
 
 // calls requestAnimation again after every frame
 const runAnimation = (frameFunction) => {
     // last time since window has been open
     let lastTime = null;
 
-    // window.addEventListener('keydown', (e) => {
-    //     if (e.keyCode === 27) { 
-    //         running = !running;
-    //         pauseModal.classList.toggle("show");   
-    //      }
-    //     if (running) requestAnimationFrame(frame);
-    // });
-
-    // pauseButton.addEventListener('click', (e) => {
-    //     e.preventDefault();
-    //     running = !running;
-    //     pauseModal.classList.toggle("show");
-    //     if (running) requestAnimationFrame(frame);
-    // });
+    window.addEventListener('keydown', (e) => {
+        if (e.keyCode === 27) { 
+            running = !running;
+    
+            isPlaying = !isPlaying;
+            isPlaying ? audio.play() : audio.pause();
+    
+            pauseModal.classList.toggle("show");   
+         }
+        if (running) requestAnimationFrame(frame);
+    });
+    
+    pauseButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        running = !running;
+        pauseModal.classList.toggle("show");
+    
+        isPlaying = true;
+        audio.play();
+    
+        if (running) requestAnimationFrame(frame);
+    });
 
     const frame = (time) => {
-        // if (running === false) {
-        //     return;
-        // }
+        if (running === false) {
+            return;
+        }
 
         if (lastTime !== null) {
             // converts time between ms and s for convenience
@@ -74,7 +86,7 @@ const runAnimation = (frameFunction) => {
         requestAnimationFrame(frame);
     };
 
-    requestAnimationFrame(frame);
+    if (running) requestAnimationFrame(frame);
 };
 
 // let nextLevelCount = 0;
@@ -85,7 +97,7 @@ const runLevel = (level, successFunction) => {
     let state = State.start(level);
     let ending = 1;
 
-    // if (level.width === 73) {
+    // Rotate on the 10th level after 10 seconds
     if (level.levelId === 10) {
         setTimeout(rotate, 10000);
     } else {
@@ -99,13 +111,18 @@ const runLevel = (level, successFunction) => {
         state = state.update(time, keys);
         display.drawFrame(state);
 
-        // restartButton.addEventListener('click', (e) => {
-        //     e.preventDefault();
-        //     running = !running;
-        //     pauseModal.classList.toggle("show");
-        //     display.clear();
-        //     successFunction('lost');
-        // });
+        restartButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            running = !running;
+            pauseModal.classList.toggle("show");
+
+            isPlaying = false;
+            audio.pause();
+
+            display.clear('restart button clicked', state.status);
+            successFunction('lost');
+            return;
+        });
 
         if (state.status.includes('playing')) {
             return true;
@@ -117,7 +134,7 @@ const runLevel = (level, successFunction) => {
             // if (nextLevelCount === 0) {
             // nextLevelCount++;
         // }
-            display.clear();
+            display.clear('else statement of runAnimation', state.status);
             successFunction(state.status);
             return false;
         }
@@ -129,8 +146,7 @@ const rotate = () => {
     wrap.classList.add('rotated');
 };
 
-const runGame = () => {
-    audio.play();
+const runGame = (isStart) => {
 
     const startLevel = (n) => {
         runLevel(new Level(levelMaps[n], n + 1), status => {
@@ -139,13 +155,22 @@ const runGame = () => {
             } else if (n < levelMaps.length - 1) {
                 startLevel(n + 1);
             } else {
-                alert('');
+                titleScreen.classList.add('show');
             }
         });
     };
 
-    // goToTitleScreen();
-    startLevel(0);
+    isStart ? startLevel(0) : goToTitleScreen();
+};
+
+const goToTitleScreen = () => {
+    startButton.addEventListener('click', () => {
+        isPlaying = true;
+        audio.play();
+
+        titleScreen.classList.remove('show');
+        runGame(true);
+    });
 };
 
 

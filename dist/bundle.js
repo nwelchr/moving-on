@@ -538,9 +538,8 @@ class Game {
         audio.play();
 
         titleScreen.classList.remove('show');
-
-        titleScreen.classList.remove('show');
-        this.startLevel(0);
+        this.levelId = 0;
+        this.startLevel();
     }
 
     startLevel() {
@@ -625,7 +624,6 @@ class Game {
 
 }
 
-console.log('about to create new game');
 const game = new Game();
 
 /***/ }),

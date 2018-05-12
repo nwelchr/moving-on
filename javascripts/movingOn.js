@@ -32,6 +32,10 @@ class Game {
         this.gameIsRunning = true;
         this.keys = Object.create(null);
         this.levelId = 0;
+        this.display = {};
+        this.state = {};
+        this.ending = 0;
+        this.lastTime = null;
     }
 
     trackKeys(e) {
@@ -54,7 +58,7 @@ class Game {
         this.runLevel(new Level(levelMaps[this.levelId], this.levelId + 1), this.statusFunction);
     }
 
-    statusFunction (status) {
+    statusFunction(status) {
         if (status.includes('lost')) {
             this.startLevel();
         } else if (this.levelId < levelMaps.length - 1) {
@@ -65,84 +69,86 @@ class Game {
         }
     }
 
-    runLevel (level, statusFunction) {
-        const display = new Display(gameWrapper, level);
-        let state = State.start(level);
-        let ending = 1;
+    rotateLevel10() {
+        const wrap = document.getElementById('game-wrapper');
+        wrap.classList.add('rotated');
+    }
+
+    frameFunction(time) {
+        this.state = this.state.update(time, this.keys);
+        this.display.drawFrame(this.state);
+
+        if (this.state.status.includes('playing')) {
+            return true;
+        } else if (this.ending > 0) {
+            finish.play();
+            this.ending -= time;
+            return true;
+        } else {
+            this.display.clear('else statement of runAnimation', this.state.status);
+            this.statusFunction(this.state.status);
+            return false;
+        }
+    }
+
+    runLevel(level, statusFunction) {
+        this.display = new Display(gameWrapper, level);
+        this.state = State.start(level);
+        this.ending = 1;
     
         // Rotate on the 10th level after 10 seconds
-
-        if (level.levelId === 10) {
-            setTimeout(rotate, 10000);
-        } else if (gameWrapper.classList.contains('rotated')) {
-                gameWrapper.classList.remove('rotated');
+        if (level.levelId === 10) setTimeout(this.rotateLevel10, 10000);
+        else if (gameWrapper.classList.contains('rotated')) {
+            gameWrapper.classList.remove('rotated');
         }
-    
-        const rotate = () => {
-            const wrap = document.getElementById('game-wrapper');
-            wrap.classList.add('rotated');
-        };
-    
-        restartButton.addEventListener('click', (e) => {
-            e.preventDefault();
-            this.gameIsRunning = !this.gameIsRunning;
-            pauseModal.classList.toggle("show");
-    
-            this.musicIsPlaying = false;
-            audio.pause();
-    
-            ending = 0;
-    
-            display.clear('restart button clicked', state.status);
-            statusFunction('lost');
-            return;
-        });
-    
-        const frameFunction = time => {
-            state = state.update(time, this.keys);
-            display.drawFrame(state);
-    
-            if (state.status.includes('playing')) {
-                return true;
-            } else if (ending > 0) {
-                finish.play();
-                ending -= time;
-                return true;
-            } else {
-                display.clear('else statement of runAnimation', state.status);
-                statusFunction(state.status);
-                return false;
-            }
-        };
-    
-    
-        this.runAnimation(frameFunction);
+           
+        this.runAnimation(this.frameFunction);
     }
 
-    runAnimation (frameFunction) {
+    runAnimation(frameFunction) {
         // last time since window has been open
-        let lastTime = null;
+        this.lastTime = null;
     
-        const frame = (time) => {
-            if (this.gameIsRunning === false) {
-                return;
-            }
-    
-            if (lastTime !== null) {
-                // converts time between ms and s for convenience
-                let timeStep = Math.min(time - lastTime, 100) / 1000;
-                if (frameFunction(timeStep) === false) return;
-            }
-    
-            lastTime = time;
-            requestAnimationFrame(frame);
-        };
-    
-        if (this.gameIsRunning) requestAnimationFrame(frame);
+        if (this.gameIsRunning) requestAnimationFrame(this.frame);
     }
+
+    frame(time) {
+        if (this.gameIsRunning === false) {
+            return;
+        }
+
+        if (this.lastTime !== null) {
+            // converts time between ms and s for convenience
+            let timeStep = Math.min(time - this.lastTime, 100) / 1000;
+            if (this.frameFunction(timeStep) === false) return;
+        }
+
+        this.lastTime = time;
+        requestAnimationFrame(this.frame);
+    }
+
+    restartLevel(e)  {
+        e.preventDefault();
+        this.gameIsRunning = !this.gameIsRunning;
+        pauseModal.classList.toggle("show");
+
+        this.musicIsPlaying = false;
+        audio.pause();
+
+        this.ending = 0;
+
+        this.display.clear('restart button clicked', this.state.status);
+        this.statusFunction('lost');
+    }
+
 }
 
 
-window.addEventListener('keydown', Game.trackKeys);
-window.addEventListener('keyup', Game.trackKeys);
+const game = new Game;
+game.trackKeys();
+game.startGame();
+
+restartButton.addEventListener('click', game.restartLevel());
+window.addEventListener('keydown', game.trackKeys);
+window.addEventListener('keyup', game.trackKeys);
 

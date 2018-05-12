@@ -452,8 +452,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 
-// KEYCODES
-
 const keyCodes = {
     37: 'left',
     38: 'up',
@@ -461,16 +459,13 @@ const keyCodes = {
     83: 'switch'
 };
 
-// MUSIC
-
 const audio = document.getElementById('intro');
-let musicIsPlaying = false;
-const finish = document.getElementById('level-finish');
 audio.volume = 0.2;
 audio.loop = true;
-finish.volume = 0.05;
+let isPlaying = false;
 
-// MODALS / BUTTONS
+const finish = document.getElementById('level-finish');
+finish.volume = 0.05;
 
 const pauseModal = document.querySelector('.pause-modal');
 const pauseButton = document.querySelector('.unpause');
@@ -478,151 +473,155 @@ const restartButton = document.querySelector('.restart');
 const titleScreen = document.querySelector('.title-screen');
 const startButton = document.querySelector('.start');
 
-// GAME
+const gameWrapper = document.getElementById('game-wrapper');
 
-let gameIsRunning = true;
+class Game {
+    constructor() {
+        this.musicIsPlaying = false;
+        this.gameIsRunning = true;
+        this.keys = Object.create(null);
+        this.levelId = 0;
+        this.display = {};
+        this.state = {};
+        this.ending = 0;
+        this.lastTime = 0;
 
-const detectKeys = () => {
-    // to avoid error with indexing into something that doesn't exist
-    const isPressed = Object.create(null);
+        this.trackKeys = this.trackKeys.bind(this);
+        this.restartLevel = this.restartLevel.bind(this);
+        this.start = this.start.bind(this);
+        this.startLevel = this.startLevel.bind(this);
+        this.statusFunction = this.statusFunction.bind(this);
+        this.rotateLevel10 = this.rotateLevel10.bind(this);
+        this.frameFunction = this.frameFunction.bind(this);
+        this.runLevel = this.runLevel.bind(this);
+        this.runAnimation = this.runAnimation.bind(this);
+        this.frame = this.frame.bind(this);
+        this.restartLevel = this.restartLevel.bind(this);
+        this.goToTitleScreen = this.goToTitleScreen.bind(this);
 
-    const track = e => {
-        if (e.keyCode === 27) togglePauseScreen(e);else if (keyCodes.hasOwnProperty(e.keyCode)) {
+        restartButton.addEventListener('click', this.restartLevel);
+        startButton.addEventListener('click', this.goToTitleScreen);
+        window.addEventListener('keydown', this.trackKeys);
+        window.addEventListener('keyup', this.trackKeys);
+    }
+
+    trackKeys(e) {
+        if (!e) return;
+        if (keyCodes.hasOwnProperty(e.keyCode)) {
             e.preventDefault();
             const isKeydown = e.type === 'keydown';
-            isPressed[keyCodes[e.keyCode]] = isKeydown;
-        }
-    };
-
-    window.addEventListener('keydown', track);
-    window.addEventListener('keyup', track);
-
-    return isPressed;
-};
-
-const startGame = () => {
-    musicIsPlaying = true;
-    audio.play();
-
-    titleScreen.classList.remove('show');
-    startLevel(0);
-};
-
-const startLevel = levelId => {
-
-    const statusFunction = status => {
-        if (status.includes('lost')) {
-            startLevel(levelId);
-        } else if (levelId < __WEBPACK_IMPORTED_MODULE_2__level_maps__["a" /* default */].length - 1) {
-            startLevel(levelId + 1);
-        } else {
-            titleScreen.classList.add('show');
-        }
-    };
-
-    runLevel(new __WEBPACK_IMPORTED_MODULE_0__level__["a" /* default */](__WEBPACK_IMPORTED_MODULE_2__level_maps__["a" /* default */][levelId], levelId + 1), statusFunction);
-};
-
-const runLevel = (level, statusFunction) => {
-    const gameWrapper = document.getElementById('game-wrapper');
-    const display = new __WEBPACK_IMPORTED_MODULE_1__display__["a" /* default */](gameWrapper, level);
-    let state = __WEBPACK_IMPORTED_MODULE_3__state__["a" /* default */].start(level);
-    let ending = 1;
-
-    // Rotate on the 10th level after 10 seconds
-    if (level.levelId === 10) {
-        setTimeout(rotate, 10000);
-    } else {
-        if (gameWrapper.classList.contains('rotated')) {
-            gameWrapper.classList.remove('rotated');
+            this.keys[keyCodes[e.keyCode]] = isKeydown;
         }
     }
 
-    const rotate = () => {
+    goToTitleScreen() {
+        this.isPlaying = true;
+        audio.play();
+
+        titleScreen.classList.remove('show');
+        this.start();
+    }
+
+    start() {
+        this.musicIsPlaying = true;
+        audio.play();
+
+        titleScreen.classList.remove('show');
+        this.startLevel(0);
+    }
+
+    startLevel() {
+        this.runLevel(new __WEBPACK_IMPORTED_MODULE_0__level__["a" /* default */](__WEBPACK_IMPORTED_MODULE_2__level_maps__["a" /* default */][this.levelId], this.levelId + 1), this.statusFunction);
+    }
+
+    statusFunction(status) {
+        if (status.includes('lost')) {
+            this.startLevel();
+        } else if (this.levelId < __WEBPACK_IMPORTED_MODULE_2__level_maps__["a" /* default */].length - 1) {
+            this.levelId += 1;
+            this.startLevel();
+        } else {
+            this.titleScreen.classList.add('show');
+        }
+    }
+
+    rotateLevel10() {
         const wrap = document.getElementById('game-wrapper');
         wrap.classList.add('rotated');
-    };
+    }
 
-    console.log('hi');
+    frameFunction(time) {
+        this.state = this.state.update(time, this.keys);
+        this.display.drawFrame(this.state);
 
-    restartButton.addEventListener('click', e => {
-        e.preventDefault();
-        gameIsRunning = !gameIsRunning;
-        pauseModal.classList.toggle("show");
-
-        musicIsPlaying = false;
-        audio.pause();
-
-        ending = 0;
-
-        display.clear('restart button clicked', state.status);
-        statusFunction('lost');
-        return;
-    });
-
-    const frameFunction = time => {
-        state = state.update(time, keys);
-        display.drawFrame(state);
-
-        if (state.status.includes('playing')) {
+        if (this.state.status.includes('playing')) {
             return true;
-        } else if (ending > 0) {
+        } else if (this.ending > 0) {
             finish.play();
-            ending -= time;
+            this.ending -= time;
             return true;
         } else {
-            display.clear('else statement of runAnimation', state.status);
-            statusFunction(state.status);
+            this.display.clear('else statement of runAnimation', this.state.status);
+            this.statusFunction(this.state.status);
             return false;
         }
-    };
+    }
 
-    runAnimation(frameFunction);
-};
+    runLevel(level, statusFunction) {
+        this.display = new __WEBPACK_IMPORTED_MODULE_1__display__["a" /* default */](gameWrapper, level);
+        this.state = __WEBPACK_IMPORTED_MODULE_3__state__["a" /* default */].start(level);
+        this.ending = 1;
 
-const togglePauseScreen = e => {
-    // const didPressEsc = e.keyCode === 27;
-    // const didClick = e.type === "click";
-    gameIsRunning = !gameIsRunning;
+        // Rotate on the 10th level after 10 seconds
+        if (level.levelId === 10) setTimeout(this.rotateLevel10, 10000);else if (gameWrapper.classList.contains('rotated')) {
+            gameWrapper.classList.remove('rotated');
+        }
 
-    // toggle music
-    musicIsPlaying = !musicIsPlaying;
-    musicIsPlaying ? audio.play() : audio.pause();
+        this.runAnimation(this.frameFunction);
+    }
 
-    pauseModal.classList.toggle("show");
-};
+    runAnimation() {
+        // last time since window has been open
+        this.lastTime = null;
 
-pauseButton.addEventListener('click', togglePauseScreen);
+        if (this.gameIsRunning) requestAnimationFrame(this.frame);
+    }
 
-// calls requestAnimation again after every frame
-const runAnimation = frameFunction => {
-    // last time since window has been open
-    let lastTime = null;
-
-    const frame = time => {
-        if (gameIsRunning === false) {
+    frame(time) {
+        if (this.gameIsRunning === false) {
             return;
         }
 
-        if (lastTime !== null) {
+        if (this.lastTime !== null) {
             // converts time between ms and s for convenience
-            let timeStep = Math.min(time - lastTime, 100) / 1000;
-            if (frameFunction(timeStep) === false) return;
+            let timeStep = Math.min(time - this.lastTime, 100) / 1000;
+            if (this.frameFunction(timeStep) === false) return;
         }
 
-        lastTime = time;
-        requestAnimationFrame(frame);
-    };
+        this.lastTime = time;
+        requestAnimationFrame(this.frame);
+    }
 
-    if (gameIsRunning) requestAnimationFrame(frame);
-};
+    restartLevel(e) {
+        e.preventDefault();
+        this.gameIsRunning = !this.gameIsRunning;
+        pauseModal.classList.toggle("show");
 
-// let nextLevelCount = 0;
+        this.musicIsPlaying = false;
+        audio.pause();
 
+        this.ending = 0;
 
-startButton.addEventListener('click', () => startGame());
+        this.display.clear('restart button clicked', this.state.status);
+        this.statusFunction('lost');
+    }
 
-const keys = detectKeys();
+}
+
+console.log('about to create new game');
+const game = new Game();
+game.trackKeys();
+game.goToTitleScreen();
 
 /***/ }),
 /* 4 */

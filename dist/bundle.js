@@ -997,23 +997,26 @@ class Display {
     }
 
     // drawn every time the display is updated with the given state
-    drawActors(actors) {
+    drawActors(state) {
         const wrapper = createElement('div');
 
-        actors.forEach(actor => {
-            const el = wrapper.appendChild(createElement('div', `actor ${actor.constructor.name.toLowerCase()}`)); // actor.constructor.name finds the name of the class of the actor
+        const currPlayer = state.player;
+
+        for (let actor of state.actors) {
+            const currPlayerStatus = currPlayer === actor ? 'curr-player' : '';
+            const el = wrapper.appendChild(createElement('div', `actor ${actor.constructor.name.toLowerCase()} ${currPlayerStatus}`)); // actor.constructor.name finds the name of the class of the actor
             el.style.width = `${actor.size.x * scale}px`;
             el.style.height = `${actor.size.y * scale}px`;
             el.style.left = `${actor.pos.x * scale}px`;
             el.style.top = `${actor.pos.y * scale}px`;
-        });
+        }
 
         return wrapper;
     }
 
     drawFrame(state) {
         if (this.actorLayer) this.actorLayer.remove();
-        this.actorLayer = this.drawActors(state.actors);
+        this.actorLayer = this.drawActors(state);
         this.wrapper.appendChild(this.actorLayer);
         this.wrapper.className = `game ${state.status}`;
         this.scrollPlayerIntoView(state);

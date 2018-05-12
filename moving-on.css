@@ -198,6 +198,20 @@ button:hover, a:hover {
   transform: scale(1.05);
 }
 
+.curr-player:before {
+  content: '';
+  height: 0;
+  width: 0;
+  position: absolute;
+  top: -20px;
+  left: calc(50% - 8px);
+
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  
+  border-top: 10px solid #fff;
+}
+
 .promotion {
   width: 100%;
   /* background-color: orange!important; */
@@ -206,9 +220,10 @@ button:hover, a:hover {
 }
 
 .promotion a {
-  width: 100px;
-  height: 30px;
-  font-size: 20px;
+  width: 60px;
+  height: 20px;
+  font-size: 18px;
+  padding: 10px;
 }
 
 @keyframes fadein {

@@ -48,17 +48,37 @@ class Game {
         this.runAnimation = this.runAnimation.bind(this);
         this.frame = this.frame.bind(this);
         this.restartLevel = this.restartLevel.bind(this);
-        this.goToTitleScreen = this.goToTitleScreen.bind(this);
-
+        this.togglePauseScreen = this.togglePauseScreen.bind(this);
 
         restartButton.addEventListener('click', this.restartLevel);
-        startButton.addEventListener('click', this.goToTitleScreen);
+        startButton.addEventListener('click', this.start);
+        pauseButton.addEventListener('click', this.togglePauseScreen);
         window.addEventListener('keydown', this.trackKeys);
         window.addEventListener('keyup', this.trackKeys);
     }
 
+    togglePauseScreen(e) {
+        this.gameIsRunning = !this.gameIsRunning;
+
+        // toggle music
+        this.musicIsPlaying = !this.musicIsPlaying;
+        this.musicIsPlaying ? audio.play() : audio.pause();
+
+        
+        pauseModal.classList.toggle("show");
+
+
+        if (this.gameIsRunning) {
+            requestAnimationFrame(this.frame);
+        }
+    }
+
     trackKeys(e) {
         if (!e) return;
+        if (e.keyCode === 27 && e.type === "keydown") {
+            this.togglePauseScreen();
+            return;
+        }
         if (keyCodes.hasOwnProperty(e.keyCode)) {
             e.preventDefault();
             const isKeydown = (e.type === 'keydown');
@@ -66,24 +86,18 @@ class Game {
         }
     }
 
-    goToTitleScreen() {
-        this.isPlaying = true;
-        audio.play();
-
-        titleScreen.classList.remove('show');
-        this.start();
-    }
-
     start() {
         this.musicIsPlaying = true;
         audio.play();
+
+        titleScreen.classList.remove('show');
     
         titleScreen.classList.remove('show');
         this.startLevel(0);
     }
 
     startLevel() {
-        this.runLevel(new Level(levelMaps[this.levelId], this.levelId + 1), this.statusFunction);
+        this.runLevel(new Level(levelMaps[this.levelId], this.levelId + 1));
     }
 
     statusFunction(status) {
@@ -115,11 +129,11 @@ class Game {
         } else {
             this.display.clear('else statement of runAnimation', this.state.status);
             this.statusFunction(this.state.status);
-            return false;
+            // return false;
         }
     }
 
-    runLevel(level, statusFunction) {
+    runLevel(level) {
         this.display = new Display(gameWrapper, level);
         this.state = State.start(level);
         this.ending = 1;
@@ -156,16 +170,11 @@ class Game {
     }
 
     restartLevel(e)  {
-        e.preventDefault();
-        this.gameIsRunning = !this.gameIsRunning;
-        pauseModal.classList.toggle("show");
-
-        this.musicIsPlaying = false;
-        audio.pause();
-
         this.ending = 0;
 
+        
         this.display.clear('restart button clicked', this.state.status);
+        this.togglePauseScreen();
         this.statusFunction('lost');
     }
 
@@ -173,6 +182,4 @@ class Game {
 
 console.log('about to create new game');
 const game = new Game();
-game.trackKeys();
-game.goToTitleScreen();
 

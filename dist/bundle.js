@@ -108,18 +108,9 @@ class Player {
         if (keys.left && this === state.player && !(overlap === 'rightOverlap')) this.speed.x -= this.xSpeed;
         if (keys.right && this === state.player && !(overlap === 'leftOverlap')) this.speed.x += this.xSpeed;
 
-        // if ((keys.left || keys.right || keys.up) && this === state.player) {
-        //     if (this.speed.x < this.xSpeed && this.speed.x > -this.xSpeed) {
-        //     if (keys.left) this.speed.x -= this.xSpeed;
-        //     if (keys.right) this.speed.x += this.xSpeed;
-        //     } else if (this.speed.x === this.xSpeed || this.speed.x === -this.xSpeed) {
-        //       if (keys.left && this.speed.x === this.xSpeed) this.speed.x -= this.xSpeed;
-        //       if (keys.right && this.speed.x === -this.xSpeed) this.speed.x += this.xSpeed;
-        //     } 
-        //   } else { 
-        //     if (this.speed.x > 0) this.speed.x -= this.speed.x < this.xSpeed ? this.speed.x : this.xSpeed;
-        //     if (this.speed.x < 0) this.speed.x += this.speed.x > -this.xSpeed ? -this.speed.x : this.xSpeed;
-        //   }
+        if (this !== state.player && ['topOverlap'].includes(overlap)) {
+            this.speed.x += state.player.speed.x;
+        }
 
         const movedX = this.pos.plus(new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](this.speed.x * time, 0));
         if (state.level.touching(movedX, this.size) !== 'wall') {
@@ -132,13 +123,18 @@ class Player {
         const motion = new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](0, this.speed.y * time);
         const newPos = this.pos.plus(motion);
         const obstacle = state.level.touching(newPos, this.size);
-        if (obstacle || overlap === 'topOverlap' && this === state.player) {
+        if (obstacle || ['topOverlap', 'bottomOverlap'].includes(overlap) && (this === state.player || state.nonPlayers.includes(this))) {
             if (overlap === 'topOverlap' && this.speed.y < 0) {
                 this.pos = newPos;
             } else if (obstacle === 'trampoline') {
-                this.speed.y = -this.jumpSpeed * 1.5;
+                this.speed.y = -Math.floor(Math.random() * 4 + 10);
                 // this.jumpSpeed = -this.jumpSpeed;
                 this.pos = newPos;
+            } else if (overlap === 'bottomOverlap') {
+                this.speed.y = this.jumpSpeed * .1;
+                if (newPos < this.pos) {
+                    this.pos = newPos;
+                }
             } else if (keys.up && (this.speed.y >= 0 || overlap === 'topOverlap') && this === state.player) {
                 this.speed.y = -this.jumpSpeed;
             } else if (obstacle === 'water') {
@@ -155,9 +151,11 @@ class Player {
 
     update(time, state, keys) {
         let overlap;
+        console.log(this);
         for (let actor of state.actors) {
-            if (actor !== state.player) {
+            if (!(this === actor)) {
                 overlap = state.overlap(this, actor);
+                // if (state.player.constructor.name === 'Finley' && actor.constructor.name === 'Frankie' && overlap === 'topOverlap') {debugger;}
                 if (overlap) break;
             }
         }
@@ -315,38 +313,6 @@ class State {
       if (horizontalOverlap >= horizontalDistance - 0.1 && horizontalOverlap <= horizontalDistance + 0.1 && (player.pos.y + player.size.y > actor.pos.y && player.pos.y + player.size.y < actor.pos.y + actor.size.y || player.pos.y > actor.pos.y && player.pos.y < actor.pos.y + actor.size.y || player.pos.y < actor.pos.y && player.pos.y + player.size.y > actor.pos.y + actor.size.y || player.pos.y > actor.pos.y && player.pos.y + player.size.y < actor.pos.y + actor.size.y)) {
         return "rightOverlap";
       }
-
-      // console.log(horizontalOverlap, "vo", verticalDistance, "vd");
-
-      // console.log(-verticalOverlap > verticalDistance - .2 && -verticalOverlap < verticalDistance + .2, verticalOverlap, verticalDistance);
-
-      // const leftOverlap = (player.pos.x + player.size.x > actor.pos.x && player.pos.x < actor.pos.x);
-
-      // const rightOverlap = (player.pos.x < actor.pos.x + actor.size.x && player.pos.x + player.size.x > actor.pos.x + actor.size.x);
-
-      // const topOverlap = (player.pos.y + player.size.y > actor.pos.y && player.pos.y < actor.pos.y);
-
-      // const bottomOverlap = (player.pos.y < actor.pos.y + actor.size.y && player.pos.y + player.size.y > actor.pos.y + actor.size.y);
-
-      // if (leftOverlap && !rightOverlap && (topOverlap || bottomOverlap)) {
-      //     debugger;
-      //     return 'left';
-      // }
-
-      // if (rightOverlap && !leftOverlap && (topOverlap || bottomOverlap)) {
-      //     debugger;
-      //     return 'right';
-      // }
-
-      // if (topOverlap && !bottomOverlap && (leftOverlap || rightOverlap)) {
-      //     debugger;
-      //     return 'top';
-      // }
-
-      // if (bottomOverlap && !topOverlap && (leftOverlap || rightOverlap)) {
-      //     debugger;
-      //     return 'bottom';
-      // }
     } else {
       return player.pos.x + player.size.x > actor.pos.x && player.pos.x < actor.pos.x + actor.size.x && player.pos.y + player.size.y > actor.pos.y && player.pos.y < actor.pos.y + actor.size.y;
     }
@@ -371,31 +337,13 @@ class State {
       case "poison":
         if (player.size.x === 0.8) return new State(this.level, actors, "lost", this.player);
       case "water":
-        if (player.size.x === 0.8 && this.level.levelId !== 9)
-          // this.level.width !== 78
-          return new State(this.level, actors, "lost drowned", this.player);
+        if (player.size.x === 0.8 && this.level.levelId !== 9) return new State(this.level, actors, "lost drowned", this.player);
         break;
       case "trampoline":
         return new State(this.level, actors, "playing", this.player, keys.switch, -this.gravity * 1.5, this.finleyStatus, this.frankieStatus);
       default:
         break;
     }
-
-    // if (player.constructor.name === 'Finley' && this.level.touching(player.pos, player.size) === 'finleyGoal') {
-    //     if (this.status === 'frankieWon') return new State(this.level, actors, 'won');
-    //     return new State(this.level, actors, this.status, this.player, this.switch, this.gravity, 'finleyWon', this.frankieStatus);
-    // } else if (player.constructor.name === 'Frankie' && this.level.touching(player.pos, player.size) == 'frankieGoal') {
-    //     if (this.status === 'finleyWon') return new State(this.level, actors, 'won');
-    //     return new State(this.level, actors, this.status, this.player, this.switch, this.gravity, this.finleyStatus, 'frankieWon');
-    // }
-
-    // if ((this.level.touching(player.pos, player.size)) === 'finleyGoal' || 'frankieGoal') {
-    //     return new State(this.level, actors, 'won');
-    // }
-
-    // if (keys.esc) {
-    //     return new State(this.level, actors, 'paused');
-    // }
 
     let overlapActors = actors.filter(actor => !(Object.getPrototypeOf(Object.getPrototypeOf(actor)).constructor.name === "Player" || ["FinleyGoal", "FrankieGoal"].includes(actor.constructor.name)));
     for (let actor of overlapActors) {
@@ -418,6 +366,7 @@ class State {
       newState.gravity = Math.abs(newState.gravity);
     }
 
+    // attempting to do swimming in water level
     // if (this.level.touching(this.player.pos, this.player.size) === 'water' && this.level.width === 77) {
     //     console.log(this.level.width);
     //     newState.gravity = -Math.abs(newState.gravity) * 2;

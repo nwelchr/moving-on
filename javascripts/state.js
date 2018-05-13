@@ -207,37 +207,6 @@ class State {
         return "rightOverlap";
       }
 
-      // console.log(horizontalOverlap, "vo", verticalDistance, "vd");
-
-      // console.log(-verticalOverlap > verticalDistance - .2 && -verticalOverlap < verticalDistance + .2, verticalOverlap, verticalDistance);
-
-      // const leftOverlap = (player.pos.x + player.size.x > actor.pos.x && player.pos.x < actor.pos.x);
-
-      // const rightOverlap = (player.pos.x < actor.pos.x + actor.size.x && player.pos.x + player.size.x > actor.pos.x + actor.size.x);
-
-      // const topOverlap = (player.pos.y + player.size.y > actor.pos.y && player.pos.y < actor.pos.y);
-
-      // const bottomOverlap = (player.pos.y < actor.pos.y + actor.size.y && player.pos.y + player.size.y > actor.pos.y + actor.size.y);
-
-      // if (leftOverlap && !rightOverlap && (topOverlap || bottomOverlap)) {
-      //     debugger;
-      //     return 'left';
-      // }
-
-      // if (rightOverlap && !leftOverlap && (topOverlap || bottomOverlap)) {
-      //     debugger;
-      //     return 'right';
-      // }
-
-      // if (topOverlap && !bottomOverlap && (leftOverlap || rightOverlap)) {
-      //     debugger;
-      //     return 'top';
-      // }
-
-      // if (bottomOverlap && !topOverlap && (leftOverlap || rightOverlap)) {
-      //     debugger;
-      //     return 'bottom';
-      // }
     } else {
       return (
         player.pos.x + player.size.x > actor.pos.x &&
@@ -291,7 +260,6 @@ class State {
           return new State(this.level, actors, "lost", this.player);
       case "water":
         if (player.size.x === 0.8 && this.level.levelId !== 9)
-        // this.level.width !== 78
           return new State(this.level, actors, "lost drowned", this.player);
         break;
       case "trampoline":
@@ -308,22 +276,6 @@ class State {
       default:
         break;
     }
-
-    // if (player.constructor.name === 'Finley' && this.level.touching(player.pos, player.size) === 'finleyGoal') {
-    //     if (this.status === 'frankieWon') return new State(this.level, actors, 'won');
-    //     return new State(this.level, actors, this.status, this.player, this.switch, this.gravity, 'finleyWon', this.frankieStatus);
-    // } else if (player.constructor.name === 'Frankie' && this.level.touching(player.pos, player.size) == 'frankieGoal') {
-    //     if (this.status === 'finleyWon') return new State(this.level, actors, 'won');
-    //     return new State(this.level, actors, this.status, this.player, this.switch, this.gravity, this.finleyStatus, 'frankieWon');
-    // }
-
-    // if ((this.level.touching(player.pos, player.size)) === 'finleyGoal' || 'frankieGoal') {
-    //     return new State(this.level, actors, 'won');
-    // }
-
-    // if (keys.esc) {
-    //     return new State(this.level, actors, 'paused');
-    // }
 
     let overlapActors = actors.filter(
       actor =>
@@ -361,6 +313,7 @@ class State {
       newState.gravity = Math.abs(newState.gravity);
     }
 
+    // attempting to do swimming in water level
     // if (this.level.touching(this.player.pos, this.player.size) === 'water' && this.level.width === 77) {
     //     console.log(this.level.width);
     //     newState.gravity = -Math.abs(newState.gravity) * 2;

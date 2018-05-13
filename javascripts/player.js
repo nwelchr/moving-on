@@ -14,19 +14,10 @@ class Player {
         if (keys.left && this === state.player && !(overlap === 'rightOverlap')) this.speed.x -= this.xSpeed;
         if (keys.right && this === state.player && !(overlap === 'leftOverlap')) this.speed.x += this.xSpeed;
 
+        if (this !== state.player && ['topOverlap'].includes(overlap)) { 
+            this.speed.x += state.player.speed.x;
+         }
 
-        // if ((keys.left || keys.right || keys.up) && this === state.player) {
-        //     if (this.speed.x < this.xSpeed && this.speed.x > -this.xSpeed) {
-        //     if (keys.left) this.speed.x -= this.xSpeed;
-        //     if (keys.right) this.speed.x += this.xSpeed;
-        //     } else if (this.speed.x === this.xSpeed || this.speed.x === -this.xSpeed) {
-        //       if (keys.left && this.speed.x === this.xSpeed) this.speed.x -= this.xSpeed;
-        //       if (keys.right && this.speed.x === -this.xSpeed) this.speed.x += this.xSpeed;
-        //     } 
-        //   } else { 
-        //     if (this.speed.x > 0) this.speed.x -= this.speed.x < this.xSpeed ? this.speed.x : this.xSpeed;
-        //     if (this.speed.x < 0) this.speed.x += this.speed.x > -this.xSpeed ? -this.speed.x : this.xSpeed;
-        //   }
 
         const movedX = this.pos.plus(new Vector(this.speed.x * time, 0));
         if (state.level.touching(movedX, this.size) !== 'wall') {
@@ -39,14 +30,19 @@ class Player {
         const motion = new Vector(0, this.speed.y * time);
         const newPos = this.pos.plus(motion); 
         const obstacle = state.level.touching(newPos, this.size);
-        if (obstacle || overlap === 'topOverlap' && this === state.player) {
+        if (obstacle || ['topOverlap', 'bottomOverlap'].includes(overlap) && (this === state.player || state.nonPlayers.includes(this))) {
             if (overlap === 'topOverlap' && this.speed.y < 0) {
                 this.pos = newPos;
             } else if (obstacle === 'trampoline') {
-                this.speed.y = -this.jumpSpeed * 1.5;
+                this.speed.y = -(Math.floor(Math.random() * 4 + 10));
                 // this.jumpSpeed = -this.jumpSpeed;
                 this.pos = newPos;
-            } 
+            } else if (overlap === 'bottomOverlap') {
+                this.speed.y = this.jumpSpeed * .1;
+                if (newPos < this.pos) {
+                    this.pos = newPos;
+                }
+            }
             else if (keys.up && (this.speed.y >= 0 || overlap === 'topOverlap') && this === state.player) {
                 this.speed.y = -this.jumpSpeed;
             } else if (obstacle === 'water') {
@@ -66,9 +62,11 @@ class Player {
 
     update (time, state, keys) {
         let overlap;
+        console.log(this);
         for(let actor of state.actors) {
-            if (actor !== state.player) {
+            if (!(this === actor)) {
                 overlap = state.overlap(this, actor);
+                // if (state.player.constructor.name === 'Finley' && actor.constructor.name === 'Frankie' && overlap === 'topOverlap') {debugger;}
                 if (overlap) break;
             }
         }

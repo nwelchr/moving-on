@@ -39,7 +39,7 @@ class Player {
                 this.pos = newPos;
             } else if (overlap === 'bottomOverlap') {
                 this.speed.y = this.jumpSpeed * .1;
-                if (newPos < this.pos) {
+                if (newPos < this.pos || !['water', 'wall'].includes(obstacle)) {
                     this.pos = newPos;
                 }
             }
@@ -62,11 +62,9 @@ class Player {
 
     update (time, state, keys) {
         let overlap;
-        console.log(this);
         for(let actor of state.actors) {
             if (!(this === actor)) {
                 overlap = state.overlap(this, actor);
-                // if (state.player.constructor.name === 'Finley' && actor.constructor.name === 'Frankie' && overlap === 'topOverlap') {debugger;}
                 if (overlap) break;
             }
         }

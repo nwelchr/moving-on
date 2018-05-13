@@ -49,7 +49,6 @@ class State {
       case 9:
         break;
       case 10:
-        console.log('hi');
         this.frankieStatus = true;
         if (this.player.pos.y < 80 && this.player.pos.y > 5) this.gravity = 2;
         const wrapper = document.getElementById("game-wrapper");
@@ -64,41 +63,10 @@ class State {
         break;
     }
 
-    // console.log(this.level.levelId, this.level.width);
-
-    // if ([73, 58, 67].includes(this.level.width)) {
-    //     this.frankieStatus = true;
-    // }
 
     if (this.finleyStatus === true && this.frankieStatus === true) {
       return new State(this.level, this.actors, "won", this.player);
     }
-
-    // if first level
-    // if (this.level.width === 67 && this.player.pos.y < 30 && this.player.pos.y > 2) {
-    //     this.gravity = .8;
-    // } else if (this.level.width === 73 & this.player.pos.y < 80 && this.player.pos.y > 5) {
-    //     this.gravity = 2;
-    // } else if (this.level.width === 58 && status !== 'won') {
-    //     this.gravity = -1;
-    //     this.status = 'playing last-level';
-
-    //     if (this.player.pos.x > 20) {
-    //         this.gravity = 10;
-    //     }
-    // } else {
-    //     this.gravity = gravity || 10;
-    // }
-
-    // if (this.level.width === 73) {
-    //     const wrapper = document.getElementById('game-wrapper');
-    //     if (wrapper.classList.contains('rotated')) {
-    //         this.gravity = -5;
-    //     }
-    // }
-
-    // this.finleyStatus = finleyStatus || null;
-    // this.frankieStatus = frankieStatus || null;
 
     // to check whether switch is currently being pressed to prevent repeat switching on update
     this.switch = switchKey;
@@ -125,14 +93,6 @@ class State {
       Object.getPrototypeOf(Object.getPrototypeOf(actor)).constructor.name ===
       "Player"
     ) {
-      // player on top if actor.y - player.y > 0
-      // player on bottom if actor.y - player.y < 0
-
-      // player on left if actor.x - player.x > 0
-      // player on right if actor.x - player.x < 0
-
-      // if player.pos.x + player.size.x  / 2 (center of player) - actor.pos.x + actor.size.x / 2 (center of actor) +-.01(-(player.size.x / 2 + actor.size.x/2)) -- player can't move right
-
       const horizontalOverlap =
         player.pos.x + player.size.x / 2 - (actor.pos.x + actor.size.x / 2);
       const horizontalDistance = player.size.x / 2 + actor.size.x / 2;
@@ -140,12 +100,6 @@ class State {
       const verticalOverlap =
         player.pos.y + player.size.y / 2 - (actor.pos.y + actor.size.y / 2);
       const verticalDistance = player.size.y / 2 + actor.size.y / 2;
-
-      // if (horizontalOverlap >= horizontalDistance - .2 && horizontalOverlap <= horizontalDistance + .2) { console.log('left overlap', horizontalDistance); }
-
-      // if (-horizontalOverlap >= horizontalDistance - .2 && horizontalOverlap <= horizontalDistance + .2) { console.log('right overlap', horizontalDistance); }
-
-      // if (verticalOverlap >= verticalDistance - .2 && verticalOverlap <= verticalDistance + .2) { console.log('bottom overlap', verticalDistance); }
 
       if (
         -verticalOverlap >= verticalDistance - 0.1 &&

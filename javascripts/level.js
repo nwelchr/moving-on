@@ -9,7 +9,7 @@ import { SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION } from "constants";
 const actorChars = {
     'i': Finley,
     'r': Frankie,
-    '=': Poison, '|': Poison, 'v': Poison,
+    '=': Poison, '|': Poison, 'v': Poison, 'p': Poison,
     '!': FinleyGoal, '@': FrankieGoal,
 };
 
@@ -45,9 +45,6 @@ class Level {
                         case 'w':
                             fieldType = 'water';
                             break;                            
-                        case 'p':
-                            fieldType = 'poison';
-                            break;
                         case 't':
                             fieldType = 'trampoline';
                             break;
@@ -148,8 +145,9 @@ class Level {
 
 
         for (let y = yStart; y < yEnd; y++) {
+            let fieldType;
             for (let x = xStart; x < xEnd; x++) {
-                const fieldType = this.rows[y][x];
+                fieldType = this.rows[y][x];
                 if (fieldType) return fieldType;
             }
         }

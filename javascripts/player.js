@@ -36,7 +36,10 @@ class Player {
         const obstacle = state.level.touching(newPos, this.size);
         if (this.speed.y < -13) this.speed.y = -13;
         if (obstacle || ['topOverlap', 'bottomOverlap'].includes(overlap) && (this === state.player || state.nonPlayers.includes(this))) {
-            if (overlap === 'topOverlap' && this.speed.y < 0) {
+            if (['gravity', 'poison', 'instruction'].includes(obstacle)) {
+                this.pos = newPos;
+                if (obstacle === 'poison') debugger;
+            } else if (overlap === 'topOverlap' && this.speed.y < 0) {
                 this.pos = newPos;
             } else if (obstacle === 'trampoline') {
                 state.player.constructor.name === "Finley" ? finleyJumpAudio.play() : frankieJumpAudio.play();
@@ -56,16 +59,15 @@ class Player {
                 this.speed.y = -this.jumpSpeed;
                 if (obstacle === 'water') this.speed.y -= .5;
             } else if (obstacle === 'water') {
-                if (this.size.x === .8) {
-                    this.speed.y -= .7;
-                    if (this.speed.y < 0) this.speed.y += .6;
+                if (this.constructor.name === "Finley") {
+                    this.speed.y -= 1;
+                    if (this.speed.y < 0) this.speed.y += 1.5;
+                    // if (this.speed.y > 0) this.speed.y -= 1;
                     this.pos = newPos;
                 }
                 else this.pos.y = 8.1;
             } 
-            else if (['gravity', 'poison', 'instruction'].includes(obstacle)) {
-                this.pos = newPos;
-            } else {
+            else {
                 this.speed.y = 0;
             }
         } else { 

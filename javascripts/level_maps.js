@@ -128,9 +128,10 @@ const levelMaps = [
           " xxxxxxxxxxxxx           xxx             xxx                    ! @ x                    x",
           " xxxxxxxxxxxxx                                              xxxxxxxxx                     x",
           " xxxxxxxxxxxxxwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwxxxxxxxxxxxxx                   x",
-          " xxxxxxxxxxxxxwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwxxxxxxxxxxxxx ",
-          " xxxxxxxxxxxxxwwwwwwwwwwwww9wwwwwwwwwwwwwwwwwwwwwwwwwwwwxxxxxxxxxxxxx x",
-          " xxxxxxxxxxxxxwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwxxxxxxxxxxxxx x",    
+          " xxxxxxxxxxxxxwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwxxxxxxxxxxxxx",
+          " xxxxxxxxxxxxxwwwwwwwwwwwww9wwwwwwwwwwwwwwwwwwwwwwwwwwwwxxxxxxxxxxxxx",
+          " xxxxxxxxxxxxxwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwxxxxxxxxxxxxx",
+          " xxxxxxxxxxxxxppppppppppppppppppppppppppppppppppppppppppxxxxxxxxxxxxx",    
           " xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
         ],
 [         "x             x                                            ",
@@ -204,9 +205,10 @@ const levelMaps = [
           " xxxxxxxxxxxxx           xxx             xxx                    !   x                    x",
           " xxxxxxxxxxxxx                                              xxxxxxxxx                     x",
           " xxxxxxxxxxxxxwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwxxxxxxxxxxxxx                   x",
-          " xxxxxxxxxxxxxwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwxxxxxxxxxxxxx ",
-          " xxxxxxxxxxxxxwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwxxxxxxxxxxxxx x",
-          " xxxxxxxxxxxxxwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwxxxxxxxxxxxxx x",    
+          " xxxxxxxxxxxxxwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwxxxxxxxxxxxxx",
+          " xxxxxxxxxxxxxwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwxxxxxxxxxxxxx",
+          " xxxxxxxxxxxxxwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwxxxxxxxxxxxxx",
+          " xxxxxxxxxxxxxppppppppppppppppppppppppppppppppppppppppppxxxxxxxxxxxxx",    
           " xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
         ],
 

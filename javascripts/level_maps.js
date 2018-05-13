@@ -81,7 +81,7 @@ const levelMaps = [
           " x                       ! @                        x",
           " x   5           xxxxxxxxxxxxxxxxxx                 x",
           " x               xxxxxxxxxxxxxxxxxx                 x",
-          " x i          xxxxxxxxxxxxxxxxxxxxxxxx              x",
+          " x i          xxxxxxxxxxxxxxxxxxxxxxxx           r  x",
           " x            xxxxxxxxxxxxxxxxxxxxxxxx              x",    
           " xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
         ],

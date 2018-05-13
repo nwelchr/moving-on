@@ -43,18 +43,24 @@ class Player {
                 this.speed.y = -(Math.floor(Math.random() * 2 + 12));
                 this.pos.y -= .1;
             } else if (overlap === 'bottomOverlap') {
-                this.speed.y = this.jumpSpeed * .1;
                 if (newPos < this.pos || !['water', 'wall'].includes(obstacle)) {
                     this.pos = newPos;
+                } else if (this.constructor.name === 'Frankie') {
+                    if (this.speed.y > 0) this.speed.y = 0;
+                } else {
+                    this.speed.y = this.jumpSpeed * .1;
                 }
             }
             else if (keys.up && (this.speed.y >= 0 || overlap === 'topOverlap') && this === state.player) {
                 state.player.constructor.name === "Finley" ? finleyJumpAudio.play() : frankieJumpAudio.play();                
                 this.speed.y = -this.jumpSpeed;
-                if (obstacle === 'water') this.speed.y = -this.jumpSpeed * 2;
+                if (obstacle === 'water') this.speed.y -= .5;
             } else if (obstacle === 'water') {
-                this.speed.y /= 1.2;
-                if (this.size.x === .8) this.pos = newPos;
+                if (this.size.x === .8) {
+                    this.speed.y -= .7;
+                    if (this.speed.y < 0) this.speed.y += .6;
+                    this.pos = newPos;
+                }
                 else this.pos.y = 8.1;
             } 
             else if (['gravity', 'poison', 'instruction'].includes(obstacle)) {

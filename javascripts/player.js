@@ -34,14 +34,14 @@ class Player {
         const motion = new Vector(0, this.speed.y * time);
         const newPos = this.pos.plus(motion); 
         const obstacle = state.level.touching(newPos, this.size);
+        if (this.speed.y < -13) this.speed.y = -13;
         if (obstacle || ['topOverlap', 'bottomOverlap'].includes(overlap) && (this === state.player || state.nonPlayers.includes(this))) {
             if (overlap === 'topOverlap' && this.speed.y < 0) {
                 this.pos = newPos;
             } else if (obstacle === 'trampoline') {
                 state.player.constructor.name === "Finley" ? finleyJumpAudio.play() : frankieJumpAudio.play();
-                debugger;
                 this.speed.y = -(Math.floor(Math.random() * 2 + 12));
-                this.pos = newPos;
+                this.pos.y -= .1;
             } else if (overlap === 'bottomOverlap') {
                 this.speed.y = this.jumpSpeed * .1;
                 if (newPos < this.pos || !['water', 'wall'].includes(obstacle)) {
@@ -51,7 +51,9 @@ class Player {
             else if (keys.up && (this.speed.y >= 0 || overlap === 'topOverlap') && this === state.player) {
                 state.player.constructor.name === "Finley" ? finleyJumpAudio.play() : frankieJumpAudio.play();                
                 this.speed.y = -this.jumpSpeed;
+                if (obstacle === 'water') this.speed.y = -this.jumpSpeed * 2;
             } else if (obstacle === 'water') {
+                this.speed.y /= 1.2;
                 if (this.size.x === .8) this.pos = newPos;
                 else this.pos.y = 8.1;
             } 

@@ -269,7 +269,6 @@ class State {
 
     // attempting to do swimming in water level
     // if (this.level.touching(this.player.pos, this.player.size) === 'water' && this.level.width === 77) {
-    //     console.log(this.level.width);
     //     newState.gravity = -Math.abs(newState.gravity) * 2;
     // } else {
     //     newState.gravity = Math.abs(newState.gravity);

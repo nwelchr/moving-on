@@ -376,7 +376,7 @@ class State {
           return new State(this.level, actors, "lost drowned", this.player);
         break;
       case "trampoline":
-        return new State(this.level, actors, "playing", this.player, keys.switch, -this.gravity * 1.1, this.finleyStatus, this.frankieStatus);
+        return new State(this.level, actors, "playing", this.player, keys.switch, -this.gravity * 1.5, this.finleyStatus, this.frankieStatus);
       default:
         break;
     }

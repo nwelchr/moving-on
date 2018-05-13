@@ -1,5 +1,9 @@
 import Vector from './vector';
 
+const finleyJumpAudio = document.getElementById('finley-jump');
+const frankieJumpAudio = document.getElementById('frankie-jump');
+finleyJumpAudio.volume = .08;
+frankieJumpAudio.volume = .08;
 class Player {
     constructor(pos, ch, speed, size, xSpeed, jumpSpeed) {
         this.pos = pos;
@@ -34,8 +38,9 @@ class Player {
             if (overlap === 'topOverlap' && this.speed.y < 0) {
                 this.pos = newPos;
             } else if (obstacle === 'trampoline') {
-                this.speed.y = -(Math.floor(Math.random() * 4 + 10));
-                // this.jumpSpeed = -this.jumpSpeed;
+                state.player.constructor.name === "Finley" ? finleyJumpAudio.play() : frankieJumpAudio.play();
+                debugger;
+                this.speed.y = -(Math.floor(Math.random() * 2 + 12));
                 this.pos = newPos;
             } else if (overlap === 'bottomOverlap') {
                 this.speed.y = this.jumpSpeed * .1;
@@ -44,6 +49,7 @@ class Player {
                 }
             }
             else if (keys.up && (this.speed.y >= 0 || overlap === 'topOverlap') && this === state.player) {
+                state.player.constructor.name === "Finley" ? finleyJumpAudio.play() : frankieJumpAudio.play();                
                 this.speed.y = -this.jumpSpeed;
             } else if (obstacle === 'water') {
                 if (this.size.x === .8) this.pos = newPos;

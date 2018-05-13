@@ -376,7 +376,7 @@ class State {
           return new State(this.level, actors, "lost drowned", this.player);
         break;
       case "trampoline":
-        return new State(this.level, actors, "playing", this.player, keys.switch, -this.gravity, this.finleyStatus, this.frankieStatus);
+        return new State(this.level, actors, "playing", this.player, keys.switch, -this.gravity * 1.1, this.finleyStatus, this.frankieStatus);
       default:
         break;
     }
@@ -538,7 +538,7 @@ class Game {
         audio.play();
 
         titleScreen.classList.remove('show');
-        this.levelId = 0;
+        this.levelId = 7;
         this.startLevel();
     }
 

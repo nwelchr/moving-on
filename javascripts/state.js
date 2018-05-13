@@ -301,7 +301,7 @@ class State {
           "playing",
           this.player,
           keys.switch,
-          -this.gravity,
+          -this.gravity * 1.1,
           this.finleyStatus,
           this.frankieStatus
         );
